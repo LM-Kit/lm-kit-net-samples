@@ -132,11 +132,10 @@ LMkit.NET is designed for full compatibility with a wide range of operating syst
 
 ## **Supported .NET Frameworks**
 
-LMkit.NET is compatible with a wide range of .NET frameworks, spanning from version 4.6.2 up to .NET 8.  
-To maximize performance through specific optimizations, separate binaries are provided for each supported framework version.  
-Accordingly, the NuGet package includes assemblies targeting:
-- netstandard2.0
-- net5.0
-- net6.0
-- net7.0
-- net8.0
+LMkit.NET is compatible with a wide range of .NET frameworks, spanning from version 4.6.2 up to .NET 8. 
+
+
+
+## **Hugging Face Integration**
+
+The [LM-Kit section on Hugging Face](https://huggingface.co/lm-kit) provides state-of-the-art quantized models that have been rigorously tested with the LM-Kit SDK.
