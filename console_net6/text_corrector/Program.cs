@@ -10,7 +10,7 @@ namespace text_corrector
     {
         static readonly string DEFAULT_LLAMA3_1_8B_MODEL_PATH = @"https://huggingface.co/lm-kit/llama-3.1-8b-instruct-gguf/resolve/main/Llama-3.1-8B-Instruct-Q4_K_M.gguf";
         static readonly string DEFAULT_GEMMA2_9B_MODEL_PATH = @"https://huggingface.co/lm-kit/gemma-2-9b-gguf/resolve/main/gemma-2-9B-Q4_K_M.gguf";
-        static readonly string DEFAULT_PHI3_MINI_3_8B_MODEL_PATH = @"https://huggingface.co/lm-kit/phi-3-instruct-gguf/resolve/main/Phi-3.1-mini-4k-Instruct-Q4_K_M.gguf";
+        static readonly string DEFAULT_PHI3_MINI_3_8B_MODEL_PATH = @"https://huggingface.co/lm-kit/phi-3.1-mini-4k-3.8b-instruct-gguf/resolve/main/Phi-3.1-mini-4k-Instruct-Q4_K_M.gguf";
         static readonly string DEFAULT_QWEN2_7_6B_MODEL_PATH = @"https://huggingface.co/lm-kit/qwen-2-7.6b-instruct-gguf/resolve/main/Qwen-2-7.6B-Instruct-Q4_K_M.gguf";
         static readonly string DEFAULT_MISTRAL_NEMO_12_2B_MODEL_PATH = @"https://huggingface.co/lm-kit/mistral-nemo-2407-12.2b-instruct-gguf/resolve/main/Mistral-Nemo-2407-12.2B-Instruct-Q4_K_M.gguf";
         static bool _isDownloading;
