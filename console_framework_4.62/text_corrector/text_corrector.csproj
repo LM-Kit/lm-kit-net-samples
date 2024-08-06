@@ -82,8 +82,8 @@
     <None Include="packages.config" />
   </ItemGroup>
   <ItemGroup>
-		<PackageReference Include="LM-Kit.NET" Version="2024.7.9" />
-		<PackageReference Include="LM-Kit.NET.Backend.Cuda12.Windows" Version="2024.7.7" />
+		<PackageReference Include="LM-Kit.NET" Version="2024.7.10" />
+		<PackageReference Include="LM-Kit.NET.Backend.Cuda12.Windows" Version="2024.7.8" />
 
 
 

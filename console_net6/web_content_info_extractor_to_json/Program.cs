@@ -115,49 +115,11 @@ namespace web_content_info_extractor_to_json
 'Primary Topic': The main subject or theme of the content.
 'Domain or Field': The area of knowledge or industry the content belongs to.
 'Language': The language in which the content is written.
-'Audience': The intended or target audience for the content"
+'Audience': The intended or target audience for the content."
             };
 
 
-            //Loïc: I've used this very handy online tool to convert json scheme to gbnf: https://adrienbrault.github.io/json-schema-to-gbnf/
-
-            string gbnf = @"root ::= ""{"" ws01 root-Primary-Topic "","" ws01 root-Domain-or-Field "","" ws01 root-Language "","" ws01 root-Audience ""}"" ws01
-root-Primary-Topic ::= ""\""Primary Topic\"""" "":"" ws01 string
-root-Domain-or-Field ::= ""\""Domain or Field\"""" "":"" ws01 string
-root-Language ::= ""\""Language\"""" "":"" ws01 string
-root-Audience ::= ""\""Audience\"""" "":"" ws01 string
-
-
-value  ::= (object | array | string | number | boolean | null) ws
-
-object ::=
-  ""{"" ws (
-    string "":"" ws value
-    ("","" ws string "":"" ws value)*
-  )? ""}""
-
-array  ::=
-  ""["" ws01 (
-            value
-    ("","" ws01 value)*
-  )? ""]""
-
-string ::=
-  ""\"""" (string-char)* ""\""""
-
-string-char ::= [^""\\] | ""\\"" ([""\\/bfnrt] | ""u"" [0-9a-fA-F] [0-9a-fA-F] [0-9a-fA-F] [0-9a-fA-F]) # escapes
-
-number ::= integer (""."" [0-9]+)? ([eE] [-+]? [0-9]+)?
-integer ::= ""-""? ([0-9] | [1-9] [0-9]*)
-boolean ::= ""true"" | ""false""
-null ::= ""null""
-
-# Optional space: by convention, applied in this grammar after literal chars when allowed
-ws ::= ([ \t\n] ws)?
-ws01 ::= ([ \t\n])?";
-
-
-            chat.Grammar = new Grammar(gbnf);
+            chat.Grammar = Grammar.CreateJsonGrammarFromTextFields(new string[] { "Primary Topic", "Domain or Field", "Language", "Audience" });
 
             chat.AfterTextCompletion += Chat_AfterTextCompletion;
 
