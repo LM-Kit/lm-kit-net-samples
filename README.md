@@ -1,10 +1,14 @@
+# 🚀 **NEW** 
+- Function Calling Support
+- Vulkan Backend
+
 # Enterprise-Grade .NET SDK for Integrating Generative AI Capabilities | Demo repository
 
 > **With LM-Kit.NET, integrating or building AI is no longer complex.**
 
 **LM-Kit.NET** is a state-of-the-art, cross-platform SDK that offers a wide range of advanced **Generative AI** capabilities.  
 It enables seamless orchestration of multiple AI models through a **single API**, tailored to meet specific business needs.  
-The SDK provides AI capabilities across a wide range of domains, including [text completion](https://www.easyllm.tech/docs/text-completion.html), chat assistance, content retrieval, text analysis, translation, and more...
+The SDK offers AI capabilities across a wide range of domains, including text completion, function calling, chat assistance, coding assistance, content retrieval, text analysis, translation, and more...
 
 📘 **Documentation and resources** can be found in the LM-Kit Docs area hosted at: [https://docs.lm-kit.com](https://docs.lm-kit.com)
 
