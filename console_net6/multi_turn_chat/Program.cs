@@ -116,12 +116,12 @@ namespace multi_turn_chat
 
                 if (regenerateMode)
                 {
-                    result = chat.RegenerateResponse(new CancellationTokenSource(TimeSpan.FromMinutes(1)).Token);
+                    result = chat.RegenerateResponse(new CancellationTokenSource(TimeSpan.FromMinutes(2)).Token);
                     regenerateMode = false;
                 }
                 else
                 {
-                    result = chat.Submit(prompt, new CancellationTokenSource(TimeSpan.FromMinutes(1)).Token);
+                    result = chat.Submit(prompt, new CancellationTokenSource(TimeSpan.FromMinutes(2)).Token);
                 }
 
                 Console.Write($"\n(gen. tokens: {result.GeneratedTokens.Count} - stop reason: {result.TerminationReason} - quality score: {Math.Round(result.QualityScore, 2)} - speed: {Math.Round(result.TokenGenerationRate, 2)} tok/s - ctx usage: {result.ContextTokens.Count}/{result.ContextSize})");

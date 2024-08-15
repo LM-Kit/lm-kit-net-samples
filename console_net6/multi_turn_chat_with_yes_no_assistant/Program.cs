@@ -135,7 +135,7 @@ namespace multi_turn_chat_with_yes_no_assistant
                 Console.ForegroundColor = ConsoleColor.Green;
                 Console.Write("Assistant: ");
                 Console.ResetColor();
-                TextGenerationResult result = chat.Submit(prompt, new CancellationTokenSource(TimeSpan.FromMinutes(1)).Token);
+                TextGenerationResult result = chat.Submit(prompt, new CancellationTokenSource(TimeSpan.FromMinutes(2)).Token);
                
                 prompt = "";
 

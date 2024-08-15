@@ -152,7 +152,7 @@ namespace web_content_info_extractor_to_json
 
                 WriteColor("Assistant: ", ConsoleColor.Green);
 
-                TextGenerationResult result = chat.Submit(pageText, new CancellationTokenSource(TimeSpan.FromMinutes(1)).Token);
+                TextGenerationResult result = chat.Submit(pageText, new CancellationTokenSource(TimeSpan.FromMinutes(2)).Token);
 
                 Console.Write($"\n(gen. tokens: {result.GeneratedTokens.Count} - stop reason: {result.TerminationReason} - quality score: {Math.Round(result.QualityScore, 2)} - speed: {Math.Round(result.TokenGenerationRate, 2)} tok/s - ctx usage: {result.ContextTokens.Count}/{result.ContextSize})");
             }
@@ -168,7 +168,10 @@ namespace web_content_info_extractor_to_json
 
         private static string NormalizeSpacings(string text)
         {
-            return new Regex("[ ]{2,}", RegexOptions.None).Replace(text, " ").Replace("\n ", "\n").Trim();
+            text = new Regex("[ ]{2,}", RegexOptions.None).Replace(text.Replace("\t", ""), " ").Replace("\r\n", "\n").Replace("\n ", "\n").Trim();
+            text = Regex.Replace(text, "(\\n){2,}", "\n", RegexOptions.IgnoreCase);
+
+            return text;
         }
 
         private static string ExtractHtmlText(string html)

@@ -129,7 +129,7 @@ namespace translator
                 Language inputLanguage = translator.DetectLanguage(text);
                 Console.Write($"\nTranslating from {inputLanguage}...\n");
                 Console.ResetColor();
-                _ = translator.Translate(text, destLanguage, new CancellationTokenSource(TimeSpan.FromMinutes(1)).Token);
+                _ = translator.Translate(text, destLanguage, new CancellationTokenSource(TimeSpan.FromMinutes(2)).Token);
 
                 translationCount++;
             }

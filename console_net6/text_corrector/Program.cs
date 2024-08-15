@@ -123,7 +123,7 @@ namespace text_corrector
                 Console.ForegroundColor = ConsoleColor.Green;
                 Console.Write($"\nCorrecting the text...\n");
                 Console.ResetColor();
-                _ = corrector.Correct(text, new CancellationTokenSource(TimeSpan.FromMinutes(1)).Token);
+                _ = corrector.Correct(text, new CancellationTokenSource(TimeSpan.FromMinutes(2)).Token);
 
                 correctionCount++;
             }
