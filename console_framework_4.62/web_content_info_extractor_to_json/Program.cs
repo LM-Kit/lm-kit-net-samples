@@ -202,10 +202,18 @@ namespace web_content_info_extractor_to_json
             {
                 using (var client = new WebClient())
                 {
+                    client.Headers.Add("User-Agent: Other");
                     client.DownloadFile(uri, tmpFile);
                 }
 
-                return File.ReadAllText(tmpFile);
+                string content = File.ReadAllText(tmpFile);
+
+                if (string.IsNullOrWhiteSpace(content))
+                {
+                    throw new Exception("an empty response has been received from: " + uri.AbsoluteUri);
+                }
+
+                return content;
             }
             finally
             {

@@ -192,7 +192,16 @@ namespace web_content_info_extractor_to_json
         private static string DownloadContent(Uri uri)
         {
             using var client = new HttpClient();
-            return client.GetStringAsync(uri).Result;
+              client.DefaultRequestHeaders.Add("User-Agent", "Other");
+
+            string content =  client.GetStringAsync(uri).Result;
+
+            if (string.IsNullOrWhiteSpace(content))
+            {
+                throw new Exception("an empty response has been received from: " + uri.AbsoluteUri);
+            }
+
+            return content;
         }
 
         private static void WriteColor(string text, ConsoleColor color, bool addNL = true)
