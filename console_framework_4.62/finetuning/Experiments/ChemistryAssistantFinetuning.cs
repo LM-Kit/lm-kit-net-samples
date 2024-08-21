@@ -24,7 +24,7 @@ namespace finetuning.Experiments
 {
     internal static class ChemistryAssistantFinetuning
     {
-        private static readonly string DefaultModelPath = @"https://huggingface.co/TheBloke/TinyLlama-1.1B-1T-OpenOrca-GGUF/resolve/main/tinyllama-1.1b-1t-openorca.Q8_0.gguf";
+        private static readonly string DefaultModelPath = @"https://huggingface.co/TheBloke/TinyLlama-1.1B-1T-OpenOrca-GGUF/resolve/main/tinyllama-1.1b-1t-openorca.Q8_0.gguf?download=true";
         private const string DatasetURI = "https://raw.githubusercontent.com/YuanTony/chemistry-assistant/main/fine-tune-model/train.txt";
         // Early-stop conditions
         private const float StopTrainingAtLoss = 0.01f;

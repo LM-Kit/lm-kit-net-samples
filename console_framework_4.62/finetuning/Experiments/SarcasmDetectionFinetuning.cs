@@ -18,7 +18,7 @@ namespace finetuning.Experiments
 {
     internal static class SarcasmDetectionFinetuning
     {
-        private static readonly string DefaultModelPath = @"https://huggingface.co/TheBloke/TinyLlama-1.1B-1T-OpenOrca-GGUF/resolve/main/tinyllama-1.1b-1t-openorca.Q8_0.gguf";
+        private static readonly string DefaultModelPath = @"https://huggingface.co/TheBloke/TinyLlama-1.1B-1T-OpenOrca-GGUF/resolve/main/tinyllama-1.1b-1t-openorca.Q8_0.gguf?download=true";
 
         // Early-stop conditions
         private const float StopTrainingAtLoss = 0.01f;

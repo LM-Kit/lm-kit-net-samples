@@ -9,8 +9,8 @@ namespace multi_turn_chat_with_coding_assistant
 {
     internal class Program
     {
-        static readonly string DEFAULT_SMALL_MODEL_PATH = @"https://huggingface.co/lm-kit/deepseek-coder-1.6-7b-gguf/resolve/main/DeepSeek-Coder-1.6-7B-Instruct-Q4_K_M.gguf";
-        static readonly string DEFAULT_MEDIUM_MODEL_PATH = @"https://huggingface.co/lm-kit/deepseek-coder-2-lite-15.7b-gguf/resolve/main/DeepSeek-Coder-2-Lite-15.7B-Instruct-Q4_K_M.gguf";
+        static readonly string DEFAULT_SMALL_MODEL_PATH = @"https://huggingface.co/lm-kit/deepseek-coder-1.6-7b-gguf/resolve/main/DeepSeek-Coder-1.6-7B-Instruct-Q4_K_M.gguf?download=true";
+        static readonly string DEFAULT_MEDIUM_MODEL_PATH = @"https://huggingface.co/lm-kit/deepseek-coder-2-lite-15.7b-gguf/resolve/main/DeepSeek-Coder-2-Lite-15.7B-Instruct-Q4_K_M.gguf?download=true";
         static bool _isDownloading;
 
         private static bool ModelDownloadingProgress(string path, long? contentLength, long bytesRead)

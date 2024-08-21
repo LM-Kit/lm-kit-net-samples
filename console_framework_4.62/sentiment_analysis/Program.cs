@@ -13,7 +13,7 @@ namespace sentiment_analysis
             # Note: This model has been fine-tuned specifically for the English language. 
             # For processing multilingual input, please use another model such as LLama3.
          */
-        static readonly string DEFAULT_MODEL_PATH = @"https://huggingface.co/lm-kit/LM-Kit.Sentiment_Analysis-TinyLlama-1.1B-1T-OpenOrca-en-q4/resolve/main/LM-Kit.Sentiment_Analysis-TinyLlama-1.1B-1T-OpenOrca-en-q4.gguf";
+        static readonly string DEFAULT_MODEL_PATH = @"https://huggingface.co/lm-kit/LM-Kit.Sentiment_Analysis-TinyLlama-1.1B-1T-OpenOrca-en-q4/resolve/main/LM-Kit.Sentiment_Analysis-TinyLlama-1.1B-1T-OpenOrca-en-q4.gguf?download=true";
         static bool _isDownloading;
 
         private static bool ModelDownloadingProgress(string path, long? contentLength, long bytesRead)
