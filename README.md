@@ -19,6 +19,7 @@ LM-Kit.NET offers a collection of highly optimized low-level APIs, making it eas
 Moreover, LM-Kit.NET provides a broad spectrum of high-level AI functionalities across multiple domains, such as:  
 
 - 📝 **Text Generation:** Automatically produce coherent and contextually appropriate text.
+- 📋 **Structured Output Generation**: Extract structured information based on a JSON scheme.
 - ✅ **Text Quality Evaluation:** Evaluate the quality metrics of generated content.
 - 🔗 **Function Calling:** Dynamically trigger specific functions in your application.
 - 🌐 **Language Detection:** Accurately identify the language of text input.
