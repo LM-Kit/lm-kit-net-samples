@@ -2,7 +2,7 @@
 
 Get started with the **LM-Kit Community Edition** today and gain access to powerful AI tools for free. Whether you're a hobbyist, startup, or open-source developer, the Community Edition is here to help you innovate and experiment without limitations.
 
-👉 [Claim Your Free License Now!](https://lm-kit.com/product/community-edition)
+👉 [Claim Your Free License Now!](https://lm-kit.com/products/community-edition/)
 
 # 🚀 **NEW** 
 - Function Calling Support
