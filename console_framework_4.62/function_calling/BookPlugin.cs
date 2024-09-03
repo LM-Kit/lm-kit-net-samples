@@ -1,11 +1,12 @@
 ﻿using LMKit.FunctionCalling;
-using System;
 using System.Collections.Generic;
+using System;
 using System.ComponentModel;
 using System.IO;
 using System.Linq;
 using System.Net.Http;
 using System.Text.Json;
+using System.Text.RegularExpressions;
 using System.Threading.Tasks;
 
 namespace function_calling
@@ -55,33 +56,62 @@ namespace function_calling
                                               .ToList();
 
             string publish_year = "unknown";
-            string author = "unknown";
+            string authors = "unknown";
             string number_of_pages_median = "unknown";
+            string isbn = "unknown";
+            string publisher = "unknown";
+            string formats = "unknown";
+            string ebookAccess = "unknown";
 
             if (docsArray.Count > 0)
             {
-                JsonElement titleElement = docsArray[0].GetProperty("title");
-
-                title = titleElement.GetString();
-
                 JsonElement publishYearElement = docsArray[0].GetProperty("publish_year");
                 publish_year = publishYearElement[0].GetInt32().ToString();
 
-                JsonElement pageCountMedElement = docsArray[0].GetProperty("number_of_pages_median");
-                number_of_pages_median = publishYearElement[0].GetInt32().ToString();
-
-                List<JsonElement> authorNameElement = docsArray[0].GetProperty("author_name").EnumerateArray()
-                                                                                .Cast<JsonElement>()
-                                                                                .ToList();
-                if (authorNameElement.Count > 0)
+                if (docsArray[0].TryGetProperty("number_of_pages_median", out JsonElement pageCountMedElement))
                 {
-                    author = authorNameElement[0].GetString();
+                    number_of_pages_median = publishYearElement[0].GetInt32().ToString();
+                }
+
+                if (docsArray[0].TryGetProperty("ebook_access", out JsonElement ebookAccessElement))
+                {
+                    ebookAccess = ebookAccessElement.GetString();
+                }
+
+                if (docsArray[0].TryGetProperty("isbn", out JsonElement isbnElement))
+                {
+                    isbn = NormalizeSpacings(isbnElement.GetRawText().Replace("\n", " "));
+                }
+
+                if (docsArray[0].TryGetProperty("format", out JsonElement formatElement))
+                {
+                    formats = NormalizeSpacings(formatElement.GetRawText().Replace("\n", " "));
+                }
+
+                if (docsArray[0].TryGetProperty("publisher", out JsonElement publisherProperty))
+                {
+                    publisher = publisherProperty[0].GetString();
+                }
+
+                if (docsArray[0].TryGetProperty("author_name", out JsonElement authorsElement))
+                {
+                    authors = NormalizeSpacings(authorsElement.GetRawText().Replace("\n", " "));
+                }
+
+                if (docsArray[0].TryGetProperty("title", out JsonElement titleElement))
+                {
+                    title = titleElement.GetString();
                 }
             }
 
-            return "First publish year: " + publish_year + "\n" +
-                   "Author: " + author + "\n" +
-                   "Number of pages median: " + number_of_pages_median;
+            return "Title: " + title + "\n" +
+                   "First publish year: " + publish_year + "\n" +
+                   "Authors: " + authors + "\n" +
+                   "Number of pages median: " + number_of_pages_median + "\n" +
+                   "Formats: " + formats + "\n" +
+                   "E-book access: " + ebookAccess + "\n" +
+                   "ISBN: " + isbn + "\n" +
+                   "Publisher: " + publisher;
         }
 
         [LMFunction("GetLastBookFromAuthor", "Retrieves detailed information about the most recent book by a specified author.")]
@@ -162,6 +192,14 @@ namespace function_calling
             }
 
             return "unknown";
+        }
+
+        private static string NormalizeSpacings(string text)
+        {
+            text = new Regex("[ ]{2,}", RegexOptions.None).Replace(text.Replace("\t", ""), " ").Replace("\r\n", "\n").Replace("\n ", "\n").Trim();
+            text = Regex.Replace(text, "(\\n){2,}", "\n", RegexOptions.IgnoreCase);
+
+            return text;
         }
     }
 }

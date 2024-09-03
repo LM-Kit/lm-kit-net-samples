@@ -120,11 +120,14 @@ namespace function_calling
 
                 if (callResult.Method == null)
                 {
-                    Console.WriteLine("> No function has been called");
+                    Console.WriteLine(">> No function has been called");
                 }
                 else
                 {
-                    Console.WriteLine($"Result: {callResult.Result.ToString()}");
+                    string result = callResult.Result.ToString();
+
+                    WriteColor("\nResult: ", ConsoleColor.Green, result.Contains("\n"));
+                    Console.WriteLine(result);
                 }
             }
 
@@ -134,7 +137,7 @@ namespace function_calling
 
         private static void FunctionCalling_BeforeMethodInvoke(object sender, LMKit.FunctionCalling.Events.BeforeMethodInvokeEventArgs e)
         {
-            Console.WriteLine("Invoking method " + e.MethodInfo.Name + "...");
+            Console.WriteLine(">> Invoking method " + e.MethodInfo.Name + "...");
         }
 
         private static void ShowInfo()
@@ -152,6 +155,21 @@ namespace function_calling
         private static void Chat_AfterTextCompletion(object sender, LMKit.TextGeneration.Events.AfterTextCompletionEventArgs e)
         {
             Console.Write(e.Text);
+        }
+
+        private static void WriteColor(string text, ConsoleColor color, bool addNL = true)
+        {
+            Console.ForegroundColor = color;
+            if (addNL)
+            {
+                Console.WriteLine(text);
+            }
+            else
+            {
+                Console.Write(text);
+            }
+
+            Console.ResetColor();
         }
     }
 }

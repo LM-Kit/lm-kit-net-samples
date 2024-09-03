@@ -107,7 +107,7 @@ namespace web_content_info_extractor_to_json
             SingleTurnConversation chat = new SingleTurnConversation(model)
             {
                 MaximumCompletionTokens = 256,
-                MaximumContextLength = model.GpuLayerCount > 0 ? 4096 : 1024,
+                MaximumInputTokens = model.GpuLayerCount > 0 ? 3840 : 1024,
                 SamplingMode = new GreedyDecoding(),
                 SystemPrompt = @"You are an expert in extracting and summarizing web content. When provided with the content of a web page, respond with a JSON formatted output that always and only includes the following fields:
 
@@ -143,13 +143,20 @@ namespace web_content_info_extractor_to_json
                     continue;
                 }
 
-                string pageText = ExtractHtmlText(DownloadContent(new Uri(uri)));
+                try
+                {
+                    string pageText = ExtractHtmlText(DownloadContent(new Uri(uri)));
 
-                WriteColor("Assistant: ", ConsoleColor.Green);
+                    WriteColor("Assistant: ", ConsoleColor.Green);
 
-                TextGenerationResult result = chat.Submit(pageText, new CancellationTokenSource(TimeSpan.FromMinutes(2)).Token);
+                    TextGenerationResult result = chat.Submit(pageText, new CancellationTokenSource(TimeSpan.FromMinutes(2)).Token);
 
-                Console.Write($"\n(gen. tokens: {result.GeneratedTokens.Count} - stop reason: {result.TerminationReason} - quality score: {Math.Round(result.QualityScore, 2)} - speed: {Math.Round(result.TokenGenerationRate, 2)} tok/s - ctx usage: {result.ContextTokens.Count}/{result.ContextSize})");
+                    Console.Write($"\n(gen. tokens: {result.GeneratedTokens.Count} - stop reason: {result.TerminationReason} - quality score: {Math.Round(result.QualityScore, 2)} - speed: {Math.Round(result.TokenGenerationRate, 2)} tok/s - ctx usage: {result.ContextTokens.Count}/{result.ContextSize})");
+                }
+                catch (Exception e)
+                {
+                    WriteColor("Error: " + e.Message, ConsoleColor.Red);
+                }
             }
 
             Console.WriteLine("The chat ended. Press any key to exit the application.");
@@ -191,9 +198,9 @@ namespace web_content_info_extractor_to_json
         private static string DownloadContent(Uri uri)
         {
             using var client = new HttpClient();
-              client.DefaultRequestHeaders.Add("User-Agent", "Other");
+            client.DefaultRequestHeaders.Add("User-Agent", "Other");
 
-            string content =  client.GetStringAsync(uri).Result;
+            string content = client.GetStringAsync(uri).Result;
 
             if (string.IsNullOrWhiteSpace(content))
             {
