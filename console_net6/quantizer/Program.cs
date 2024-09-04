@@ -98,7 +98,7 @@ namespace text_rewriter
                 dstFileName = dstFileName.Substring(0, dstFileName.Length - 4);
             }
 
-            string dstModelPath = Path.Combine(Path.GetDirectoryName(modelPath), dstFileName + "-" + format + ".gguf?download=true");
+            string dstModelPath = Path.Combine(Path.GetDirectoryName(modelPath), dstFileName + "-" + format + ".gguf");
 
             LLM.Precision quantizationFormat;
 
