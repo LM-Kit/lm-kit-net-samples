@@ -1,0 +1,46 @@
+<?xml version="1.0" encoding="utf-8" ?>
+<ContentView xmlns="http://schemas.microsoft.com/dotnet/2021/maui"
+             xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
+             xmlns:icons="clr-namespace:UraniumUI.Icons.MaterialIcons;assembly=UraniumUI.Icons.MaterialIcons"
+             xmlns:uranium="http://schemas.enisn-projects.io/dotnet/maui/uraniumui"
+             x:Class="ChatPlayground.Views.LinkView"
+             x:Name="linkView"
+             >
+
+    <ContentView.Resources>
+        <Style TargetType="uranium:StatefulContentView">
+            <Setter Property="VisualStateManager.VisualStateGroups">
+                <VisualStateGroupList>
+                    <VisualStateGroup x:Name="CommonStates">
+                        <VisualState x:Name="Normal">
+                            <VisualState.Setters>
+                                <!--<Setter Property="TextColor" Value="{StaticResource OutlineDark}"/>-->
+                            </VisualState.Setters>
+                        </VisualState>
+
+                        <VisualState x:Name="Pressed">
+                            <VisualState.Setters>
+                                <Setter Property="Opacity" Value="0.5"/>
+                            </VisualState.Setters>
+                        </VisualState>
+                        <VisualState x:Name="PointerOver">
+                            <VisualState.Setters>
+                                <Setter Property="Opacity" Value="0.7"/>
+                                <!--<Setter Property="TextColor" Value="{StaticResource SecondaryDark}"/>-->
+                            </VisualState.Setters>
+                        </VisualState>
+                    </VisualStateGroup>
+                </VisualStateGroupList>
+            </Setter>
+        </Style>
+    </ContentView.Resources>
+
+    <uranium:StatefulContentView BindingContext="{Binding Source={x:Reference linkView}}" 
+                                 CommandParameter="{Binding CommandParameter}"
+                                 TappedCommand="{Binding Command}">
+        <HorizontalStackLayout Spacing="4" HorizontalOptions="Center">
+            <Label TextColor="{Binding TextColor}" VerticalOptions="Center" Text="{Binding Icon}" FontFamily="MaterialRegular"/>
+            <Label TextColor="{Binding TextColor}" VerticalOptions="Center" Text="{Binding Text}"/>
+        </HorizontalStackLayout>
+    </uranium:StatefulContentView>
+</ContentView>

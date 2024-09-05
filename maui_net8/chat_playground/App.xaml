@@ -1,0 +1,46 @@
+﻿<?xml version = "1.0" encoding = "UTF-8" ?>
+<Application xmlns="http://schemas.microsoft.com/dotnet/2021/maui"
+             xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
+             xmlns:local="clr-namespace:ChatPlayground"
+             xmlns:mct="http://schemas.microsoft.com/dotnet/2022/maui/toolkit"
+             xmlns:material="http://schemas.enisn-projects.io/dotnet/maui/uraniumui/material"
+             x:Class="ChatPlayground.App">
+    <Application.Resources>
+        <ResourceDictionary>
+            <mct:VariableMultiValueConverter x:Key="AllTrueConverter" ConditionType="All"/>
+            <x:Int32 x:Key="1">1</x:Int32>
+            <x:Int32 x:Key="0">0</x:Int32>
+            <mct:CompareConverter
+                x:Key="GreaterThanOneConverter"
+                ComparingValue="{StaticResource 1}"
+                ComparisonOperator="Greater"
+                TrueObject="True"
+                FalseObject="False" />
+
+            <mct:CompareConverter
+                x:Key="GreaterThanZeroConverter"
+                ComparingValue="{StaticResource 0}"
+                ComparisonOperator="Greater"
+                TrueObject="True"
+                FalseObject="False" />
+
+            <mct:CompareConverter
+                x:Key="EqualToZeroConverter"
+                ComparingValue="{StaticResource 0}"
+                ComparisonOperator="Equal"
+                TrueObject="True"
+                FalseObject="False" />
+            
+            <ResourceDictionary.MergedDictionaries>
+                <ResourceDictionary x:Name="colors" Source="Resources/Styles/Colors.xaml" />
+                <ResourceDictionary Source="Resources/Styles/Styles.xaml" />
+
+                <!--<material:StyleResource ColorsOverride="{x:Reference colors}">
+                    <material:StyleResource.Overrides>
+                        <ResourceDictionary Source="Resources/Styles/Styles.xaml"/>
+                    </material:StyleResource.Overrides>
+                </material:StyleResource>-->
+            </ResourceDictionary.MergedDictionaries>
+        </ResourceDictionary>
+    </Application.Resources>
+</Application>

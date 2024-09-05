@@ -1,0 +1,77 @@
+<?xml version="1.0" encoding="utf-8" ?>
+<mct:Popup xmlns="http://schemas.microsoft.com/dotnet/2021/maui"
+           xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
+           xmlns:mct="http://schemas.microsoft.com/dotnet/2022/maui/toolkit"
+           xmlns:vm="clr-namespace:ChatPlayground.ViewModels"
+           xmlns:icons="clr-namespace:UraniumUI.Icons.MaterialIcons;assembly=UraniumUI.Icons.MaterialIcons"
+           x:DataType="vm:UnsortedModelFilesPopupViewModel"
+           CanBeDismissedByTappingOutsideOfPopup="False"
+           Color="Transparent"
+           x:Class="ChatPlayground.Views.Popups.UnsortedModelFilesPopup">
+
+    <mct:Popup.Resources>
+        <ResourceDictionary>
+            <Style x:Key="InnerBorderStyle" TargetType="Border">
+                <Setter Property="StrokeThickness" Value="0"/>
+                <Setter Property="Padding" Value="8"/>
+                <Setter Property="StrokeShape" Value="RoundRectangle 4"/>
+                <Setter Property="BackgroundColor" Value="{StaticResource SurfaceContainerDark}"/>
+            </Style>
+        </ResourceDictionary>
+    </mct:Popup.Resources>
+
+    <Border Stroke="{StaticResource OutlineVariantDark}" StrokeThickness="0" WidthRequest="600" Padding="16" StrokeShape="RoundRectangle 8"  BackgroundColor="{StaticResource SurfaceContainerLowDark}">
+        <Grid RowSpacing="20" RowDefinitions="auto, 140, 40">
+            <Grid RowSpacing="12" RowDefinitions="auto, *">
+                <Label FontAttributes="Bold" TextColor="{StaticResource OnSurfaceDark}" Text="This is the expected folder structure"/>
+
+                <Border Style="{StaticResource InnerBorderStyle}" Grid.Row="1">
+                    <VerticalStackLayout Margin="8, 0" Spacing="6">
+                        <HorizontalStackLayout Spacing="8">
+                            <Label TextColor="{StaticResource OnSurfaceVariantDark}" VerticalOptions="Center" FontFamily="MaterialRegular" Text="{x:Static icons:MaterialRegular.Folder}"/>
+                            <Label TextColor="{StaticResource OnSurfaceVariantDark}" VerticalOptions="Center" Text="Models folder"/>
+                        </HorizontalStackLayout>
+
+                        <HorizontalStackLayout Margin="20, 0" Spacing="6">
+                            <Label TextColor="{StaticResource OnSurfaceVariantDark}" VerticalTextAlignment="Center" FontFamily="MaterialRegular" Text="{x:Static icons:MaterialRegular.Folder}"/>
+                            <Label TextColor="{StaticResource OnSurfaceVariantDark}" VerticalTextAlignment="Center" Text="Publisher"/>
+                        </HorizontalStackLayout>
+
+
+                        <HorizontalStackLayout Margin="40, 0" Spacing="6">
+                            <Label TextColor="{StaticResource OnSurfaceVariantDark}" VerticalOptions="Center" FontFamily="MaterialRegular" Text="{x:Static icons:MaterialRegular.Folder}"/>
+                            <Label TextColor="{StaticResource OnSurfaceVariantDark}" VerticalOptions="Center" Text="Repository"/>
+                        </HorizontalStackLayout>
+
+                        <HorizontalStackLayout Margin="60, 0" Spacing="0">
+                            <Label TextColor="Transparent" VerticalOptions="Center" FontFamily="MaterialRegular" Text="{x:Static icons:MaterialRegular.Folder}"/>
+                            <Label TextColor="{StaticResource TertiaryDark}" Text=" model file.gguf"/>
+                        </HorizontalStackLayout>
+                        
+                    </VerticalStackLayout>
+                </Border>
+            </Grid>
+
+            <Grid Grid.Row="1" RowSpacing="12" RowDefinitions="auto, *">
+                <Label  TextColor="{StaticResource OnSurfaceDark}" Text="{Binding UnsortedModelFiles.Count, StringFormat='{}{0} unsorted model files were found'}"/>
+                <Border  Padding="0" Style="{StaticResource InnerBorderStyle}" Grid.Row="1">
+                    <CollectionView Margin="16, 4" Grid.Row="1" BackgroundColor="Transparent" SelectionMode="None" VerticalScrollBarVisibility="Never" ItemsSource="{Binding UnsortedModelFiles}">
+                        <CollectionView.ItemsLayout>
+                            <LinearItemsLayout Orientation="Vertical" ItemSpacing="4"/>
+                        </CollectionView.ItemsLayout>
+                        <CollectionView.ItemTemplate>
+                            <DataTemplate>
+                                <Grid Padding="0, 0" RowSpacing="8" BackgroundColor="Transparent"  RowDefinitions="*, auto">
+                                    <Label TextColor="{StaticResource OnSurfaceDark}" Text="{Binding}"/>
+                                    <BoxView Grid.Row="1" StyleClass="Separator"/>
+                                </Grid>
+                            </DataTemplate>
+                        </CollectionView.ItemTemplate>
+                    </CollectionView>
+                </Border>
+            </Grid>
+
+            <Button VerticalOptions="End" Text="OK" Clicked="OnOKButtonClicked" Grid.Row="2" HorizontalOptions="End"/>
+        </Grid>
+    </Border>
+</mct:Popup>

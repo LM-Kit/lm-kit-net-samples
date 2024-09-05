@@ -1,0 +1,330 @@
+<?xml version="1.0" encoding="utf-8" ?>
+<ContentView xmlns="http://schemas.microsoft.com/dotnet/2021/maui"
+             xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
+             x:Class="ChatPlayground.Views.ChatSettingsView"
+             xmlns:mct="http://schemas.microsoft.com/dotnet/2022/maui/toolkit"
+             xmlns:views="clr-namespace:ChatPlayground.Views"
+             xmlns:models="clr-namespace:ChatPlayground.Models"
+             xmlns:controls="clr-namespace:ChatPlayground.Controls"
+             xmlns:plainer="clr-namespace:Plainer.Maui.Controls;assembly=Plainer.Maui"
+             xmlns:vm="clr-namespace:ChatPlayground.ViewModels"
+             xmlns:local="clr-namespace:ChatPlayground"
+             xmlns:icons="clr-namespace:UraniumUI.Icons.MaterialIcons;assembly=UraniumUI.Icons.MaterialIcons"
+             x:DataType="vm:SettingsViewModel"
+             x:Name="chatSettingsView"
+             >
+    <ContentView.Resources>
+        <ResourceDictionary>
+
+            <Style Class="SettingGrid" TargetType="Grid">
+                <Setter Property="RowDefinitions" Value="*,*"/>
+                <Setter Property="ColumnDefinitions" Value="auto,*"/>
+                <Setter Property="RowSpacing" Value="8"/>
+                <Setter Property="ColumnSpacing" Value="8"/>
+                <!-- Workaround: when slider is inside ControlTemplate, right extremity is cut-off -->
+                <Setter Property="Margin" Value="4, 0"/>
+
+            </Style>
+
+            <Style Class="SettingValueLabel" TargetType="Label">
+                <Setter Property="FontAttributes" Value="Bold"/>
+                <Setter Property="HorizontalOptions" Value="End"/>
+            </Style>
+
+            <Style TargetType="VerticalStackLayout">
+                <Setter Property="Padding" Value="8, 20"/>
+                <Setter Property="Spacing" Value="20"/>
+            </Style>
+
+            <ControlTemplate x:Key="RandomSamplingSettingsTemplate" x:DataType="vm:RandomSamplingSettingsViewModel">
+                <VerticalStackLayout Padding="0" BindingContext="{TemplateBinding Path=Parent.BindingContext.RandomSamplingSettings}">
+                    <Grid StyleClass="SettingGrid">
+                        <Label Text="Temperature"/>
+                        <Label 
+                            Grid.Column="1"
+                            StyleClass="SettingValueLabel"
+                            Text="{Binding Temperature}"/>
+                        <Slider
+                            Grid.ColumnSpan="2"
+                            Grid.Row="1"
+                            Value="{Binding Temperature, Mode=TwoWay}" Minimum="0" Maximum="1"/>
+                    </Grid>
+
+                    <Grid StyleClass="SettingGrid">
+                        <Label Text="Dynamic temperature range"/>
+                        <Label 
+                            Grid.Column="1"
+                            StyleClass="SettingValueLabel"
+                            Text="{Binding DynamicTemperatureRange}"/>
+                        <Slider
+                            Grid.ColumnSpan="2"
+                            Grid.Row="1"
+                            Value="{Binding DynamicTemperatureRange, Mode=TwoWay}" Minimum="0" Maximum="1"/>
+                    </Grid>
+
+                    <Grid StyleClass="SettingGrid">
+                        <Label Text="TopP"/>
+                        <Label 
+                            Grid.Column="1"
+                            StyleClass="SettingValueLabel"
+                            Text="{Binding TopP}"/>
+                        <Slider
+                            Grid.ColumnSpan="2"
+                            Grid.Row="1"
+                            Value="{Binding TopP, Mode=TwoWay}" Minimum="0" Maximum="1"/>
+                    </Grid>
+
+                    <Grid StyleClass="SettingGrid">
+                        <Label Text="MinP"/>
+                        <Label 
+                            Grid.Column="1"
+                            StyleClass="SettingValueLabel"
+                            Text="{Binding MinP}"/>
+                        <Slider
+                            Grid.ColumnSpan="2"
+                            Grid.Row="1"
+                            Value="{Binding MinP, Mode=TwoWay}" Minimum="0" Maximum="1"/>
+                    </Grid>
+
+                    <Grid StyleClass="SettingGrid">
+                        <Label Text="TopK"/>
+                        <Label 
+                            Grid.Column="1"
+                            StyleClass="SettingValueLabel"
+                            Text="{Binding TopK}"/>
+                        <Slider
+                            Grid.ColumnSpan="2"
+                            Grid.Row="1"
+                            Value="{Binding TopK, Mode=TwoWay}" Minimum="1" Maximum="1000"/>
+                    </Grid>
+
+                    <Grid StyleClass="SettingGrid">
+                        <Label Text="Locally typical"/>
+                        <Label 
+                            Grid.Column="1"
+                            StyleClass="SettingValueLabel"
+                            Text="{Binding LocallyTypical}"/>
+                        <Slider
+                            Grid.ColumnSpan="2"
+                            Grid.Row="1"
+                            Value="{Binding LocallyTypical, Mode=TwoWay}" Minimum="0" Maximum="1"/>
+                    </Grid>
+                </VerticalStackLayout>
+            </ControlTemplate>
+
+            <ControlTemplate x:Key="MirostatSettingsTemplate" x:DataType="vm:MirostatSamplingSettingsViewModel">
+                <VerticalStackLayout Padding="0" BindingContext="{TemplateBinding Path=Parent.BindingContext.MirostatSamplingSettings}">
+                    <Grid StyleClass="SettingGrid">
+                        <Label Text="Temperature"/>
+                        <Label 
+                            Grid.Column="1"
+                            StyleClass="SettingValueLabel"
+                            Text="{Binding Temperature}"/>
+                        <Slider
+                            Grid.ColumnSpan="2"
+                            Grid.Row="1"
+                            Value="{Binding Temperature, Mode=TwoWay}" Minimum="0" Maximum="1"/>
+                    </Grid>
+
+                    <Grid StyleClass="SettingGrid">
+                        <Label Text="Target entropy"/>
+                        <Label 
+                            Grid.Column="1"
+                            StyleClass="SettingValueLabel"
+                            Text="{Binding TargetEntropy}"/>
+                        <Slider
+                            Grid.ColumnSpan="2"
+                            Grid.Row="1"
+                            Value="{Binding TargetEntropy, Mode=TwoWay}" Minimum="0" Maximum="10"/>
+                    </Grid>
+
+                    <Grid StyleClass="SettingGrid">
+                        <Label Text="Learning rate"/>
+                        <Label 
+                            Grid.Column="1"
+                            StyleClass="SettingValueLabel"
+                            Text="{Binding LearningRate}"/>
+                        <Slider
+                            Grid.ColumnSpan="2"
+                            Grid.Row="1"
+                            Value="{Binding LearningRate, Mode=TwoWay}" Minimum="0" Maximum="1"/>
+                    </Grid>
+                </VerticalStackLayout>
+            </ControlTemplate>
+        </ResourceDictionary>
+    </ContentView.Resources>
+
+    <Grid ColumnDefinitions="auto, *" RowDefinitions="48, *">
+        <BoxView StyleClass="VerticalSeparator" Grid.RowSpan="2"/>
+        <Grid RowDefinitions="*, auto" Grid.Column="1">
+            <Grid Padding="8" ColumnDefinitions="*, auto">
+                <Label Text="Settings" VerticalOptions="Center"/>
+                <Button 
+                    Padding="8, 4"
+                    VerticalOptions="Center"
+                    BackgroundColor="{StaticResource SecondaryDark}"
+                    TextColor="{StaticResource OnSecondaryDark}"
+                    CornerRadius="4"
+                    Text="Reset default settings" Command="{Binding ResetDefaultValuesCommand}" Grid.Column="1"/>
+            </Grid>
+            <BoxView StyleClass="Separator" Grid.Row="1" Grid.ColumnSpan="2"/>
+        </Grid>
+
+        <ScrollView VerticalScrollBarVisibility="Never" HorizontalScrollBarVisibility="Never" Grid.Row="1" Grid.Column="1">
+            <VerticalStackLayout Padding="0" Spacing="0">
+
+                <mct:Expander x:Name="generalSettingsExpander">
+                    <mct:Expander.Header>
+                        <Grid RowDefinitions="*, auto">
+                            <HorizontalStackLayout Padding="16" Spacing="8">
+                                <Label Text="General settings"/>
+                                <Label VerticalOptions="Center" FontFamily="MaterialRegular">
+                                    <Label.Triggers>
+                                        <DataTrigger TargetType="Label" Binding="{Binding Source={x:Reference generalSettingsExpander}, Path=IsExpanded}" Value="True">
+                                            <Setter Property="Text" Value="{x:Static icons:MaterialRegular.Keyboard_arrow_up}"/>
+                                        </DataTrigger>
+                                        <DataTrigger TargetType="Label" Binding="{Binding Source={x:Reference generalSettingsExpander}, Path=IsExpanded}" Value="False">
+                                            <Setter Property="Text" Value="{x:Static icons:MaterialRegular.Keyboard_arrow_right}"/>
+                                        </DataTrigger>
+                                    </Label.Triggers>
+                                </Label>
+                            </HorizontalStackLayout>
+                            <BoxView Grid.Row= "1" StyleClass="Separator"/>
+                        </Grid>
+                    </mct:Expander.Header>
+
+                    <Grid RowDefinitions="*, auto">
+
+                        <VerticalStackLayout BackgroundColor="{StaticResource SurfaceContainerLowDark}">
+                            <Grid StyleClass="SettingGrid">
+                                <Label VerticalOptions="Center" Text="System prompt"/>
+                                <Border  
+                                    x:Name="systemPromptBorder"
+                                    StrokeThickness="0.25"
+                                    StrokeShape="RoundRectangle 4" 
+                                    Padding="0, 8" 
+                                    Grid.ColumnSpan="2" 
+                                    Grid.Row="1" 
+                                    HeightRequest="120">
+                                    <Border.Triggers>
+                                        <DataTrigger TargetType="Border" Binding="{Binding Source={x:Reference systemPromptBorder}, Path=IsFocused}" Value="True">
+                                            <Setter Property="Stroke" Value="{StaticResource OnSurfaceDark}"/>
+                                        </DataTrigger>
+                                        <DataTrigger TargetType="Border" Binding="{Binding Source={x:Reference systemPromptBorder}, Path=IsFocused}" Value="False">
+                                            <Setter Property="Stroke" Value="{StaticResource OutlineDark}"/>
+                                        </DataTrigger>
+                                    </Border.Triggers>
+
+                                    <plainer:EditorView Unfocused="OnSystemPromptUnfocused" x:Name="systemPromptEditor" BackgroundColor="Transparent"  Text="{Binding SystemPrompt, Mode=TwoWay}"/>
+                                </Border>
+                            </Grid>
+
+                            <Grid StyleClass="SettingGrid" ColumnDefinitions="3*, *">
+                                <Label VerticalOptions="Center" Text="Maximum completion tokens"/>
+                                <Border 
+                                    StrokeThickness="0.25"
+                                    StrokeShape="RoundRectangle 4" 
+                                    x:Name="maxCompletionTokensBorder" Grid.Column="1">
+                                    <Border.Triggers>
+                                        <DataTrigger TargetType="Border" Binding="{Binding Source={x:Reference maxCompletionTokensBorder}, Path=IsFocused}" Value="True">
+                                            <Setter Property="Stroke" Value="{StaticResource OnSurfaceDark}"/>
+                                        </DataTrigger>
+                                        <DataTrigger TargetType="Border" Binding="{Binding Source={x:Reference maxCompletionTokensBorder}, Path=IsFocused}" Value="False">
+                                            <Setter Property="Stroke" Value="{StaticResource OutlineDark}"/>
+                                        </DataTrigger>
+                                    </Border.Triggers>
+
+                                    <plainer:EntryView x:Name=" maxCompletionTokensEntry"  Unfocused="EntryView_Unfocused" Text="{Binding MaximumCompletionTokens, Mode=TwoWay}" Keyboard="Numeric"/>
+                                </Border>
+                            </Grid>
+
+                            <Grid StyleClass="SettingGrid">
+                                <Label Text="Request timeout"/>
+                                <HorizontalStackLayout HorizontalOptions="End" Spacing="4" Grid.Column="1">
+                                    <Label 
+                                        StyleClass="SettingValueLabel"
+                                        Text="{Binding RequestTimeout}"/>
+                                    <Label Text="sec"/>
+                                </HorizontalStackLayout>
+                                <Slider
+                                    Grid.ColumnSpan="2"
+                                    Grid.Row="1"
+                                    Value="{Binding RequestTimeout, Mode=TwoWay}" Minimum="10" Maximum="120"/>
+                            </Grid>
+
+                            <Grid StyleClass="SettingGrid">
+                                <Label Text="Context size"/>
+                                <HorizontalStackLayout HorizontalOptions="End" Spacing="4" Grid.Column="1">
+                                    <Label 
+                                        StyleClass="SettingValueLabel"
+                                        Text="{Binding ContextSize}"/>
+                                </HorizontalStackLayout>
+                                <Slider
+                                    Grid.ColumnSpan="2"
+                                    Grid.Row="1"
+                                    Value="{Binding ContextSize, Mode=TwoWay}" Minimum="512" Maximum="16384"/>
+                            </Grid>
+                        </VerticalStackLayout>
+
+                        <BoxView Grid.Row="1" StyleClass="Separator" />
+                    </Grid>
+
+                </mct:Expander>
+
+                <mct:Expander x:Name="samplingSettingsExpander">
+                    <mct:Expander.Header>
+                        <Grid RowDefinitions="*, auto">
+                            <HorizontalStackLayout Padding="16" Spacing="8">
+                                <Label Text="Sampling configuration"/>
+                                <Label VerticalOptions="Center" FontFamily="MaterialRegular" Text="{x:Static icons:MaterialRegular.Keyboard_arrow_right}">
+                                    <Label.Triggers>
+                                        <DataTrigger TargetType="Label" Binding="{Binding Source={x:Reference samplingSettingsExpander}, Path=IsExpanded}" Value="True">
+                                            <Setter Property="Text" Value="{x:Static icons:MaterialRegular.Keyboard_arrow_up}"/>
+                                        </DataTrigger>
+                                        <DataTrigger TargetType="Label" Binding="{Binding Source={x:Reference samplingSettingsExpander}, Path=IsExpanded}" Value="False">
+                                            <Setter Property="Text" Value="{x:Static icons:MaterialRegular.Keyboard_arrow_right}"/>
+                                        </DataTrigger>
+                                    </Label.Triggers>
+                                </Label>
+                            </HorizontalStackLayout>
+
+                            <BoxView Grid.Row= "1" StyleClass="Separator"/>
+                        </Grid>
+                    </mct:Expander.Header>
+
+                    <Grid RowDefinitions="*, auto">
+                        <VerticalStackLayout BackgroundColor="{StaticResource SurfaceContainerLowDark}">
+                            <Grid StyleClass="SettingGrid">
+                                <Label VerticalOptions="Center" Text="Sampling mode"/>
+                                <Picker
+                                HorizontalOptions="End"
+                                Grid.Column="1"
+                                SelectedItem="{Binding SamplingMode}"
+                                ItemsSource="{x:Static local:LMKitDefaultSettings.AvailableSamplingModes}"/>
+                            </Grid>
+
+                            <ContentView>
+                                <ContentView.Triggers>
+                                    <DataTrigger TargetType="ContentView" Binding="{Binding SamplingMode}" Value="{x:Static models:SamplingMode.Random}">
+                                        <Setter Property="ControlTemplate" Value="{StaticResource RandomSamplingSettingsTemplate}"/>
+
+                                    </DataTrigger>
+
+                                    <DataTrigger TargetType="ContentView" Binding="{Binding SamplingMode}" Value="{x:Static models:SamplingMode.Mirostat}">
+                                        <Setter Property="ControlTemplate" Value="{StaticResource MirostatSettingsTemplate}"/>
+                                    </DataTrigger>
+
+                                    <DataTrigger TargetType="ContentView" Binding="{Binding SamplingMode}" Value="{x:Static models:SamplingMode.Greedy}">
+                                        <Setter Property="IsVisible" Value="False"/>
+                                    </DataTrigger>
+                                </ContentView.Triggers>
+                            </ContentView>
+                        </VerticalStackLayout>
+
+                        <BoxView Grid.Row="1" StyleClass="Separator" />
+                    </Grid>
+                </mct:Expander>
+            </VerticalStackLayout>
+        </ScrollView>
+    </Grid>
+</ContentView>

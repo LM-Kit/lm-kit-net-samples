@@ -1,0 +1,395 @@
+<?xml version="1.0" encoding="utf-8" ?>
+<ContentPage xmlns="http://schemas.microsoft.com/dotnet/2021/maui"
+             xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
+             xmlns:mct="http://schemas.microsoft.com/dotnet/2022/maui/toolkit"
+             xmlns:views="clr-namespace:ChatPlayground.Views"
+             xmlns:models="clr-namespace:ChatPlayground.Models"
+             xmlns:vm="clr-namespace:ChatPlayground.ViewModels"
+             xmlns:icons="clr-namespace:UraniumUI.Icons.MaterialIcons;assembly=UraniumUI.Icons.MaterialIcons"
+             xmlns:plainer="clr-namespace:Plainer.Maui.Controls;assembly=Plainer.Maui"
+             xmlns:converters="clr-namespace:ChatPlayground.Converters"
+             xmlns:uranium="http://schemas.enisn-projects.io/dotnet/maui/uraniumui"
+             xmlns:material="http://schemas.enisn-projects.io/dotnet/maui/uraniumui/material"
+             x:DataType="vm:ModelsPageViewModel"
+             x:Class="ChatPlayground.Views.ModelsPage"
+             x:Name="modelsPage"
+             Title="ModelsPage">
+
+    <!--<ContentPage.Resources>
+        <ControlTemplate "ModelDownloadingTemplate">
+            
+        </ControlTemplate>
+        <ControlTemplate "ModelDownloadedTemplate">
+
+        </ControlTemplate>
+        <ControlTemplate "ModelNotDownloadedTemplate">
+
+        </ControlTemplate>
+    </ContentPage.Resources>-->
+    <ContentPage.Resources>
+        <!--<Style TargetType="uranium:StatefulContentView">
+            <Setter Property="VisualStateManager.VisualStateGroups">
+                <VisualStateGroupList>
+                    <VisualStateGroup x:Name="CommonStates">
+                        <VisualState x:Name="Normal" />
+                        <VisualState x:Name="Pressed">
+                            <VisualState.Setters>
+                                <Setter Property="Opacity" Value="0.5"/>
+                            </VisualState.Setters>
+                        </VisualState>
+                        <VisualState x:Name="PointerOver">
+                            <VisualState.Setters>
+                                <Setter Property="Opacity" Value="0.7"/>
+                            </VisualState.Setters>
+                        </VisualState>
+                    </VisualStateGroup>
+                </VisualStateGroupList>
+            </Setter>
+        </Style>-->
+
+        <Style x:Key="ModelCardButton" TargetType="uranium:StatefulContentView">
+            <Setter Property="VisualStateManager.VisualStateGroups">
+                <VisualStateGroupList>
+                    <VisualStateGroup x:Name="CommonStates">
+                        <VisualState x:Name="Normal" />
+                        <VisualState x:Name="Pressed">
+                            <VisualState.Setters>
+                                <Setter Property="Opacity" Value="0.5"/>
+                            </VisualState.Setters>
+                        </VisualState>
+                        <VisualState x:Name="PointerOver">
+                            <VisualState.StateTriggers>
+                                <StateTrigger IsActive="False" />
+                            </VisualState.StateTriggers>
+
+                            <VisualState.Setters>
+                                <Setter Property="Opacity" Value="0.1"/>
+                            </VisualState.Setters>
+                        </VisualState>
+                    </VisualStateGroup>
+                </VisualStateGroupList>
+            </Setter>
+        </Style>
+
+        <Style x:Key="ModelBorderStyle" TargetType="Border">
+            <Setter Property="BackgroundColor" Value="{StaticResource SurfaceContainerDark}"/>
+            <Setter Property="StrokeThickness" Value="0.2"/>
+            <Setter Property="Padding" Value="16"/>
+            <Setter Property="Stroke" Value="{StaticResource OutlineDark}"/>
+            <Setter Property="StrokeShape" Value="RoundRectangle 4"/>
+        </Style>
+
+        <!--<DataTemplate x:Key="LmKitModelsTemplate" x:DataType="vm:ModelInfoViewModel">
+            <Grid Padding="16, 0">
+                <Border Style="{StaticResource ModelBorderStyle}">
+                    <Grid RowDefinitions="*, *, auto" ColumnSpacing="8" ColumnDefinitions="*, auto">
+                        <VerticalStackLayout Spacing="4">
+                            <Label Text="{Binding Name}"/>
+                            <HorizontalStackLayout Spacing="4">
+                                <Label TextColor="{StaticResource OutlineDark}" Text="{Binding FileSize, Converter={converters:FileSizeConverter}}"/>
+                                <Label IsVisible="{Binding Description, Converter={mct:IsStringNotNullOrWhiteSpaceConverter}}" TextColor="{StaticResource OutlineDark}" Text="•"/>
+                                <Label TextColor="{StaticResource OutlineDark}" Text="{Binding Description}" Grid.Row="1"/>
+                            </HorizontalStackLayout>
+                        </VerticalStackLayout>
+
+                        <uranium:StatefulContentView 
+                            Grid.Column="1"
+                            Grid.RowSpan="2"
+                            IsEnabled="False"
+                            Style="{StaticResource ModelCardButton}"
+                            TappedCommand="{Binding Source={RelativeSource AncestorType={x:Type vm:ModelsPageViewModel}}, Path=DownloadModelCommand}"
+                            CommandParameter="{Binding}"
+                            VerticalOptions="Center">
+
+                            <Border 
+                                IsEnabled="False"
+                                StrokeThickness="0" 
+                                StrokeShape="RoundRectangle 4"
+                                Stroke="{StaticResource SecondaryContainerDark}" 
+                                BackgroundColor="{StaticResource SecondaryContainerDark}"
+                                Padding="8, 6">
+
+                                <Label IsEnabled="False" VerticalOptions="Center" VerticalTextAlignment="Center">
+                                    <Label.FormattedText>
+                                        <FormattedString>
+                                            <Span TextColor="{StaticResource OnSecondaryContainerDark}" FontSize="12" FontFamily="MaterialRegular" Text="{x:Static icons:MaterialRegular.Download}"/>
+                                            <Span TextColor="{StaticResource OnSecondaryContainerDark}" Text=" Download"/>
+                                        </FormattedString>
+                                    </Label.FormattedText>
+                                </Label>
+                            </Border>
+                        </uranium:StatefulContentView>
+                        <Grid
+                            IsVisible="False"
+                            Margin="0, 20, 0, 0"
+                            RowSpacing="20"
+                            Grid.ColumnSpan="2"
+                            Grid.Row="2"
+                            ColumnDefinitions="*, auto"
+                            RowDefinitions="*, *">
+                            <Grid.Triggers>
+                                <DataTrigger TargetType="Grid" Binding="{Binding DownloadInfo.Status}" Value="{x:Static vm:DownloadStatus.DownloadPaused}">
+                                    <Setter Property="IsVisible" Value="True"/>
+                                </DataTrigger>
+                                <DataTrigger TargetType="Grid" Binding="{Binding DownloadInfo.Status}" Value="{x:Static vm:DownloadStatus.Downloading}">
+                                    <Setter Property="IsVisible" Value="True"/>
+                                </DataTrigger>
+                            </Grid.Triggers>
+
+                            <HorizontalStackLayout Grid.Column="1" Spacing="8">
+                                <Button
+                                    VerticalOptions="Fill"
+                                    Grid.Column="1"
+                                    CommandParameter="{Binding}"
+                                    Text="{x:Static icons:MaterialRegular.Pause}"
+                                    FontFamily="MaterialRegular">
+                                    <Button.Triggers>
+                                        <DataTrigger TargetType="Button" Binding="{Binding DownloadInfo.Status}" Value="{x:Static vm:DownloadStatus.DownloadPaused}">
+                                            <Setter Property="Text" Value="{x:Static icons:MaterialRegular.Play_arrow}"/>
+                                            <Setter Property="Command" Value="{Binding Source={RelativeSource AncestorType={x:Type vm:ModelsPageViewModel}}, Path=ResumeDownloadCommand}"/>
+                                        </DataTrigger>
+                                        <DataTrigger TargetType="Button" Binding="{Binding DownloadInfo.Status}" Value="{x:Static vm:DownloadStatus.Downloading}">
+                                            <Setter Property="Text" Value="{x:Static icons:MaterialRegular.Pause}"/>
+                                            <Setter Property="Command" Value="{Binding Source={RelativeSource AncestorType={x:Type vm:ModelsPageViewModel}}, Path=PauseDownloadCommand}"/>
+                                        </DataTrigger>
+                                    </Button.Triggers>
+                                </Button>
+
+                                <Button
+                                    VerticalOptions="Fill"
+                                    Grid.Column="1"
+                                    Command="{Binding Source={RelativeSource AncestorType={x:Type vm:ModelsPageViewModel}}, Path=CancelDownloadCommand}"
+                                    CommandParameter="{Binding}"
+                                    Text="{x:Static icons:MaterialRegular.Stop}"
+                                    FontFamily="MaterialRegular"/>
+                            </HorizontalStackLayout>
+
+                            <Label  HorizontalTextAlignment="Start">
+                                <Label.Text>
+                                    <MultiBinding StringFormat="{}Downloading: {0} / {1} ({2:F0}%)">
+                                        <Binding Path="DownloadInfo.BytesRead" Converter="{converters:FileSizeConverter}" />
+                                        <Binding Path="DownloadInfo.ContentLength" Converter="{converters:FileSizeConverter}" />
+                                        <Binding Path="DownloadInfo.Progress" Converter="{mct:MathExpressionConverter}" ConverterParameter='x*100'/>
+                                    </MultiBinding>
+                                </Label.Text>
+                            </Label>
+
+                            <ProgressBar 
+                                Grid.Row="1"
+                                Grid.ColumnSpan="2"
+                                Progress="{Binding DownloadInfo.Progress}"/>
+
+                        </Grid>
+                    </Grid>
+                </Border>
+            </Grid>
+        </DataTemplate>-->
+
+        <DataTemplate x:Key="UserModelsTemplate" x:DataType="vm:ModelInfoViewModel">
+            <Grid Padding="16, 0">
+                <Border Style="{StaticResource ModelBorderStyle}">
+                    <Grid RowDefinitions="*" ColumnSpacing="16" ColumnDefinitions="*, auto, auto">
+                        <Label VerticalOptions="Center">
+                            <Label.Text>
+                                <MultiBinding StringFormat="{} {0}  •  {1}  •  {2}">
+                                    <Binding Path="ModelInfo.Publisher"/>
+                                    <Binding Path="ModelInfo.Repository"/>
+                                    <Binding Path="ModelInfo.FileName"/>
+                                </MultiBinding>
+                            </Label.Text>
+                        </Label>
+
+                        <Label VerticalOptions="Center" Grid.Column="1" Text="{Binding FileSize, Converter={converters:FileSizeConverter}}"/>
+                        <Button
+                            Grid.Column="2"
+                            Padding="10"
+                            CornerRadius="20"
+                            BorderColor="Transparent"
+                            TextColor="{StaticResource OutlineDark}"
+                            FontFamily="MaterialRegular"
+                            BackgroundColor="Transparent"
+                            CommandParameter="{Binding}"
+                            Command="{Binding Source={RelativeSource AncestorType={x:Type vm:ModelsPageViewModel}}, Path=DeleteModelCommand}"
+                            Text="{x:Static icons:MaterialRegular.Delete}">
+                            <VisualStateManager.VisualStateGroups>
+                                <VisualStateGroupList>
+                                    <VisualStateGroup x:Name="CommonStates">
+                                        <VisualState x:Name="Normal" />
+                                        <VisualState x:Name="Pressed">
+                                            <VisualState.Setters>
+                                                <Setter Property="Opacity" Value="0.5"/>
+                                            </VisualState.Setters>
+                                        </VisualState>
+                                        <VisualState x:Name="PointerOver">
+                                            <VisualState.Setters>
+                                                <Setter Property="TextColor" Value="{StaticResource ErrorDark}"/>
+                                            </VisualState.Setters>
+                                        </VisualState>
+                                    </VisualStateGroup>
+                                </VisualStateGroupList>
+                            </VisualStateManager.VisualStateGroups>
+
+                        </Button>
+                    </Grid>
+                </Border>
+            </Grid>
+        </DataTemplate>
+    </ContentPage.Resources>
+
+    <Grid RowSpacing="20" Padding="16" RowDefinitions="auto, auto, *, 20" >
+        <Label VerticalOptions="End" Text="Model folder:"/>
+
+        <Grid Grid.Row="1" ColumnSpacing="8" ColumnDefinitions="*, auto, auto">
+            <Border StrokeThickness="0" StrokeShape="RoundRectangle 4" BackgroundColor="{StaticResource SurfaceContainerLowDark}" Stroke="Transparent">
+                <plainer:EntryView  VerticalOptions="End"  IsReadOnly="True" Text="{Binding AppSettingsService.ModelsFolderPath}"/>
+            </Border>
+
+            <Button Grid.Column="1" VerticalOptions="Fill" Text="Change" Command="{Binding PickModelsFolderCommand}"/>
+            <Button  Grid.Column="2" VerticalOptions="Fill" Text="Open in File Explorer" Command="{Binding OpenModelsFolderCommand}"/>
+        </Grid>
+
+        <Border 
+            Grid.Row="2" 
+            Stroke="Transparent" 
+            StrokeShape="RoundRectangle 4" 
+            StrokeThickness="0" 
+            BackgroundColor="{StaticResource SurfaceContainerLowDark}">
+            <Grid
+                RowDefinitions="auto, *, auto">
+
+                <VerticalStackLayout
+                    Spacing="16"
+                    Margin="0, 16, 0, 0"
+                    IsVisible="{Binding Source={x:Reference modelsPage}, Path=SelectedTab, Converter={mct:IsEqualConverter}, ConverterParameter={x:Static views:ModelsPageTab.UserModels}}">
+                    <HorizontalStackLayout Spacing="12" VerticalOptions="Center" HorizontalOptions="Center">
+                        <HorizontalStackLayout.Triggers>
+                            <DataTrigger TargetType="HorizontalStackLayout" Binding="{Binding FileManager.FileCollectingInProgress}" Value="True">
+                                <Setter Property="ToolTipProperties.Text" Value="Folder scan in progress"/>
+                            </DataTrigger>
+                        </HorizontalStackLayout.Triggers>
+
+                        <ActivityIndicator 
+                            HorizontalOptions="Center"
+                            IsVisible="{Binding FileManager.FileCollectingInProgress}"
+                            BackgroundColor="Transparent"
+                            VerticalOptions="Center"
+                            Color="{StaticResource OutlineDark}"
+                            Margin="0" IsRunning="True" HeightRequest="12" WidthRequest="12"/>
+
+                        <Label 
+                            HorizontalOptions="Center"
+                            VerticalOptions="Center"
+                            IsVisible="{Binding ModelListViewModel.UserModels.Count, Converter={StaticResource GreaterThanZeroConverter}}">
+                            <Label.FormattedText>
+                                <FormattedString>
+                                    <Span Text="You have "/>
+                                    <Span Text="{Binding ModelListViewModel.UserModels.Count}" FontAttributes="Bold"/>
+                                    <Span Text=" installed model(s) taking a total of "/>
+                                    <Span Text="{Binding ModelListViewModel.TotalModelSize, Converter={converters:FileSizeConverter}}" FontAttributes="Bold"/>
+                                </FormattedString>
+                            </Label.FormattedText>
+                        </Label>
+                    </HorizontalStackLayout>
+
+                    <Grid>
+                        <views:LinkView 
+                            Icon="{x:Static icons:MaterialRegular.Report}"
+                            TextColor="{StaticResource TertiaryDark}"
+                            Text="{Binding FileManager.UnsortedModels.Count, StringFormat='{}You have {0} unsorted model files'}"
+                            Command="{Binding ShowUnsortedModelFilesPopupCommand}"
+                            IsVisible="{Binding FileManager.UnsortedModels.Count, Converter={StaticResource GreaterThanZeroConverter}}"/>
+                    </Grid>
+                </VerticalStackLayout>
+
+                <CollectionView Margin="0, 16, 0, 0" x:Name="modelsCollectionView" Grid.Row="1">
+                    <CollectionView.ItemsLayout>
+                        <LinearItemsLayout ItemSpacing="8" Orientation="Vertical"/>
+                    </CollectionView.ItemsLayout>
+
+                    <CollectionView.Triggers>
+                        <DataTrigger TargetType="CollectionView" Value="True" Binding="{Binding Source={x:Reference modelsCollectionView}, Path=ItemsSource.Count, Converter={StaticResource EqualToZeroConverter}}">
+                            <Setter Property="VerticalOptions" Value="Center"/>
+                        </DataTrigger>
+
+                        <DataTrigger TargetType="CollectionView" Binding="{Binding Source={x:Reference modelsPage}, Path=SelectedTab}" Value="{x:Static views:ModelsPageTab.UserModels}">
+                            <Setter Property="ItemsSource" Value="{Binding ModelListViewModel.UserModels}"/>
+                            <Setter Property="ItemTemplate" Value="{StaticResource UserModelsTemplate}"/>
+                            <Setter Property="EmptyView">
+                                <Setter.Value>
+                                    <VerticalStackLayout VerticalOptions="End" HorizontalOptions="Center" Spacing="8">
+                                        <Label HorizontalTextAlignment="Center" Text="It looks like you don't have any model yet."/>
+                                        <Label HorizontalTextAlignment="Center" Text="Model files added to your model folder will appear here."/>
+                                    </VerticalStackLayout>
+
+                                </Setter.Value>
+                            </Setter>
+                        </DataTrigger>
+
+                        <!--<DataTrigger TargetType="CollectionView" Binding="{Binding Source={x:Reference modelsPage}, Path=SelectedTab}" Value="{x:Static views:ModelsPageTab.LmKitModels}">
+                            <Setter Property="ItemsSource" Value="{Binding ModelListViewModel.AvailableModels}"/>
+                            <Setter Property="ItemTemplate" Value="{StaticResource LmKitModelsTemplate}"/>
+                        </DataTrigger>-->
+                    </CollectionView.Triggers>
+                </CollectionView>
+
+                <!--<Grid RowDefinitions="1, *" Margin="0, 0" Grid.Row="2">
+                    <BoxView  Margin="16,0"/>
+                    <Grid Padding="16" VerticalOptions="Center" Grid.Row="1" ColumnDefinitions="*, auto, *">
+                        <uranium:StatefulContentView Grid.Row="1" Tapped="UserModelsTabTapped">
+                            <Label TextColor="{StaticResource OutlineDark}" HorizontalOptions="Center" Text="My models">
+                                <Label.Triggers>
+                                    <DataTrigger TargetType="Label" Binding="{Binding Source={x:Reference modelsPage}, Path=SelectedTab}" Value="{x:Static views:ModelsPageTab.UserModels}">
+                                        <Setter Property="TextColor" Value="{StaticResource OnSurfaceDark}"/>
+                                    </DataTrigger>
+                                </Label.Triggers>
+                            </Label>
+                        </uranium:StatefulContentView>
+
+                        <BoxView  WidthRequest="1" Grid.Column="1"/>
+
+                        <uranium:StatefulContentView Tapped="LmKitModelsTabTapped" Grid.Column="2">
+                            <Label TextColor="{StaticResource OutlineDark}" HorizontalOptions="Center" Text="LM-Kit models">
+                                <Label.Triggers>
+                                    <DataTrigger TargetType="Label" Binding="{Binding Source={x:Reference modelsPage}, Path=SelectedTab}" Value="{x:Static views:ModelsPageTab.LmKitModels}">
+                                        <Setter Property="TextColor" Value="{StaticResource OnSurfaceDark}"/>
+                                    </DataTrigger>
+                                </Label.Triggers>
+                            </Label>
+                        </uranium:StatefulContentView>
+                    </Grid>
+                </Grid>-->
+            </Grid>
+        </Border>
+
+        <uranium:StatefulContentView TappedCommand="{Binding OpenHuggingFaceLinkCommand}" Grid.Row="3">
+            <VisualStateManager.VisualStateGroups>
+                <VisualStateGroupList>
+                    <VisualStateGroup x:Name="CommonStates">
+                        <VisualState x:Name="Normal" />
+                        <VisualState x:Name="Pressed">
+                            <VisualState.Setters>
+                                <Setter TargetName="hfLabel" Property="Label.TextColor" Value="#FFD21E"/>
+                                <Setter Property="Opacity" Value="0.8"/>
+                            </VisualState.Setters>
+                        </VisualState>
+                        <VisualState x:Name="PointerOver">
+                            <VisualState.Setters>
+
+                                <!--<Setter Property="Opacity" Value="0.7"/>-->
+                                <Setter TargetName="hfLabel" Property="Label.TextColor" Value="#FFD21E"/>
+                                <!--<Setter TargetName="hfLogo" Property="Image.WidthRequest" Value="20"/>
+                                <Setter TargetName="hfLogo" Property="Image.HeightRequest" Value="20"/>-->
+                            </VisualState.Setters>
+                        </VisualState>
+                    </VisualStateGroup>
+                </VisualStateGroupList>
+            </VisualStateManager.VisualStateGroups>
+
+            <HorizontalStackLayout Spacing="8" HorizontalOptions="Center">
+                <Image x:Name="hfLogo" VerticalOptions="Center" HeightRequest="16" WidthRequest="16" Source="hugging_face.png"/>
+                <Label x:Name="hfLabel" TextColor="{StaticResource OutlineVariantDark}" Text="See more models"/>
+            </HorizontalStackLayout>
+        </uranium:StatefulContentView>
+    </Grid>
+
+</ContentPage>

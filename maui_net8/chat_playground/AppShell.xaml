@@ -1,0 +1,106 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<shell:SimpleShell
+    x:Class="ChatPlayground.AppShell"
+    xmlns="http://schemas.microsoft.com/dotnet/2021/maui"
+    xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
+    xmlns:views="clr-namespace:ChatPlayground.Views"
+    xmlns:vm="clr-namespace:ChatPlayground.ViewModels"
+    xmlns:local="clr-namespace:ChatPlayground"
+    xmlns:mct="http://schemas.microsoft.com/dotnet/2022/maui/toolkit"
+    xmlns:shell="clr-namespace:SimpleToolkit.SimpleShell;assembly=SimpleToolkit.SimpleShell"
+    xmlns:converters="clr-namespace:ChatPlayground.Converters"
+    xmlns:uranium="http://schemas.enisn-projects.io/dotnet/maui/uraniumui"
+    Shell.FlyoutBehavior="Disabled"
+    Shell.NavBarIsVisible="False"
+    FlyoutBackgroundColor="{StaticResource SurfaceContainerLowDark}"
+    Title="LM-Kit Chat Playground"
+    x:DataType="vm:AppShellViewModel"
+    x:Name="thisShell"
+    >
+    <!-- WinUI TitleBar issue: https://stackoverflow.com/questions/78200704/net-maui-flyout-menu-is-overlapping-the-windows-title-bar-->
+
+    <!--<FlyoutItem Route="HomePage" Title="Home">
+        <ShellContent ContentTemplate="{DataTemplate views:HomePage}"/>
+    </FlyoutItem>-->
+
+    <!--<Tab BindingContext="{Binding HomeTab}" Title="{Binding HomeTab.Title}" Route="HomePage">
+        <ShellContent Title="Home" ContentTemplate="{DataTemplate views:HomePage}"/>
+    </Tab>-->
+
+    <Tab BindingContext="{Binding ChatTab}" Title="{Binding ChatTab.Title}" Route="ChatPage">
+        <ShellContent Title="AI Chat" ContentTemplate="{DataTemplate views:ChatPage}"/>
+    </Tab>
+
+    <Tab BindingContext="{Binding ModelsTab}" Title="{Binding ModelsTab.Title}" Route="ModelsPage">
+        <ShellContent Title="Models" ContentTemplate="{DataTemplate views:ModelsPage}"/>
+    </Tab>
+    <!--<FlyoutItem Route="ChatPage" Title="AI Chat">
+        <ShellContent ContentTemplate="{DataTemplate views:ChatPage}"/>
+    </FlyoutItem>-->
+
+    <!--<FlyoutItem Route="ModelsPage"  Title="Models">
+        <ShellContent ContentTemplate="{DataTemplate views:ModelsPage}"/>
+    </FlyoutItem>-->
+
+    <shell:SimpleShell.RootPageContainer>
+        <Grid x:Name="rootPageContainer">
+            <shell:SimpleNavigationHost/>
+        </Grid>
+    </shell:SimpleShell.RootPageContainer>
+
+    <shell:SimpleShell.Content>
+        <Grid  BackgroundColor="{StaticResource BackgroundDark}" RowDefinitions="auto, *">
+            <Grid RowDefinitions="*, auto">
+                <Grid Padding="12">
+                    <HorizontalStackLayout
+                        VerticalOptions="Center"
+                        BindableLayout.ItemsSource="{Binding Tabs}"
+                        Spacing="12">
+                        <BindableLayout.ItemTemplate>
+                            <DataTemplate x:DataType="vm:ChatPlaygroundTabViewModel">
+                                <!--<Border
+                                        Padding="8"
+                                        Stroke="Transparent"
+                                        StrokeThickness="0"
+                                        StrokeShape="RoundRectangle 20">
+                                    <Border.Triggers>
+                                        <DataTrigger TargetType="Border" Binding="{Binding IsSelected}" Value="True">
+                                            <Setter Property="BackgroundColor" Value="{StaticResource OutlineVariantDark}"/>
+                                        </DataTrigger>
+                                    </Border.Triggers>-->
+
+                                <views:LinkView
+                                   Command="{Binding Source={RelativeSource AncestorType={x:Type vm:AppShellViewModel}}, Path=NavigateCommand}"
+                                   CommandParameter="{Binding}"
+                                   TextColor="{StaticResource OutlineVariantDark}"
+                                   Text="{Binding Title}">
+                                    <views:LinkView.Triggers>
+                                        <DataTrigger TargetType="views:LinkView" Binding="{Binding IsSelected}" Value="True">
+                                            <Setter Property="TextColor" Value="{StaticResource LmKitPurpleText}"/>
+                                        </DataTrigger>
+                                    </views:LinkView.Triggers>
+                                </views:LinkView>
+
+                                <!--<views:LinkView
+                                    Command="{Binding Source={RelativeSource AncestorType={x:Type vm:AppShellViewModel}}, Path=NavigateCommand}"
+                                    CommandParameter="{Binding}"
+                                    TextColor="{StaticResource OutlineDark}"
+                                    Text="{Binding Title}">
+                                    <views:LinkView.Triggers>
+                                        <DataTrigger TargetType="views:LinkView" Binding="{Binding IsSelected}" Value="True">
+                                            <Setter Property="TextColor" Value="{StaticResource SecondaryDark}"/>
+                                        </DataTrigger>
+                                    </views:LinkView.Triggers>
+                                </views:LinkView>-->
+                                <!--</Border>-->
+                            </DataTemplate>
+                        </BindableLayout.ItemTemplate>
+                    </HorizontalStackLayout>
+                </Grid>
+
+                <BoxView Grid.Row="1" Color="{StaticResource BackgroundDark}" StyleClass="Separator"/>
+            </Grid>
+            <shell:SimpleNavigationHost Grid.Row="1"/>
+        </Grid>
+    </shell:SimpleShell.Content>
+</shell:SimpleShell>

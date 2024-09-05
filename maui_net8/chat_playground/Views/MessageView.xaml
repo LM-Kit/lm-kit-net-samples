@@ -1,0 +1,127 @@
+<?xml version="1.0" encoding="utf-8" ?>
+<ContentView xmlns="http://schemas.microsoft.com/dotnet/2021/maui"
+             xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
+             xmlns:mct="http://schemas.microsoft.com/dotnet/2022/maui/toolkit"
+             xmlns:views="clr-namespace:ChatPlayground.Views"
+             xmlns:models="clr-namespace:ChatPlayground.Models"
+             xmlns:vm="clr-namespace:ChatPlayground.ViewModels"
+             xmlns:plainer="clr-namespace:Plainer.Maui.Controls;assembly=Plainer.Maui"
+             xmlns:icons="clr-namespace:UraniumUI.Icons.MaterialIcons;assembly=UraniumUI.Icons.MaterialIcons"
+             xmlns:uranium="http://schemas.enisn-projects.io/dotnet/maui/uraniumui"
+             x:DataType="vm:MessageViewModel"
+             x:Name="messageView"
+             x:Class="ChatPlayground.Views.MessageView">
+
+    <Grid>
+        <Grid.Triggers>
+            <DataTrigger TargetType="Grid" Binding="{Binding Sender}" Value="{x:Static models:MessageSender.User}">
+                <Setter Property="ColumnDefinitions" Value="*, 4*"/>
+            </DataTrigger>
+            <DataTrigger TargetType="Grid" Binding="{Binding Sender}" Value="{x:Static models:MessageSender.Assistant}">
+                <Setter Property="ColumnDefinitions" Value="4*, *"/>
+            </DataTrigger>
+        </Grid.Triggers>
+
+        <uranium:StatefulContentView
+            x:Name="statefulContentView"
+            Padding="0, 0"
+            HoverCommand="{Binding ToggleHoveredStateCommand}"
+            HoverExitCommand="{Binding ToggleHoveredStateCommand}">
+            <uranium:StatefulContentView.Triggers>
+                <DataTrigger TargetType="uranium:StatefulContentView" Binding="{Binding Sender}" Value="{x:Static models:MessageSender.User}">
+                    <Setter Property="HorizontalOptions" Value="End"/>
+                    <Setter Property="Grid.Column" Value="1"/>
+                </DataTrigger>
+                <DataTrigger TargetType="uranium:StatefulContentView" Binding="{Binding Sender}" Value="{x:Static models:MessageSender.Assistant}">
+                    <Setter Property="HorizontalOptions" Value="Start"/>
+                </DataTrigger>
+            </uranium:StatefulContentView.Triggers>
+
+            <Grid RowSpacing="4" RowDefinitions="auto, 32">
+                <ActivityIndicator  
+                    HorizontalOptions="Start"
+                    Margin="8, 0"
+                    HeightRequest="20"
+                    WidthRequest="20"
+                    Color="{StaticResource LmKitPurpleText}">
+                    <ActivityIndicator.IsRunning>
+                        <MultiBinding Converter="{StaticResource AllTrueConverter}">
+                            <Binding Path="MessageInProgress"/>
+                            <Binding Path="Text" Converter="{mct:IsStringNullOrEmptyConverter}"/>
+                        </MultiBinding>
+                    </ActivityIndicator.IsRunning>
+                </ActivityIndicator>
+
+                <Label 
+                    TextColor="{StaticResource ErrorDark}"
+                    Text="{Binding Status}"
+                    Margin="16, 0"
+                    Grid.Column="1"
+                    VerticalOptions="Center"
+                    TranslationX="{Binding Source={x:Reference messageBorder}, Path=Width, 
+                    Converter={mct:MathExpressionConverter}, ConverterParameter='x*-1'}"
+                    HorizontalOptions="End">
+
+                    <Label.IsVisible>
+                        <MultiBinding Converter="{StaticResource AllTrueConverter}">
+                            <Binding Path="Sender" Converter="{mct:IsEqualConverter}" ConverterParameter="{x:Static models:MessageSender.User}" />
+                            <Binding Path="Status" Converter="{mct:IsNotEqualConverter}" ConverterParameter="{x:Static vm:LmKitTextGenerationSatus.Undefined}" />
+                        </MultiBinding>
+                    </Label.IsVisible>
+                </Label>
+
+                <Border 
+                    x:Name="messageBorder"
+                    VerticalOptions="Start"
+                    Stroke="Transparent" 
+                    BackgroundColor="{StaticResource SurfaceContainerLowDark}" 
+                    StrokeShape="RoundRectangle 20" 
+                    Padding="16" 
+                    Margin="0" 
+                    Grid.Column="1">
+
+                    <Border.Triggers>
+                        <DataTrigger TargetType="Border" Binding="{Binding Sender}" Value="{x:Static models:MessageSender.Assistant}">
+                            <Setter Property="BackgroundColor" Value="Transparent"/>
+                            <Setter Property="Padding" Value="8, 0"/>
+                        </DataTrigger>
+                        <DataTrigger TargetType="Border" Binding="{Binding Sender}" Value="{x:Static models:MessageSender.User}">
+                            <Setter Property="HorizontalOptions" Value="End"/>
+                        </DataTrigger>
+                    </Border.Triggers>
+                    <Grid>
+                        <Label Text="{Binding Text}"/>
+
+                        <!--<plainer:EditorView
+                            AutoSize="TextChanges" Margin="0" BackgroundColor="Transparent" IsReadOnly="True" Text="{Binding Text}"/>-->
+
+
+                    </Grid>
+                </Border>
+
+                <Grid 
+                    VerticalOptions="Start"
+                    IsVisible="{Binding IsHovered}"
+                    HorizontalOptions="{Binding Source={x:Reference statefulContentView}, Path=HorizontalOptions}"
+                    Grid.Row="1">
+
+                    <Button 
+                        VerticalOptions="Center"
+                        Command="{Binding Source={x:Reference messageView}, Path=CopyMessageCommand}"  
+                        BackgroundColor="Transparent" 
+                        Style="{StaticResource ChatActionButtonStyle}"
+                        Text="{x:Static icons:MaterialRegular.Content_copy}"
+                        CornerRadius="10" 
+                        HorizontalOptions="Start">
+                        <Button.Triggers>
+                            <DataTrigger TargetType="Button" Binding="{Binding Source={x:Reference messageView}, Path=MessageJustCopied}" Value="True">
+                                <Setter Property="Text" Value="{x:Static icons:MaterialRegular.Check}"/>
+                            </DataTrigger>
+                        </Button.Triggers>
+                    </Button>
+                </Grid>
+            </Grid>
+        </uranium:StatefulContentView>
+    </Grid>
+
+</ContentView>
