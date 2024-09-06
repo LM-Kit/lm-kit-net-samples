@@ -134,7 +134,7 @@ public partial class ChatView : ContentView
         {
             if (e.PropertyName == nameof(_conversationViewModel.LatestPromptStatus))
             {
-                if (_conversationViewModel.LatestPromptStatus != LmKitTextGenerationSatus.Undefined)
+                if (_conversationViewModel.LatestPromptStatus != LmKitTextGenerationStatus.Undefined)
                 {
                     SetScrollViewToEnd(false);
                 }

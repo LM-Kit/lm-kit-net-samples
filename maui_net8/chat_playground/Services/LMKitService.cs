@@ -88,9 +88,19 @@ namespace ChatPlayground.Services
                 _modelLoadingTask.Wait();
             }
 
-            LMKitConfig.LoadedModel = null;
-            Model?.Dispose();
-            Model = null;
+            if (_multiTurnConversation != null)
+            {
+                _multiTurnConversation.Dispose();
+                _multiTurnConversation = null;
+            }
+
+            if (Model != null)
+            {
+                Model.Dispose();
+                Model = null;
+            }
+
+            _lastConversationUsed = null;
             ModelLoadingState = ModelLoadingState.Unloaded;
             ModelUnloaded?.Invoke(this, EventArgs.Empty);
         }
@@ -110,7 +120,7 @@ namespace ChatPlayground.Services
             {
                 return new PromptResult()
                 {
-                    Status = LmKitTextGenerationSatus.Cancelled
+                    Status = LmKitTextGenerationStatus.Cancelled
                 };
             }
 
@@ -139,7 +149,7 @@ namespace ChatPlayground.Services
                     result = new PromptResult()
                     {
                         Exception = ex,
-                        Status = LmKitTextGenerationSatus.UnknownError
+                        Status = LmKitTextGenerationStatus.UnknownError
                     };
                 }
 
@@ -178,20 +188,19 @@ namespace ChatPlayground.Services
 
                 if (promptResult.Exception is OperationCanceledException)
                 {
-                    promptResult.Status = LmKitTextGenerationSatus.Cancelled;
+                    promptResult.Status = LmKitTextGenerationStatus.Cancelled;
                 }
                 else
                 {
-                    promptResult.Status = LmKitTextGenerationSatus.UnknownError;
+                    promptResult.Status = LmKitTextGenerationStatus.UnknownError;
                 }
             }
 
-            if (promptResult.TextGenerationResult != null)
+            if (_multiTurnConversation != null)
             {
-                conversation.MessageListBlob = JsonSerializer.Serialize(conversation.MessageList);
-                //conversation.SessionData = _multiTurnConversation!.SaveSession();
-                conversation.ChatHistoryData = _multiTurnConversation.ChatHistory.Serialize();
                 conversation.ChatHistory = _multiTurnConversation.ChatHistory;
+                conversation.ChatHistoryData = _multiTurnConversation.ChatHistory.Serialize();
+                conversation.MessageListBlob = JsonSerializer.Serialize(conversation.MessageList);
             }
 
             return promptResult;
@@ -212,6 +221,11 @@ namespace ChatPlayground.Services
 
                 if (conversation.ChatHistoryData != null || conversation.ChatHistory != null)
                 {
+                    if (conversation.CurrentSessionLastUsedModel != LMKitConfig.LoadedModel && conversation.ChatHistory != null)
+                    {
+                        conversation.ChatHistory = null;
+                    }
+
                     if (conversation.ChatHistory == null)
                     {
                         conversation.ChatHistory = ChatHistory.Deserialize(conversation.ChatHistoryData, Model);
@@ -233,6 +247,7 @@ namespace ChatPlayground.Services
                     };
                 }
 
+                conversation.CurrentSessionLastUsedModel = LMKitConfig.LoadedModel;
                 _lastConversationUsed = conversation;
                 ((INotifyCollectionChanged)_multiTurnConversation.ChatHistory.Messages).CollectionChanged += OnChatHistoryMessageCollectionChanged;
             }
@@ -319,7 +334,7 @@ namespace ChatPlayground.Services
         {
             public Exception? Exception { get; set; }
 
-            public LmKitTextGenerationSatus Status { get; set; }
+            public LmKitTextGenerationStatus Status { get; set; }
 
             public TextGenerationResult? TextGenerationResult { get; set; }
         }

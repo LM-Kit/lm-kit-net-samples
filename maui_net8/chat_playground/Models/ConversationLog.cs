@@ -24,6 +24,9 @@ namespace ChatPlayground.Models
         public string? LastUsedModel { get; set; }
 
         [Ignore]
+        public ModelInfo? CurrentSessionLastUsedModel { get; set; }
+
+        [Ignore]
         public ChatHistory? ChatHistory { get; set; }
 
         [Ignore]

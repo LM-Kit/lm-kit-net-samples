@@ -61,7 +61,7 @@ public partial class ConversationViewModel : ObservableObject
     public ModelInfo? _lastUsedModel;
 
     [ObservableProperty]
-    public LmKitTextGenerationSatus _latestPromptStatus;
+    public LmKitTextGenerationStatus _latestPromptStatus;
 
     public ObservableCollection<MessageViewModel> Messages { get; } = new ObservableCollection<MessageViewModel>();
     public ConversationLog ConversationLog { get; }
@@ -172,13 +172,13 @@ public partial class ConversationViewModel : ObservableObject
         {
             if (submitPromptException is OperationCanceledException operationCancelledException)
             {
-                _pendingResponse!.Status = LmKitTextGenerationSatus.Cancelled;
-                _pendingPrompt!.Status = LmKitTextGenerationSatus.Cancelled;
+                _pendingResponse!.Status = LmKitTextGenerationStatus.Cancelled;
+                _pendingPrompt!.Status = LmKitTextGenerationStatus.Cancelled;
             }
             else
             {
-                _pendingResponse!.Status = LmKitTextGenerationSatus.UnknownError;
-                _pendingPrompt!.Status = LmKitTextGenerationSatus.UnknownError;
+                _pendingResponse!.Status = LmKitTextGenerationStatus.UnknownError;
+                _pendingPrompt!.Status = LmKitTextGenerationStatus.UnknownError;
             }
 
             // todo: provide more error info with event args.
@@ -190,7 +190,7 @@ public partial class ConversationViewModel : ObservableObject
             _pendingResponse!.Status = LatestPromptStatus;
             _pendingPrompt!.Status = LatestPromptStatus;
 
-            if (promptResult.Status == LmKitTextGenerationSatus.Undefined && promptResult.TextGenerationResult != null)
+            if (promptResult.Status == LmKitTextGenerationStatus.Undefined && promptResult.TextGenerationResult != null)
             {
                 OnTextGenerationSuccess(promptResult.TextGenerationResult);
 
@@ -247,7 +247,7 @@ public partial class ConversationViewModel : ObservableObject
         InputText = string.Empty;
         UsedDifferentModel &= false;
         LastUsedModel = _lmKitService.LMKitConfig.LoadedModel;
-        LatestPromptStatus = LmKitTextGenerationSatus.Undefined;
+        LatestPromptStatus = LmKitTextGenerationStatus.Undefined;
         AwaitingResponse = true;
 
         _pendingPrompt = new MessageViewModel(new Message() { Sender = MessageSender.User, Text = prompt });

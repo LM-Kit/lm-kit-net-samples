@@ -549,7 +549,8 @@ public partial class LLMFileManager : ObservableObject, ILLMFileManager
         }
         else
         {
-            return !(filePath.EndsWith(".download"));
+            return !(filePath.EndsWith(".download")) &&
+                   !(filePath.EndsWith(".origin"));
         }
     }
 

@@ -41,7 +41,7 @@ public partial class MessageViewModel : ObservableObject
     private bool _messageInProgress;
 
     [ObservableProperty]
-    private LmKitTextGenerationSatus _status;
+    private LmKitTextGenerationStatus _status;
 
     [ObservableProperty]
     private bool _isHovered;

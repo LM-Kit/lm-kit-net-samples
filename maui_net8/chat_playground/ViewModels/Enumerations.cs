@@ -13,7 +13,7 @@ namespace ChatPlayground.ViewModels
         Loaded
     }
 
-    public enum LmKitTextGenerationSatus
+    public enum LmKitTextGenerationStatus
     {
         Undefined,
         Cancelled,

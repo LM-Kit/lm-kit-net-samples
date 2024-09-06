@@ -65,7 +65,7 @@
                     <Label.IsVisible>
                         <MultiBinding Converter="{StaticResource AllTrueConverter}">
                             <Binding Path="Sender" Converter="{mct:IsEqualConverter}" ConverterParameter="{x:Static models:MessageSender.User}" />
-                            <Binding Path="Status" Converter="{mct:IsNotEqualConverter}" ConverterParameter="{x:Static vm:LmKitTextGenerationSatus.Undefined}" />
+                            <Binding Path="Status" Converter="{mct:IsNotEqualConverter}" ConverterParameter="{x:Static vm:LmKitTextGenerationStatus.Undefined}" />
                         </MultiBinding>
                     </Label.IsVisible>
                 </Label>
