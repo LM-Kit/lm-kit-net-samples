@@ -1,8 +1,5 @@
 ﻿using ChatPlayground.Helpers;
-using Microsoft.Maui.Graphics;
-using System.Data;
 using System.Diagnostics;
-using System.Xml.Linq;
 
 namespace ChatPlayground.Services;
 
@@ -11,7 +8,7 @@ public partial class LLMFileManager
     private sealed class FileSystemEntryRecorder
     {
         private DirectoryRecord? _rootDirectoryRecord;
-        private static Uri? _rootDirectoryUri;
+        private Uri? _rootDirectoryUri;
 
         public void Init(string rootDirectoryPath)
         {

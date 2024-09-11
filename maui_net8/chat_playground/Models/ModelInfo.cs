@@ -13,25 +13,25 @@ namespace ChatPlayground.Models
         public string FileName { get; }
 
         [JsonIgnore]
-        public ModelMetadata Metadata { get; set; }
+        public long? FileSize { get; set; }
 
-        public ModelInfo(string downloadUrl, ModelMetadata? modelMetadata = null)
+        [JsonIgnore]
+        public Uri? DownloadUrl { get; set; }
+
+        [JsonIgnore]
+        public Uri? FileUri { get; set; }
+
+        [JsonConstructor]
+        public ModelInfo(string publisher, string repository, string fileName)
         {
-            Metadata = modelMetadata ?? new ModelMetadata();
-            Metadata.DownloadUrl = new Uri(downloadUrl);
-            FileHelpers.GetModelInfoFromDownloadUrl(Metadata.DownloadUrl, out string publisher, out string repository, out string fileName);
             Publisher = publisher;
             Repository = repository;
             FileName = fileName;
         }
 
-        [JsonConstructor]
-        public ModelInfo (string publisher, string repository, string fileName)
+        public ModelInfo(string publisher, string repository, string fileName, Uri fileUri) : this(publisher, repository, fileName)
         {
-            Publisher = publisher;
-            Repository = repository;
-            FileName = fileName;
-            Metadata = new ModelMetadata();
+            FileUri = fileUri;
         }
 
         public override bool Equals(object? obj)
@@ -40,22 +40,6 @@ namespace ChatPlayground.Models
                 string.CompareOrdinal(modelInfo.Publisher, Publisher) == 0 &&
                 string.CompareOrdinal(modelInfo.Repository, Repository) == 0 &&
                 string.CompareOrdinal(modelInfo.FileName, FileName) == 0);
-        }
-
-        public sealed class ModelMetadata
-        {
-            public string? Description { get; set; }
-
-            public long? FileSize { get; set; }
-
-            public Uri? DownloadUrl { get; set; }
-
-            public Uri? FileUri { get; set; }
-
-            public ModelMetadata()
-            {
-
-            }
         }
     }
 }

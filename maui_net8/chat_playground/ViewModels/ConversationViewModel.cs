@@ -11,18 +11,23 @@ using System.Text.Json;
 using System.Runtime.CompilerServices;
 using System.Diagnostics;
 using ChatPlayground.Services;
+using ChatPlayground.Helpers;
 
 namespace ChatPlayground.ViewModels;
 
 public partial class ConversationViewModel : ObservableObject
 {
+    private readonly IAppSettingsService _appSettingsService;
     private readonly IChatPlaygroundDatabase _database;
     private readonly IPopupService _popupService;
     private readonly LMKitService _lmKitService;
+    private readonly LMKitService.Conversation _lmKitConversation;
 
     private bool _isSynchedWithLog = true;
     private bool _pendingCancellation;
 
+    private bool _awaitingLMKitUserMessage;
+    private bool _awaitingLMKitAssistantMessage;
     private MessageViewModel? _pendingPrompt;
     private MessageViewModel? _pendingResponse;
 
@@ -85,18 +90,24 @@ public partial class ConversationViewModel : ObservableObject
 
     public EventHandler? TextGenerationCompleted;
     public EventHandler? TextGenerationFailed;
+    public EventHandler? DatabaseSaveOperationCompleted;
+    public EventHandler? DatabaseSaveOperationFailed;
 
-    public ConversationViewModel(LMKitService lmKitService, IChatPlaygroundDatabase database, IPopupService popupService) : this(lmKitService, database, popupService, new ConversationLog("Untitled conversation"))
+    public ConversationViewModel(IAppSettingsService appSettingsService, LMKitService lmKitService, IChatPlaygroundDatabase database, IPopupService popupService) : this(appSettingsService, lmKitService, database, popupService, new ConversationLog("Untitled conversation"))
     {
     }
 
-    public ConversationViewModel(LMKitService lmKitService, IChatPlaygroundDatabase database, IPopupService popupService, ConversationLog conversationLog)
+    public ConversationViewModel(IAppSettingsService appSettingsService, LMKitService lmKitService, IChatPlaygroundDatabase database, IPopupService popupService, ConversationLog conversationLog)
     {
+        _appSettingsService = appSettingsService;
         _lmKitService = lmKitService;
         _lmKitService.ConversationHistoryChanged += OnLmKitServiceConversationHistoryChanged;
+        _lmKitService.ModelLoadingCompleted += OnModelLoadingCompleted;
         _database = database;
         _popupService = popupService;
         _title = conversationLog.Title!;
+        _lmKitConversation = new LMKitService.Conversation(conversationLog.ChatHistoryData);
+
         Messages.CollectionChanged += OnMessagesCollectionChanged;
         ConversationLog = conversationLog;
         IsInitialized = conversationLog.MessageListBlob == null;
@@ -104,17 +115,12 @@ public partial class ConversationViewModel : ObservableObject
 
     public void LoadConversationLogs()
     {
-        if (ConversationLog.MessageListBlob == null)
-        {
-            return;
-        }
-
         Task.Run(() =>
         {
             try
             {
-                var messages = JsonSerializer.Deserialize<List<Message>>(ConversationLog.MessageListBlob);
-                //Thread.Sleep(10000);
+                var messages = JsonSerializer.Deserialize<List<Message>>(ConversationLog.MessageListBlob!);
+
                 if (messages != null)
                 {
                     foreach (var message in messages)
@@ -123,10 +129,16 @@ public partial class ConversationViewModel : ObservableObject
                         MainThread.BeginInvokeOnMainThread(() => Messages.Add(new MessageViewModel(message)));
                     }
                 }
+
+                if (ConversationLog.LastUsedModel != null)
+                {
+                    LastUsedModel = JsonSerializer.Deserialize<ModelInfo>(ConversationLog.LastUsedModel);
+                    LastUsedModel!.FileUri = FileHelpers.GetModelFileUri(LastUsedModel, _appSettingsService.ModelsFolderPath);
+                }
             }
             catch (Exception exception)
             {
-                //_logger.LogError(exception, "Failed to deserialize conversation's messages");
+
             }
 
             IsInitialized = true;
@@ -137,19 +149,18 @@ public partial class ConversationViewModel : ObservableObject
     [RelayCommand]
     public void Send()
     {
-        if (_lmKitService.ModelLoadingState == ModelLoadingState.Loaded)
+        if (_lmKitService.ModelLoadingState == LmKitModelLoadingState.Loaded)
         {
             string prompt = InputText;
             OnNewlySubmittedPrompt(prompt);
 
             LMKitService.PromptResult? promptResult = null;
-            Exception? submitPromptException = null;
 
             Task.Run(async () =>
             {
                 try
                 {
-                    promptResult = await _lmKitService.SubmitPrompt(ConversationLog, prompt);
+                    promptResult = await _lmKitService.SubmitPrompt(_lmKitConversation, prompt);
                     OnPromptResult(promptResult);
                 }
                 catch (Exception ex)
@@ -167,6 +178,7 @@ public partial class ConversationViewModel : ObservableObject
     private void OnPromptResult(LMKitService.PromptResult? promptResult, Exception? submitPromptException = null)
     {
         AwaitingResponse = false;
+        LastUsedModel = _lmKitConversation.LastUsedModel;
 
         if (submitPromptException != null)
         {
@@ -206,8 +218,16 @@ public partial class ConversationViewModel : ObservableObject
             }
         }
 
-        _pendingResponse = null;
-        _pendingPrompt = null;
+        if (!_awaitingLMKitAssistantMessage)
+        {
+            _pendingResponse = null;
+        }
+
+        if (!_awaitingLMKitUserMessage)
+        {
+            _pendingPrompt = null;
+        }
+
         _pendingCancellation &= false;
     }
 
@@ -217,56 +237,34 @@ public partial class ConversationViewModel : ObservableObject
         if (AwaitingResponse)
         {
             _pendingCancellation = true;
-            _lmKitService.CancelPrompt(ConversationLog);
+            _lmKitService.CancelPrompt(_lmKitConversation);
         }
-    }
-
-    private async Task SubmitPrompt(string prompt)
-    {
-
-
-        //if (promptResult?.Exception != null)
-        //{
-        //    if (promptResult.Exception is OperationCanceledException)
-        //    {
-        //        LatestPromptStatus = _pendingCancellation ? PromptResponseStatus.Cancelled : PromptResponseStatus.TimedOut;
-        //    }
-        //    else if (promptResult.Exception is TimeoutException)
-        //    {
-        //        LatestPromptStatus = PromptResponseStatus.TimedOut;
-        //    }
-        //    else
-        //    {
-        //        LatestPromptStatus = PromptResponseStatus.UnknownError;
-        //    }
-        //}
     }
 
     private void OnNewlySubmittedPrompt(string prompt)
     {
         InputText = string.Empty;
         UsedDifferentModel &= false;
-        LastUsedModel = _lmKitService.LMKitConfig.LoadedModel;
         LatestPromptStatus = LmKitTextGenerationStatus.Undefined;
         AwaitingResponse = true;
-
+        _awaitingLMKitUserMessage = true;
+        _awaitingLMKitAssistantMessage = true;
         _pendingPrompt = new MessageViewModel(new Message() { Sender = MessageSender.User, Text = prompt });
         _pendingResponse = new MessageViewModel(new Message() { Sender = MessageSender.Assistant }) { MessageInProgress = true };
 
         Messages.Add(_pendingPrompt);
         Messages.Add(_pendingResponse);
 
-        try
-        {
-            ConversationLog.LastUsedModel = JsonSerializer.Serialize(LastUsedModel);
-        }
-        catch (Exception exception)
-        {
-            //LogError(exception, "Failed to serialize conversation's associated model info");
-        }
-
         ConversationLog.MessageList.Add(_pendingPrompt.MessageModel);
         ConversationLog.MessageList.Add(_pendingResponse.MessageModel);
+    }
+
+    private void OnModelLoadingCompleted(object? sender, EventArgs e)
+    {
+        if (LastUsedModel != null)
+        {
+            UsedDifferentModel = !LastUsedModel.Equals(_lmKitService.LMKitConfig.LoadedModel);
+        }
     }
 
     private void OnTextGenerationSuccess(TextGenerationResult result)
@@ -288,7 +286,7 @@ public partial class ConversationViewModel : ObservableObject
     {
         var args = (LMKitService.ConversationChatHistoryChangedEventArgs)e;
 
-        if (args.Conversation == ConversationLog)
+        if (args.Conversation == _lmKitConversation)
         {
             OnChatHistoryChanged(sender, args.CollectionChangedEventArgs);
         }
@@ -306,28 +304,28 @@ public partial class ConversationViewModel : ObservableObject
 
                 if (message.AuthorRole == AuthorRole.User)
                 {
-                    if (_pendingPrompt != null)
+                    if (_pendingPrompt != null && _awaitingLMKitUserMessage)
                     {
                         _pendingPrompt.LmKitMessage = message;
-                    }
-                    else
-                    {
-#if DEBUG
-                        throw new NotImplementedException();
-#endif
+                        _awaitingLMKitUserMessage = false;
+
+                        if (!AwaitingResponse)
+                        {
+                            _pendingPrompt = null;
+                        }
                     }
                 }
                 else if (message.AuthorRole == AuthorRole.Assistant)
                 {
-                    if (_pendingResponse != null)
+                    if (_pendingResponse != null && _awaitingLMKitAssistantMessage)
                     {
                         _pendingResponse.LmKitMessage = message;
-                    }
-                    else
-                    {
-#if DEBUG
-                        throw new NotImplementedException();
-#endif
+                        _awaitingLMKitUserMessage = false;
+
+                        if (!AwaitingResponse)
+                        {
+                            _pendingResponse = null;
+                        }
                     }
                 }
                 else
@@ -354,26 +352,6 @@ public partial class ConversationViewModel : ObservableObject
 
     private async void DisplayError(string message)
     {
-        //CancellationTokenSource cancellationTokenSource = new CancellationTokenSource();
-
-        //var snackbarOptions = new SnackbarOptions
-        //{
-        //    BackgroundColor = Colors.Red,
-        //    TextColor = Colors.Green,
-        //    ActionButtonTextColor = Colors.Yellow,
-        //    CornerRadius = new CornerRadius(10),
-        //    Font = Microsoft.Maui.Font.SystemFontOfSize(14),
-        //    ActionButtonFont = Microsoft.Maui.Font.SystemFontOfSize(14),
-        //    CharacterSpacing = 0.5
-        //};
-
-        ////Action action = async () => await DisplayAlert("Snackbar ActionButton Tapped", "The user has tapped the Snackbar ActionButton", "OK");
-        //TimeSpan duration = TimeSpan.FromSeconds(3);
-
-        //var snackbar = Snackbar.Make(message, null, string.Empty, duration, snackbarOptions);
-
-        //await snackbar.Show(cancellationTokenSource.Token);
-
         await App.Current!.MainPage!.DisplayAlert("Error", message, "OK");
     }
 
@@ -383,11 +361,21 @@ public partial class ConversationViewModel : ObservableObject
         {
             try
             {
+                if (_lmKitConversation.ChatHistory != null)
+                {
+                    ConversationLog.ChatHistoryData = _lmKitConversation.ChatHistory.Serialize();
+                    _lmKitConversation.LatestChatHistoryData = ConversationLog.ChatHistoryData;
+                }
+
+                ConversationLog.LastUsedModel = JsonSerializer.Serialize(LastUsedModel);
+                ConversationLog.MessageListBlob = JsonSerializer.Serialize(ConversationLog.MessageList);
                 await _database.SaveConversation(ConversationLog);
+
+                DatabaseSaveOperationCompleted?.Invoke(this, EventArgs.Empty);
             }
             catch (Exception ex)
             {
-
+                DatabaseSaveOperationFailed?.Invoke(this, EventArgs.Empty);
             }
         });
     }

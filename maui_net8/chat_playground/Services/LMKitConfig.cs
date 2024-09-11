@@ -1,4 +1,6 @@
-﻿namespace ChatPlayground.Models
+﻿using ChatPlayground.Services;
+
+namespace ChatPlayground.Models
 {
     public class LMKitConfig
     {
@@ -16,6 +18,6 @@
 
         public RandomSamplingConfig RandomSamplingConfig { get; set; } = new RandomSamplingConfig();
 
-        public MirostatSamplingConfig MirostatSamplingConfig { get; set; } = new MirostatSamplingConfig();
+        public Mirostat2SamplingConfig Mirostat2SamplingConfig { get; set; } = new Mirostat2SamplingConfig();
     }
 }

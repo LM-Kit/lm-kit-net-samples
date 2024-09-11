@@ -2,6 +2,7 @@
 using LMKit.TextGeneration.Chat;
 using ChatPlayground.Models;
 using CommunityToolkit.Mvvm.Input;
+using ChatPlayground.Services;
 
 namespace ChatPlayground.ViewModels;
 public partial class MessageViewModel : ObservableObject

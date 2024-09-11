@@ -6,18 +6,6 @@ using System.ComponentModel;
 
 namespace ChatPlayground.Services;
 
-public interface ILLMFileManager
-{
-    ObservableCollection<ModelInfo> UserModels { get; }
-    ObservableCollection<Uri> UnsortedModels { get; }
-    bool FileCollectingInProgress { get; }
-
-    event EventHandler? FileCollectingCompleted;
-
-    void Initialize();
-    void DeleteModel(ModelInfo modelInfo);
-}
-
 public partial class LLMFileManager : ObservableObject, ILLMFileManager
 {
     // todo:  FileSystemWatcher class is not available on IOS (and Android ?)
@@ -95,6 +83,7 @@ public partial class LLMFileManager : ObservableObject, ILLMFileManager
         }
     }
 
+#if BETA_DOWNLOAD_MODELS
     public void DownloadModel(ModelInfo modelInfo)
     {
         var filePath = Path.Combine(ModelsFolderPath, modelInfo.Publisher, modelInfo.Repository, modelInfo.FileName);
@@ -182,10 +171,11 @@ public partial class LLMFileManager : ObservableObject, ILLMFileManager
             fileDownloader!.Resume();
         }
     }
+#endif
 
     public void DeleteModel(ModelInfo modelInfo)
     {
-        File.Delete(modelInfo.Metadata.FileUri!.LocalPath);
+        File.Delete(modelInfo.FileUri!.LocalPath);
     }
 
     private void EnsureModelDirectoryExists()
@@ -436,14 +426,14 @@ public partial class LLMFileManager : ObservableObject, ILLMFileManager
         {
             foreach (var item in e.NewItems!)
             {
-                HandleFileRecording(((ModelInfo)item).Metadata.FileUri!);
+                HandleFileRecording(((ModelInfo)item).FileUri!);
             }
         }
         else if (e.Action == System.Collections.Specialized.NotifyCollectionChangedAction.Remove)
         {
             foreach (var item in e.OldItems!)
             {
-                HandleFileRecordDeletion(((ModelInfo)item).Metadata.FileUri!);
+                HandleFileRecordDeletion(((ModelInfo)item).FileUri!);
             }
         }
     }
@@ -482,10 +472,10 @@ public partial class LLMFileManager : ObservableObject, ILLMFileManager
         {
             ModelInfo updatedModelInfo = new ModelInfo(publisher, repository, fileName)
             {
-                Metadata = UserModels[index].Metadata
+                FileSize = UserModels[index].FileSize,
+                FileUri = fileRecordPathChangedEventArgs.NewPath
             };
-
-            updatedModelInfo.Metadata.FileUri = fileRecordPathChangedEventArgs.NewPath;
+            
             UserModels[index] = updatedModelInfo;
         }
     }
@@ -500,8 +490,8 @@ public partial class LLMFileManager : ObservableObject, ILLMFileManager
             if (FileHelpers.GetModelInfoFromFileUri(new Uri(filePath), modelFolderPath,
                 out string publisher, out string repository, out string fileName))
             {
+#if BETA_DOWNLOAD_MODELS
                 modelInfo = TryGetExistingModelInfo(fileName, repository, publisher);
-
                 if (modelInfo == null)
                 {
                     modelInfo = new ModelInfo(publisher, repository, fileName);
@@ -509,6 +499,12 @@ public partial class LLMFileManager : ObservableObject, ILLMFileManager
                 }
 
                 modelInfo.Metadata.FileUri = new Uri(filePath);
+
+#else
+                modelInfo = new ModelInfo(publisher, repository, fileName);
+                modelInfo.FileSize = FileHelpers.GetFileSize(filePath);
+                modelInfo.FileUri = new Uri(filePath);
+#endif
             }
             else
             {
@@ -524,6 +520,7 @@ public partial class LLMFileManager : ObservableObject, ILLMFileManager
         }
     }
 
+#if BETA_DOWNLOAD_MODELS
     private static ModelInfo? TryGetExistingModelInfo(string fileName, string repository, string publisher)
     {
         foreach (var modelInfo in AppConstants.AvailableModels)
@@ -538,6 +535,7 @@ public partial class LLMFileManager : ObservableObject, ILLMFileManager
 
         return null;
     }
+#endif
 
     private static bool ShouldCheckFile(string filePath)
     {
@@ -580,7 +578,7 @@ public partial class LLMFileManager : ObservableObject, ILLMFileManager
         {
             ModelInfo modelInfo = models[index];
 
-            if (modelInfo.Metadata.FileUri! == fileUri)
+            if (modelInfo.FileUri! == fileUri)
             {
                 matchIndex = index;
                 return true;

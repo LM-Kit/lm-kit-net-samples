@@ -51,25 +51,12 @@ namespace ChatPlayground.ViewModels
 
             foreach (var conversation in conversations)
             {
-                ConversationViewModel conversationViewModel = new ConversationViewModel(_lmKitService, _database, _popupService, conversation);
+                ConversationViewModel conversationViewModel = new ConversationViewModel(_appSettingsService, _lmKitService, _database, _popupService, conversation);
 
                 if (conversation.MessageListBlob != null)
                 {
                     loadedConversationViewModels.Insert(0, conversationViewModel);
                     conversationViewModel.LoadConversationLogs();
-
-                    if (conversation.LastUsedModel != null)
-                    {
-                        try
-                        {
-                            conversationViewModel.LastUsedModel = JsonSerializer.Deserialize<ModelInfo>(conversation.LastUsedModel);
-                            conversationViewModel.LastUsedModel!.Metadata.FileUri = FileHelpers.GetModelFileUri(conversationViewModel.LastUsedModel, _appSettingsService.ModelsFolderPath);
-                        }
-                        catch (Exception exception)
-                        {
-                            _logger.LogError(exception, "Failed to deserialize conversation's messages");
-                        }
-                    }
                 }
             }
 
@@ -80,13 +67,13 @@ namespace ChatPlayground.ViewModels
 
             if (Conversations.Count == 0)
             {
-                Conversations.Add(new ConversationViewModel(_lmKitService, _database, _popupService));
+                Conversations.Add(new ConversationViewModel(_appSettingsService, _lmKitService, _database, _popupService));
             }
         }
 
         public ConversationViewModel AddNewConversation()
         {
-            ConversationViewModel conversationViewModel = new ConversationViewModel(_lmKitService, _database, _popupService);
+            ConversationViewModel conversationViewModel = new ConversationViewModel(_appSettingsService, _lmKitService, _database, _popupService);
 
             Conversations.Insert(0, conversationViewModel);
 

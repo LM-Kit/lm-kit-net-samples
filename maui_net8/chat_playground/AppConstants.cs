@@ -16,6 +16,11 @@ internal static class AppConstants
 
     public static string DatabasePath => Path.Combine(FileSystem.AppDataDirectory, DatabaseFilename);
 
+    public const string ChatRoute = "Chat";
+
+    public const string ModelsRoute = "Models";
+
+#if BETA_DOWNLOAD_MODELS
     //LM-Kit models catalog: https://huggingface.co/lm-kit
     public static readonly ModelInfo[] AvailableModels =
     {
@@ -23,7 +28,6 @@ internal static class AppConstants
             @"https://huggingface.co/lm-kit/llama-3-8b-instruct-gguf/resolve/main/Llama-3-8B-Instruct-Q4_K_M.gguf",
             new ModelInfo.ModelMetadata()
             {
-                Description = "Very good model. Nice and good. Very recommended.",
                 FileSize = 4920733952
             }),
 
@@ -77,7 +81,5 @@ internal static class AppConstants
         //https://huggingface.co/lm-kit/qwen-2-7b-instruct-gguf/tree/main
         //https://huggingface.co/lm-kit/gemma-2-9b-gguf/tree/main
     };
-
-    public const string ChatRoute = "Chat";
-    public const string ModelsRoute = "Models";
+#endif
 }

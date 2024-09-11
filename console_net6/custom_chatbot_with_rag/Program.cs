@@ -7,6 +7,7 @@ using LMKit.TextGeneration.Sampling;
 using System.Diagnostics;
 using System.Text;
 using static LMKit.Retrieval.RagEngine;
+using LMKit.Global;
 
 namespace custom_chatbot_with_rag
 {

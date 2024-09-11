@@ -166,7 +166,7 @@ namespace multi_turn_chat_with_chat_history_guidance
             chatHistory.AddMessage(AuthorRole.User, "What's the best way to manage a remote team?");
             chatHistory.AddMessage(AuthorRole.Assistant, "The best way to manage a remote team is to maintain clear communication, set clear expectations, foster a sense of community, and utilize the right tools for collaboration.\n\nJoke: Why did the remote team have great chemistry? Because they bonded over the cloud! LOL");
 
-            MultiTurnConversation chat = new MultiTurnConversation(chatHistory, contextSize: 2048)
+            MultiTurnConversation chat = new MultiTurnConversation(model, chatHistory, contextSize: 2048)
             {
                 MaximumCompletionTokens = 1000,
                 SamplingMode = new RandomSampling()

@@ -5,6 +5,7 @@
              xmlns:views="clr-namespace:ChatPlayground.Views"
              xmlns:models="clr-namespace:ChatPlayground.Models"
              xmlns:vm="clr-namespace:ChatPlayground.ViewModels"
+             xmlns:services="clr-namespace:ChatPlayground.Services"
              xmlns:plainer="clr-namespace:Plainer.Maui.Controls;assembly=Plainer.Maui"
              xmlns:icons="clr-namespace:UraniumUI.Icons.MaterialIcons;assembly=UraniumUI.Icons.MaterialIcons"
              xmlns:uranium="http://schemas.enisn-projects.io/dotnet/maui/uraniumui"
@@ -65,7 +66,7 @@
                     <Label.IsVisible>
                         <MultiBinding Converter="{StaticResource AllTrueConverter}">
                             <Binding Path="Sender" Converter="{mct:IsEqualConverter}" ConverterParameter="{x:Static models:MessageSender.User}" />
-                            <Binding Path="Status" Converter="{mct:IsNotEqualConverter}" ConverterParameter="{x:Static vm:LmKitTextGenerationStatus.Undefined}" />
+                            <Binding Path="Status" Converter="{mct:IsNotEqualConverter}" ConverterParameter="{x:Static services:LmKitTextGenerationStatus.Undefined}" />
                         </MultiBinding>
                     </Label.IsVisible>
                 </Label>

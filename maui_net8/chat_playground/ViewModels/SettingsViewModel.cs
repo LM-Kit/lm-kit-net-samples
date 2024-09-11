@@ -74,14 +74,14 @@ namespace ChatPlayground.ViewModels
         RandomSamplingSettingsViewModel _randomSamplingSettings;
 
         [ObservableProperty]
-        MirostatSamplingSettingsViewModel _mirostatSamplingSettings;
+        Mirostat2SamplingSettingsViewModel _Mirostat2SamplingSettings;
 
         public SettingsViewModel(IAppSettingsService appSettingsService, LMKitService lmkitService)
         {
             _appSettingsService = appSettingsService;
             _config = lmkitService.LMKitConfig;
             RandomSamplingSettings = new RandomSamplingSettingsViewModel(_config.RandomSamplingConfig);
-            MirostatSamplingSettings = new MirostatSamplingSettingsViewModel(_config.MirostatSamplingConfig);
+            Mirostat2SamplingSettings = new Mirostat2SamplingSettingsViewModel(_config.Mirostat2SamplingConfig);
         }
 
         [RelayCommand]
@@ -93,7 +93,7 @@ namespace ChatPlayground.ViewModels
             RequestTimeout = LMKitDefaultSettings.DefaultRequestTimeout;
             ContextSize = LMKitDefaultSettings.DefaultContextSize;
             RandomSamplingSettings.Reset();
-            MirostatSamplingSettings.Reset();
+            Mirostat2SamplingSettings.Reset();
         }
 
         public void Init()
@@ -113,22 +113,22 @@ namespace ChatPlayground.ViewModels
             RandomSamplingSettings.TopK = randomSamplingConfig.TopK;
             RandomSamplingSettings.LocallyTypical = randomSamplingConfig.LocallyTypical;
 
-            var mirostatSamplingConfig = _appSettingsService.MirostatSamplingConfig;
-            MirostatSamplingSettings.Temperature = mirostatSamplingConfig.Temperature;
-            MirostatSamplingSettings.TargetEntropy = mirostatSamplingConfig.TargetEntropy;
-            MirostatSamplingSettings.LearningRate = mirostatSamplingConfig.LearningRate;
+            var Mirostat2SamplingConfig = _appSettingsService.Mirostat2SamplingConfig;
+            Mirostat2SamplingSettings.Temperature = Mirostat2SamplingConfig.Temperature;
+            Mirostat2SamplingSettings.TargetEntropy = Mirostat2SamplingConfig.TargetEntropy;
+            Mirostat2SamplingSettings.LearningRate = Mirostat2SamplingConfig.LearningRate;
         }
 
         public void Save()
         {
-            _appSettingsService.LastLoadedModel = _config.LoadedModel?.Metadata.FileUri?.LocalPath;
+            _appSettingsService.LastLoadedModel = _config.LoadedModel?.FileUri?.LocalPath;
             _appSettingsService.SystemPrompt = _config.SystemPrompt;
             _appSettingsService.MaximumCompletionTokens = _config.MaximumCompletionTokens;
             _appSettingsService.RequestTimeout = _config.RequestTimeout;
             _appSettingsService.ContextSize = _config.ContextSize;
             _appSettingsService.SamplingMode = _config.SamplingMode;
             _appSettingsService.RandomSamplingConfig = _config.RandomSamplingConfig;
-            _appSettingsService.MirostatSamplingConfig = _config.MirostatSamplingConfig;
+            _appSettingsService.Mirostat2SamplingConfig = _config.Mirostat2SamplingConfig;
         }
     }
 
@@ -234,9 +234,9 @@ namespace ChatPlayground.ViewModels
         }
     }
 
-    public partial class MirostatSamplingSettingsViewModel : ObservableObject
+    public partial class Mirostat2SamplingSettingsViewModel : ObservableObject
     {
-        private readonly MirostatSamplingConfig _config;
+        private readonly Mirostat2SamplingConfig _config;
 
         private float _temperature;
         public float Temperature
@@ -274,9 +274,9 @@ namespace ChatPlayground.ViewModels
             }
         }
 
-        public MirostatSamplingSettingsViewModel(MirostatSamplingConfig mirostatSamplingConfig)
+        public Mirostat2SamplingSettingsViewModel(Mirostat2SamplingConfig Mirostat2SamplingConfig)
         {
-            _config = mirostatSamplingConfig;
+            _config = Mirostat2SamplingConfig;
         }
 
         public void Init()
@@ -288,9 +288,9 @@ namespace ChatPlayground.ViewModels
 
         public void Reset()
         {
-            Temperature = LMKitDefaultSettings.DefaultMirostatSamplingTemperature;
-            TargetEntropy = LMKitDefaultSettings.DefaultMirostatSamplingTargetEntropy;
-            LearningRate = LMKitDefaultSettings.DefaultMirostatSamplingLearningRate;
+            Temperature = LMKitDefaultSettings.DefaultMirostat2SamplingTemperature;
+            TargetEntropy = LMKitDefaultSettings.DefaultMirostat2SamplingTargetEntropy;
+            LearningRate = LMKitDefaultSettings.DefaultMirostat2SamplingLearningRate;
         }
     }
 }

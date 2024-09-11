@@ -11,6 +11,7 @@ using System.IO;
 using System.Net;
 using System.Text;
 using static LMKit.Retrieval.RagEngine;
+using LMKit.Global;
 
 namespace custom_chatbot_with_rag
 {

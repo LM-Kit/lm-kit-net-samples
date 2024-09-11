@@ -4,12 +4,14 @@
              xmlns:mct="http://schemas.microsoft.com/dotnet/2022/maui/toolkit"
              xmlns:views="clr-namespace:ChatPlayground.Views"
              xmlns:models="clr-namespace:ChatPlayground.Models"
+             xmlns:services="clr-namespace:ChatPlayground.Services"
              xmlns:vm="clr-namespace:ChatPlayground.ViewModels"
              xmlns:icons="clr-namespace:UraniumUI.Icons.MaterialIcons;assembly=UraniumUI.Icons.MaterialIcons"
              xmlns:uranium="http://schemas.enisn-projects.io/dotnet/maui/uraniumui"
              x:Class="ChatPlayground.Views.ChatPage"
              x:DataType="vm:ChatPageViewModel"
              x:Name="chatPage">
+    
     <ContentPage.Resources>
         <Style x:Key="ModelDropdownButtonStyle" TargetType="uranium:StatefulContentView">
             <Setter Property="VisualStateManager.VisualStateGroups">
@@ -147,11 +149,11 @@
                         InputTransparent="False"
                         TappedCommand="{Binding Source={x:Reference chatPage}, Path=ToggleModelDropdownIsExpandedCommand}">
                         <uranium:StatefulContentView.Triggers>
-                            <DataTrigger TargetType="uranium:StatefulContentView" Binding="{Binding LmKitService.ModelLoadingState}" Value="{x:Static vm:ModelLoadingState.Loading}">
+                            <DataTrigger TargetType="uranium:StatefulContentView" Binding="{Binding LmKitService.ModelLoadingState}" Value="{x:Static services:LmKitModelLoadingState.Loading}">
                                 <Setter Property="InputTransparent" Value="True" />
                             </DataTrigger>
 
-                            <DataTrigger TargetType="uranium:StatefulContentView" Binding="{Binding LmKitService.ModelLoadingState}" Value="{x:Static vm:ModelLoadingState.Loading}">
+                            <DataTrigger TargetType="uranium:StatefulContentView" Binding="{Binding LmKitService.ModelLoadingState}" Value="{x:Static services:LmKitModelLoadingState.Loading}">
                                 <Setter Property="InputTransparent" Value="True" />
                             </DataTrigger>
 
@@ -164,7 +166,7 @@
                         <Grid RowDefinitions="*, auto">
                             <Grid Padding="12, 0" ColumnSpacing="8" ColumnDefinitions="24, *, 24">
                                 <Button 
-                                    IsVisible="{Binding LmKitService.ModelLoadingState, Converter={mct:IsEqualConverter}, ConverterParameter={x:Static vm:ModelLoadingState.Loaded}}"
+                                    IsVisible="{Binding LmKitService.ModelLoadingState, Converter={mct:IsEqualConverter}, ConverterParameter={x:Static services:LmKitModelLoadingState.Loaded}}"
                                     HeightRequest="24"
                                     WidthRequest="24"
                                     HorizontalOptions="Center"
@@ -207,16 +209,16 @@
                                             <Setter Property="TextColor" Value="{StaticResource OutlineDark}"/>
                                         </DataTrigger>-->
 
-                                        <DataTrigger TargetType="Label" Binding="{Binding LmKitService.ModelLoadingState}" Value="{x:Static vm:ModelLoadingState.Loading}">
+                                        <DataTrigger TargetType="Label" Binding="{Binding LmKitService.ModelLoadingState}" Value="{x:Static services:LmKitModelLoadingState.Loading}">
                                             <Setter Property="TextColor" Value="{StaticResource OutlineDark}"/>
                                             <Setter Property="Text" Value="{Binding Source={x:Reference chatPage}, Path=LoadingText}"/>
                                         </DataTrigger>
 
-                                        <DataTrigger TargetType="Label" Binding="{Binding LmKitService.ModelLoadingState}" Value="{x:Static vm:ModelLoadingState.Loaded}">
+                                        <DataTrigger TargetType="Label" Binding="{Binding LmKitService.ModelLoadingState}" Value="{x:Static services:LmKitModelLoadingState.Loaded}">
                                             <Setter Property="Text" Value="{Binding SelectedModel.Name}"/>
                                         </DataTrigger>
 
-                                        <DataTrigger TargetType="Label" Binding="{Binding LmKitService.ModelLoadingState}" Value="{x:Static vm:ModelLoadingState.Unloaded}">
+                                        <DataTrigger TargetType="Label" Binding="{Binding LmKitService.ModelLoadingState}" Value="{x:Static services:LmKitModelLoadingState.Unloaded}">
                                             <Setter Property="Text" Value="Select a model to load"/>
                                         </DataTrigger>
                                         
@@ -228,7 +230,7 @@
                                 </Label>
 
                                 <Label 
-                                    IsVisible="{Binding LmKitService.ModelLoadingState, Converter={mct:IsNotEqualConverter}, ConverterParameter={x:Static vm:ModelLoadingState.Loading}}"
+                                    IsVisible="{Binding LmKitService.ModelLoadingState, Converter={mct:IsNotEqualConverter}, ConverterParameter={x:Static services:LmKitModelLoadingState.Loading}}"
                                     BackgroundColor="Transparent"
                                     HorizontalOptions="End"
                                     Grid.Column="2"
@@ -246,7 +248,7 @@
 
                             <ProgressBar 
                                 Grid.ColumnSpan="3"
-                                IsVisible="{Binding LmKitService.ModelLoadingState, Converter={mct:IsEqualConverter}, ConverterParameter={x:Static vm:ModelLoadingState.Loading}}"
+                                IsVisible="{Binding LmKitService.ModelLoadingState, Converter={mct:IsEqualConverter}, ConverterParameter={x:Static services:LmKitModelLoadingState.Loading}}"
                                 VerticalOptions="End"
                                 Grid.Row="1"
                                 ProgressColor="{StaticResource OutlineDark}" 

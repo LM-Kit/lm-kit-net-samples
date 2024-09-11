@@ -1,10 +1,4 @@
-﻿using LMKit.TextGeneration.Chat;
-using SQLite;
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
+﻿using SQLite;
 
 namespace ChatPlayground.Models
 {
@@ -22,12 +16,6 @@ namespace ChatPlayground.Models
         public string? MessageListBlob { get; set; }
 
         public string? LastUsedModel { get; set; }
-
-        [Ignore]
-        public ModelInfo? CurrentSessionLastUsedModel { get; set; }
-
-        [Ignore]
-        public ChatHistory? ChatHistory { get; set; }
 
         [Ignore]
         public List<Message> MessageList { get; } = new List<Message>();

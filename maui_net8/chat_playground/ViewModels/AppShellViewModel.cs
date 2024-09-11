@@ -72,7 +72,6 @@ namespace ChatPlayground.ViewModels
             _settingsViewModel.Init();
 
             await _conversationListViewModel.LoadConversationLogs();
-            await _modelListViewModel.Initialize();
 
             _lmKitService.ModelLoadingFailed += OnModelLoadingFailed;
 
@@ -93,9 +92,7 @@ namespace ChatPlayground.ViewModels
                 FileHelpers.GetModelInfoFromFileUri(fileUri!, _appSettingsService.ModelsFolderPath,
                 out string publisher, out string repository, out string fileName))
             {
-                ModelInfo modelInfo = new ModelInfo(publisher, repository, fileName);
-                modelInfo.Metadata.FileUri = fileUri;
-                _lmKitService.LoadModel(modelInfo);
+                _lmKitService.LoadModel(new ModelInfo(publisher, repository, fileName, fileUri!));
             }
             else
             {

@@ -17,7 +17,6 @@ namespace ChatPlayground.ViewModels
         long _totalModelSize;
 
         public ReadOnlyObservableCollection<ModelInfoViewModel> UserModels { get; }
-        public ObservableCollection<ModelInfoViewModel> AvailableModels { get; } = new ObservableCollection<ModelInfoViewModel>();
 
         public ModelListViewModel(ILLMFileManager fileManager, LMKitService lmKitService)
         {
@@ -25,21 +24,6 @@ namespace ChatPlayground.ViewModels
             _lmKitService = lmKitService;
             _fileManager.UserModels.CollectionChanged += OnUserModelsCollectionChanged;
             UserModels = new ReadOnlyObservableCollection<ModelInfoViewModel>(_userModels);
-        }
-
-        public async Task Initialize()
-        {
-            foreach (var modelInfo in AppConstants.AvailableModels)
-            {
-                if (modelInfo.Metadata.FileSize == null && modelInfo.Metadata.DownloadUrl != null)
-                {
-                    modelInfo.Metadata.FileSize = await FileHelpers.GetFileSizeFromUri(modelInfo.Metadata.DownloadUrl);
-                }
-
-                ModelInfoViewModel modelInfoViewModel = new ModelInfoViewModel(modelInfo);
-
-                AvailableModels.Add(modelInfoViewModel);
-            }
         }
 
         private void OnUserModelsCollectionChanged(object? sender, System.Collections.Specialized.NotifyCollectionChangedEventArgs e)
@@ -78,6 +62,7 @@ namespace ChatPlayground.ViewModels
 
         private void AddNewModel(ModelInfo modelInfo)
         {
+#if BETA_DOWNLOAD_MODELS
             ModelInfoViewModel? modelInfoViewModel = ChatPlaygroundHelpers.TryGetExistingModelInfoViewModel(AvailableModels, modelInfo);
 
             if (modelInfoViewModel == null)
@@ -86,6 +71,9 @@ namespace ChatPlayground.ViewModels
             }
 
             modelInfoViewModel.DownloadInfo.Status = DownloadStatus.Downloaded;
+#else
+            ModelInfoViewModel modelInfoViewModel = new ModelInfoViewModel(modelInfo);
+#endif
 
             _userModels.Add(modelInfoViewModel);
             TotalModelSize += modelInfoViewModel.FileSize;
@@ -120,15 +108,17 @@ namespace ChatPlayground.ViewModels
             TotalModelSize = 0;
             _userModels.Clear();
 
+#if BETA_DOWNLOAD_MODELS
             foreach (var model in AvailableModels)
             {
                 model.DownloadInfo.Status = DownloadStatus.NotDownloaded;
             }
 
-            if (_lmKitService.ModelLoadingState == ModelLoadingState.Loaded)
+            if (_lmKitService.ModelLoadingState == LmKitModelLoadingState.Loaded)
             {
                 _lmKitService.UnloadModel();
             }
+#endif
         }
     }
 }

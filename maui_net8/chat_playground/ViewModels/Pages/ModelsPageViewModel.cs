@@ -91,7 +91,7 @@ namespace ChatPlayground.ViewModels
 
             if (result.IsSuccessful)
             {
-                if (_lmKitService.ModelLoadingState != ModelLoadingState.Unloaded)
+                if (_lmKitService.ModelLoadingState != LmKitModelLoadingState.Unloaded)
                 {
                     _lmKitService.UnloadModel();
                 }
@@ -127,6 +127,7 @@ namespace ChatPlayground.ViewModels
             await Launcher.Default.OpenAsync("https://huggingface.co/lm-kit");
         }
 
+#if BETA_DOWNLOAD_MODELS
         private void OnModelDownloadingProgressed(object? sender, EventArgs e)
         {
             var downloadOperationStateChangedEventArgs = (DownloadOperationStateChangedEventArgs)e;
@@ -164,5 +165,6 @@ namespace ChatPlayground.ViewModels
             modelViewModel.DownloadInfo.Progress = 0;
             modelViewModel.DownloadInfo.BytesRead = 0;
         }
+#endif
     }
 }

@@ -2,11 +2,7 @@
 using LMKit.TextGeneration;
 using LMKit.TextGeneration.Sampling;
 using ChatPlayground.Models;
-using ChatPlayground.ViewModels;
-using System.Text.Json;
-using System.Net.Http.Headers;
 using System.Collections.Specialized;
-using System.Threading;
 using LMKit.TextGeneration.Chat;
 
 namespace ChatPlayground.Services
@@ -16,9 +12,9 @@ namespace ChatPlayground.Services
         private Task? _modelLoadingTask;
 
         [ObservableProperty]
-        ModelLoadingState _modelLoadingState;
+        LmKitModelLoadingState _modelLoadingState;
 
-        private ConversationLog? _lastConversationUsed = null;
+        private Conversation? _lastConversationUsed = null;
         private MultiTurnConversation? _multiTurnConversation;
         private PromptSchedule _scheduledPrompts = new PromptSchedule();
         private bool _isAwaitingResponse;
@@ -47,7 +43,7 @@ namespace ChatPlayground.Services
                 UnloadModel();
             }
 
-            ModelLoadingState = ModelLoadingState.Loading;
+            ModelLoadingState = LmKitModelLoadingState.Loading;
 
             _modelLoadingTask = new Task(() =>
             {
@@ -55,7 +51,7 @@ namespace ChatPlayground.Services
 
                 try
                 {
-                    Model = new LMKit.Model.LLM(modelInfo.Metadata.FileUri!, loadingProgress: OnModelLoadingProgressed);
+                    Model = new LMKit.Model.LLM(modelInfo.FileUri!, loadingProgress: OnModelLoadingProgressed);
                     modelLoadingSuccess = true;
                 }
                 catch (Exception exception)
@@ -68,11 +64,11 @@ namespace ChatPlayground.Services
                 {
                     LMKitConfig.LoadedModel = modelInfo;
                     ModelLoadingCompleted?.Invoke(this, EventArgs.Empty);
-                    ModelLoadingState = ModelLoadingState.Loaded;
+                    ModelLoadingState = LmKitModelLoadingState.Loaded;
                 }
                 else
                 {
-                    ModelLoadingState = ModelLoadingState.Unloaded;
+                    ModelLoadingState = LmKitModelLoadingState.Unloaded;
                 }
 
                 _modelLoadingTask = null;
@@ -83,7 +79,7 @@ namespace ChatPlayground.Services
 
         public void UnloadModel()
         {
-            if (ModelLoadingState == ModelLoadingState.Loading && _modelLoadingTask != null)
+            if (ModelLoadingState == LmKitModelLoadingState.Loading && _modelLoadingTask != null)
             {
                 _modelLoadingTask.Wait();
             }
@@ -101,11 +97,13 @@ namespace ChatPlayground.Services
             }
 
             _lastConversationUsed = null;
-            ModelLoadingState = ModelLoadingState.Unloaded;
+            ModelLoadingState = LmKitModelLoadingState.Unloaded;
+            LMKitConfig.LoadedModel = null;
+
             ModelUnloaded?.Invoke(this, EventArgs.Empty);
         }
 
-        public async Task<PromptResult> SubmitPrompt(ConversationLog conversation, string prompt)
+        public async Task<PromptResult> SubmitPrompt(Conversation conversation, string prompt)
         {
             ScheduledPrompt scheduledPrompt = new ScheduledPrompt(conversation, prompt, LMKitConfig.RequestTimeout);
 
@@ -154,16 +152,17 @@ namespace ChatPlayground.Services
                 }
 
                 _isAwaitingResponse = false;
-                prompt.TaskCompletionSource.TrySetResult(result);
-
+                
                 if (_scheduledPrompts.Contains(prompt))
                 {
                     _scheduledPrompts.Remove(prompt);
                 }
+
+                prompt.TaskCompletionSource.TrySetResult(result);
             });
         }
 
-        public void CancelPrompt(ConversationLog conversation)
+        public void CancelPrompt(Conversation conversation)
         {
             ScheduledPrompt? conversationPrompt = _scheduledPrompts.Unschedule(conversation);
 
@@ -174,7 +173,7 @@ namespace ChatPlayground.Services
             }
         }
 
-        private async Task<PromptResult> ExecutePrompt(ConversationLog conversation, string prompt, CancellationToken cancellationToken)
+        private async Task<PromptResult> ExecutePrompt(Conversation conversation, string prompt, CancellationToken cancellationToken)
         {
             PromptResult promptResult = new PromptResult();
 
@@ -199,14 +198,13 @@ namespace ChatPlayground.Services
             if (_multiTurnConversation != null)
             {
                 conversation.ChatHistory = _multiTurnConversation.ChatHistory;
-                conversation.ChatHistoryData = _multiTurnConversation.ChatHistory.Serialize();
-                conversation.MessageListBlob = JsonSerializer.Serialize(conversation.MessageList);
+                conversation.LatestChatHistoryData = _multiTurnConversation.ChatHistory.Serialize();
             }
 
             return promptResult;
         }
 
-        private void EnsureConversationIsInitialized(ConversationLog conversation)
+        private void EnsureConversationIsInitialized(Conversation conversation)
         {
             bool conversationIsInitialized = conversation == _lastConversationUsed;
 
@@ -219,19 +217,19 @@ namespace ChatPlayground.Services
                     _multiTurnConversation = null;
                 }
 
-                if (conversation.ChatHistoryData != null || conversation.ChatHistory != null)
+                if (conversation.LatestChatHistoryData != null || conversation.ChatHistory != null)
                 {
-                    if (conversation.CurrentSessionLastUsedModel != LMKitConfig.LoadedModel && conversation.ChatHistory != null)
+                    if (!LMKitConfig.LoadedModel!.Equals(conversation.LastUsedModel) && conversation.ChatHistory != null)
                     {
                         conversation.ChatHistory = null;
                     }
 
                     if (conversation.ChatHistory == null)
                     {
-                        conversation.ChatHistory = ChatHistory.Deserialize(conversation.ChatHistoryData, Model);
+                        conversation.ChatHistory = ChatHistory.Deserialize(conversation.LatestChatHistoryData, Model);
                     }
 
-                    _multiTurnConversation = new MultiTurnConversation(conversation.ChatHistory)
+                    _multiTurnConversation = new MultiTurnConversation(Model, conversation.ChatHistory)
                     {
                         SamplingMode = GetTokenSampling(LMKitConfig),
                         MaximumCompletionTokens = LMKitConfig.MaximumCompletionTokens,
@@ -247,7 +245,7 @@ namespace ChatPlayground.Services
                     };
                 }
 
-                conversation.CurrentSessionLastUsedModel = LMKitConfig.LoadedModel;
+                conversation.LastUsedModel = LMKitConfig.LoadedModel;
                 _lastConversationUsed = conversation;
                 ((INotifyCollectionChanged)_multiTurnConversation.ChatHistory.Messages).CollectionChanged += OnChatHistoryMessageCollectionChanged;
             }
@@ -292,12 +290,12 @@ namespace ChatPlayground.Services
                 case SamplingMode.Greedy:
                     return new GreedyDecoding();
 
-                case SamplingMode.Mirostat:
-                    return new MirostatSampling()
+                case SamplingMode.Mirostat2:
+                    return new Mirostat2Sampling()
                     {
-                        Temperature = config.MirostatSamplingConfig.Temperature,
-                        LearningRate = config.MirostatSamplingConfig.LearningRate,
-                        TargetEntropy = config.MirostatSamplingConfig.TargetEntropy
+                        Temperature = config.Mirostat2SamplingConfig.Temperature,
+                        LearningRate = config.Mirostat2SamplingConfig.LearningRate,
+                        TargetEntropy = config.Mirostat2SamplingConfig.TargetEntropy
                     };
             }
         }
@@ -324,7 +322,7 @@ namespace ChatPlayground.Services
 
         public class ConversationChatHistoryChangedEventArgs : EventArgs
         {
-            public ConversationLog Conversation { get; set; }
+            public Conversation Conversation { get; set; }
 
             public NotifyCollectionChangedEventArgs CollectionChangedEventArgs { get; set; }
         }
@@ -393,7 +391,7 @@ namespace ChatPlayground.Services
                 }
             }
 
-            public ScheduledPrompt? Unschedule(ConversationLog conversation)
+            public ScheduledPrompt? Unschedule(Conversation conversation)
             {
                 ScheduledPrompt? prompt = null;
 
@@ -438,7 +436,7 @@ namespace ChatPlayground.Services
         {
             public string Prompt { get; set; }
 
-            public ConversationLog Conversation { get; set; }
+            public Conversation Conversation { get; set; }
 
             public TaskCompletionSource<PromptResult> TaskCompletionSource { get; } = new TaskCompletionSource<PromptResult>();
 
@@ -446,7 +444,7 @@ namespace ChatPlayground.Services
 
             public CancellationTokenSource CancellationTokenSource { get; }
 
-            public ScheduledPrompt(ConversationLog conversation, string prompt, int requestTimeout)
+            public ScheduledPrompt(Conversation conversation, string prompt, int requestTimeout)
             {
                 Conversation = conversation;
                 Prompt = prompt;

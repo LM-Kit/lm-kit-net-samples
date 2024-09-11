@@ -37,8 +37,7 @@ namespace ChatPlayground.ViewModels
         public ModelInfoViewModel(ModelInfo modelInfo)
         {
             ModelInfo = modelInfo;
-            FileSize = modelInfo.Metadata.FileSize!.Value;
-            Description = modelInfo.Metadata.Description;
+            FileSize = modelInfo.FileSize!.Value;
         }
     }
 

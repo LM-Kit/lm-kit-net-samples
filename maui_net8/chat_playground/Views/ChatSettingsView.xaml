@@ -5,6 +5,7 @@
              xmlns:mct="http://schemas.microsoft.com/dotnet/2022/maui/toolkit"
              xmlns:views="clr-namespace:ChatPlayground.Views"
              xmlns:models="clr-namespace:ChatPlayground.Models"
+             xmlns:services="clr-namespace:ChatPlayground.Services"
              xmlns:controls="clr-namespace:ChatPlayground.Controls"
              xmlns:plainer="clr-namespace:Plainer.Maui.Controls;assembly=Plainer.Maui"
              xmlns:vm="clr-namespace:ChatPlayground.ViewModels"
@@ -112,8 +113,8 @@
                 </VerticalStackLayout>
             </ControlTemplate>
 
-            <ControlTemplate x:Key="MirostatSettingsTemplate" x:DataType="vm:MirostatSamplingSettingsViewModel">
-                <VerticalStackLayout Padding="0" BindingContext="{TemplateBinding Path=Parent.BindingContext.MirostatSamplingSettings}">
+            <ControlTemplate x:Key="Mirostat2SettingsTemplate" x:DataType="vm:Mirostat2SamplingSettingsViewModel">
+                <VerticalStackLayout Padding="0" BindingContext="{TemplateBinding Path=Parent.BindingContext.Mirostat2SamplingSettings}">
                     <Grid StyleClass="SettingGrid">
                         <Label Text="Temperature"/>
                         <Label 
@@ -300,21 +301,21 @@
                                 HorizontalOptions="End"
                                 Grid.Column="1"
                                 SelectedItem="{Binding SamplingMode}"
-                                ItemsSource="{x:Static local:LMKitDefaultSettings.AvailableSamplingModes}"/>
+                                ItemsSource="{x:Static services:LMKitDefaultSettings.AvailableSamplingModes}"/>
                             </Grid>
 
                             <ContentView>
                                 <ContentView.Triggers>
-                                    <DataTrigger TargetType="ContentView" Binding="{Binding SamplingMode}" Value="{x:Static models:SamplingMode.Random}">
+                                    <DataTrigger TargetType="ContentView" Binding="{Binding SamplingMode}" Value="{x:Static services:SamplingMode.Random}">
                                         <Setter Property="ControlTemplate" Value="{StaticResource RandomSamplingSettingsTemplate}"/>
 
                                     </DataTrigger>
 
-                                    <DataTrigger TargetType="ContentView" Binding="{Binding SamplingMode}" Value="{x:Static models:SamplingMode.Mirostat}">
-                                        <Setter Property="ControlTemplate" Value="{StaticResource MirostatSettingsTemplate}"/>
+                                    <DataTrigger TargetType="ContentView" Binding="{Binding SamplingMode}" Value="{x:Static services:SamplingMode.Mirostat2}">
+                                        <Setter Property="ControlTemplate" Value="{StaticResource Mirostat2SettingsTemplate}"/>
                                     </DataTrigger>
 
-                                    <DataTrigger TargetType="ContentView" Binding="{Binding SamplingMode}" Value="{x:Static models:SamplingMode.Greedy}">
+                                    <DataTrigger TargetType="ContentView" Binding="{Binding SamplingMode}" Value="{x:Static services:SamplingMode.Greedy}">
                                         <Setter Property="IsVisible" Value="False"/>
                                     </DataTrigger>
                                 </ContentView.Triggers>

@@ -6,6 +6,7 @@
              xmlns:models="clr-namespace:ChatPlayground.Models"
              xmlns:controls="clr-namespace:ChatPlayground.Controls"
              xmlns:vm="clr-namespace:ChatPlayground.ViewModels"
+             xmlns:services="clr-namespace:ChatPlayground.Services"
              xmlns:plainer="clr-namespace:Plainer.Maui.Controls;assembly=Plainer.Maui"
              xmlns:icons="clr-namespace:UraniumUI.Icons.MaterialIcons;assembly=UraniumUI.Icons.MaterialIcons"
              xmlns:uranium="http://schemas.enisn-projects.io/dotnet/maui/uraniumui"
@@ -190,7 +191,7 @@
                         <MultiBinding Converter="{StaticResource AllTrueConverter}">
                             <Binding Source="{RelativeSource AncestorType={x:Type vm:AppShellViewModel}}" Path="AppIsInitialized"/>
                             <Binding Source="{RelativeSource AncestorType={x:Type vm:ConversationViewModel}}" Path="IsInitialized"/>
-                            <Binding Source="{RelativeSource AncestorType={x:Type vm:ChatPageViewModel}}" Path="LmKitService.ModelLoadingState" Converter="{mct:IsEqualConverter}" ConverterParameter="{x:Static vm:ModelLoadingState.Unloaded}"/>
+                            <Binding Source="{RelativeSource AncestorType={x:Type vm:ChatPageViewModel}}" Path="LmKitService.ModelLoadingState" Converter="{mct:IsEqualConverter}" ConverterParameter="{x:Static services:LmKitModelLoadingState.Unloaded}"/>
                         </MultiBinding>
                     </DataTrigger.Binding>
                     <Setter Property="IsVisible" Value="True"/>
@@ -201,7 +202,7 @@
                         <MultiBinding Converter="{StaticResource AllTrueConverter}">
                             <Binding Source="{RelativeSource AncestorType={x:Type vm:AppShellViewModel}}" Path="AppIsInitialized"/>
                             <Binding Path="UsedDifferentModel"/>
-                            <Binding Source="{RelativeSource AncestorType={x:Type vm:ChatPageViewModel}}" Path="LmKitService.ModelLoadingState" Converter="{mct:IsEqualConverter}" ConverterParameter="{x:Static vm:ModelLoadingState.Loaded}"/>
+                            <Binding Source="{RelativeSource AncestorType={x:Type vm:ChatPageViewModel}}" Path="LmKitService.ModelLoadingState" Converter="{mct:IsEqualConverter}" ConverterParameter="{x:Static services:LmKitModelLoadingState.Loaded}"/>
                         </MultiBinding>
                     </DataTrigger.Binding>
                     <Setter Property="IsVisible" Value="True"/>
