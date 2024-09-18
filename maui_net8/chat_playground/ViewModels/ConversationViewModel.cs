@@ -7,11 +7,7 @@ using System.Collections.ObjectModel;
 using System.Collections.Specialized;
 using CommunityToolkit.Maui.Core;
 using ChatPlayground.Data;
-using System.Text.Json;
-using System.Runtime.CompilerServices;
-using System.Diagnostics;
 using ChatPlayground.Services;
-using ChatPlayground.Helpers;
 
 namespace ChatPlayground.ViewModels;
 
@@ -63,9 +59,6 @@ public partial class ConversationViewModel : ObservableObject
     bool _isInitialized;
 
     [ObservableProperty]
-    public ModelInfo? _lastUsedModel;
-
-    [ObservableProperty]
     public LmKitTextGenerationStatus _latestPromptStatus;
 
     public ObservableCollection<MessageViewModel> Messages { get; } = new ObservableCollection<MessageViewModel>();
@@ -88,6 +81,23 @@ public partial class ConversationViewModel : ObservableObject
         }
     }
 
+    private Uri? _lastUsedModel;
+    public Uri? LastUsedModel
+    {
+        get => _lastUsedModel;
+        set
+        {
+            if (_lastUsedModel != value)
+            {
+                _lastUsedModel = value;
+                UsedDifferentModel = LastUsedModel != _lmKitService.LMKitConfig.LoadedModelUri;
+                ConversationLog.LastUsedModel = _lastUsedModel?.LocalPath;
+
+                OnPropertyChanged();
+            }
+        }
+    }
+
     public EventHandler? TextGenerationCompleted;
     public EventHandler? TextGenerationFailed;
     public EventHandler? DatabaseSaveOperationCompleted;
@@ -101,48 +111,48 @@ public partial class ConversationViewModel : ObservableObject
     {
         _appSettingsService = appSettingsService;
         _lmKitService = lmKitService;
-        _lmKitService.ConversationHistoryChanged += OnLmKitServiceConversationHistoryChanged;
         _lmKitService.ModelLoadingCompleted += OnModelLoadingCompleted;
+        _lmKitService.ModelUnloaded += OnModelUnloaded;
         _database = database;
         _popupService = popupService;
         _title = conversationLog.Title!;
-        _lmKitConversation = new LMKitService.Conversation(conversationLog.ChatHistoryData);
-
+        _lmKitConversation = new LMKitService.Conversation(lmKitService, conversationLog.ChatHistoryData);
+        _lmKitConversation.ChatHistoryChanged += OnLmKitChatHistoryChanged;
+        _lmKitConversation.SummaryTitleGenerated += OnConversationSummaryTitleGenerated;
+        _lmKitConversation.PropertyChanged += OnLmKitConversationPropertyChanged;
         Messages.CollectionChanged += OnMessagesCollectionChanged;
         ConversationLog = conversationLog;
-        IsInitialized = conversationLog.MessageListBlob == null;
+        IsInitialized = conversationLog.ChatHistoryData == null;
     }
 
     public void LoadConversationLogs()
     {
-        Task.Run(() =>
+        try
         {
-            try
+            if (ConversationLog.ChatHistoryData != null)
             {
-                var messages = JsonSerializer.Deserialize<List<Message>>(ConversationLog.MessageListBlob!);
+                var chatHistory = ChatHistory.Deserialize(ConversationLog.ChatHistoryData);
 
-                if (messages != null)
+                foreach (var message in chatHistory.Messages)
                 {
-                    foreach (var message in messages)
+                    if (message.AuthorRole == AuthorRole.Assistant || message.AuthorRole == AuthorRole.User)
                     {
-                        ConversationLog.MessageList.Add(message);
-                        MainThread.BeginInvokeOnMainThread(() => Messages.Add(new MessageViewModel(message)));
+                        Messages.Add(new MessageViewModel(message) { MessageInProgress = false });
                     }
                 }
 
                 if (ConversationLog.LastUsedModel != null)
                 {
-                    LastUsedModel = JsonSerializer.Deserialize<ModelInfo>(ConversationLog.LastUsedModel);
-                    LastUsedModel!.FileUri = FileHelpers.GetModelFileUri(LastUsedModel, _appSettingsService.ModelsFolderPath);
+                    LastUsedModel = new Uri(ConversationLog.LastUsedModel);
                 }
             }
-            catch (Exception exception)
-            {
+        }
+        catch (Exception exception)
+        {
 
-            }
+        }
 
-            IsInitialized = true;
-        });
+        IsInitialized = true;
     }
 
 
@@ -175,10 +185,19 @@ public partial class ConversationViewModel : ObservableObject
         }
     }
 
+
+    [RelayCommand]
+    public void Cancel()
+    {
+        if (AwaitingResponse)
+        {
+            CancelPendingPrompt();
+        }
+    }
+
     private void OnPromptResult(LMKitService.PromptResult? promptResult, Exception? submitPromptException = null)
     {
         AwaitingResponse = false;
-        LastUsedModel = _lmKitConversation.LastUsedModel;
 
         if (submitPromptException != null)
         {
@@ -205,17 +224,17 @@ public partial class ConversationViewModel : ObservableObject
             if (promptResult.Status == LmKitTextGenerationStatus.Undefined && promptResult.TextGenerationResult != null)
             {
                 OnTextGenerationSuccess(promptResult.TextGenerationResult);
-
-                if (!_isSynchedWithLog)
-                {
-                    SaveConversation();
-                    _isSynchedWithLog = true;
-                }
             }
             else
             {
                 OnTextGenerationFailure();
             }
+        }
+
+        if (!_isSynchedWithLog)
+        {
+            SaveConversation();
+            _isSynchedWithLog = true;
         }
 
         if (!_awaitingLMKitAssistantMessage)
@@ -231,14 +250,32 @@ public partial class ConversationViewModel : ObservableObject
         _pendingCancellation &= false;
     }
 
-    [RelayCommand]
-    public void Cancel()
+    private void CancelPendingPrompt()
     {
-        if (AwaitingResponse)
+        _pendingCancellation = true;
+        _lmKitService.CancelPrompt(_lmKitConversation);
+    }
+
+    private void SaveConversation()
+    {
+        Task.Run(async () =>
         {
-            _pendingCancellation = true;
-            _lmKitService.CancelPrompt(_lmKitConversation);
-        }
+            try
+            {
+                await _database.SaveConversation(ConversationLog);
+
+                DatabaseSaveOperationCompleted?.Invoke(this, EventArgs.Empty);
+            }
+            catch (Exception ex)
+            {
+                DatabaseSaveOperationFailed?.Invoke(this, EventArgs.Empty);
+            }
+        });
+    }
+
+    private async void DisplayError(string message)
+    {
+        await App.Current!.MainPage!.DisplayAlert("Error", message, "OK");
     }
 
     private void OnNewlySubmittedPrompt(string prompt)
@@ -254,17 +291,6 @@ public partial class ConversationViewModel : ObservableObject
 
         Messages.Add(_pendingPrompt);
         Messages.Add(_pendingResponse);
-
-        ConversationLog.MessageList.Add(_pendingPrompt.MessageModel);
-        ConversationLog.MessageList.Add(_pendingResponse.MessageModel);
-    }
-
-    private void OnModelLoadingCompleted(object? sender, EventArgs e)
-    {
-        if (LastUsedModel != null)
-        {
-            UsedDifferentModel = !LastUsedModel.Equals(_lmKitService.LMKitConfig.LoadedModel);
-        }
     }
 
     private void OnTextGenerationSuccess(TextGenerationResult result)
@@ -282,17 +308,7 @@ public partial class ConversationViewModel : ObservableObject
         TextGenerationFailed?.Invoke(this, EventArgs.Empty);
     }
 
-    private void OnLmKitServiceConversationHistoryChanged(object? sender, EventArgs e)
-    {
-        var args = (LMKitService.ConversationChatHistoryChangedEventArgs)e;
-
-        if (args.Conversation == _lmKitConversation)
-        {
-            OnChatHistoryChanged(sender, args.CollectionChangedEventArgs);
-        }
-    }
-
-    private void OnChatHistoryChanged(object? sender, NotifyCollectionChangedEventArgs e)
+    private void OnLmKitChatHistoryChanged(object? sender, NotifyCollectionChangedEventArgs e)
     {
         _isSynchedWithLog &= false;
 
@@ -332,7 +348,6 @@ public partial class ConversationViewModel : ObservableObject
                 {
                     MessageViewModel messageViewModel = new MessageViewModel(message);
                     MainThread.BeginInvokeOnMainThread(() => Messages.Add(messageViewModel));
-                    ConversationLog.MessageList!.Add(messageViewModel.MessageModel);
                 }
             }
         }
@@ -350,36 +365,43 @@ public partial class ConversationViewModel : ObservableObject
         IsEmpty = Messages.Count == 0;
     }
 
-    private async void DisplayError(string message)
+    private void OnConversationSummaryTitleGenerated(object? sender, EventArgs e)
     {
-        await App.Current!.MainPage!.DisplayAlert("Error", message, "OK");
-    }
-
-    private void SaveConversation()
-    {
-        Task.Run(async () =>
+        if (Title == "Untitled conversation")
         {
-            try
-            {
-                if (_lmKitConversation.ChatHistory != null)
-                {
-                    ConversationLog.ChatHistoryData = _lmKitConversation.ChatHistory.Serialize();
-                    _lmKitConversation.LatestChatHistoryData = ConversationLog.ChatHistoryData;
-                }
-
-                ConversationLog.LastUsedModel = JsonSerializer.Serialize(LastUsedModel);
-                ConversationLog.MessageListBlob = JsonSerializer.Serialize(ConversationLog.MessageList);
-                await _database.SaveConversation(ConversationLog);
-
-                DatabaseSaveOperationCompleted?.Invoke(this, EventArgs.Empty);
-            }
-            catch (Exception ex)
-            {
-                DatabaseSaveOperationFailed?.Invoke(this, EventArgs.Empty);
-            }
-        });
+            Title = _lmKitConversation.GeneratedTitleSummary!;
+        }
     }
 
+    private void OnModelLoadingCompleted(object? sender, EventArgs e)
+    {
+        if (LastUsedModel != null)
+        {
+            UsedDifferentModel = LastUsedModel != _lmKitService.LMKitConfig.LoadedModelUri;
+        }
+    }
+
+    private void OnModelUnloaded(object? sender, EventArgs e)
+    {
+        if (AwaitingResponse)
+        {
+            CancelPendingPrompt();
+        }
+
+        UsedDifferentModel = false;
+    }
+
+    private void OnLmKitConversationPropertyChanged(object? sender, System.ComponentModel.PropertyChangedEventArgs e)
+    {
+        if (e.PropertyName == nameof(LMKitService.Conversation.LastUsedModelUri))
+        {
+            LastUsedModel = _lmKitConversation.LastUsedModelUri;
+        }
+        else if (e.PropertyName == nameof(LMKitService.Conversation.LatestChatHistoryData))
+        {
+            ConversationLog.ChatHistoryData = _lmKitConversation.LatestChatHistoryData;
+        }
+    }
 
     public sealed class TextGenerationCompletedEventArgs : EventArgs
     {

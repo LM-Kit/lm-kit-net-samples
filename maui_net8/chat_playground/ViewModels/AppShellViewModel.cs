@@ -92,7 +92,7 @@ namespace ChatPlayground.ViewModels
                 FileHelpers.GetModelInfoFromFileUri(fileUri!, _appSettingsService.ModelsFolderPath,
                 out string publisher, out string repository, out string fileName))
             {
-                _lmKitService.LoadModel(new ModelInfo(publisher, repository, fileName, fileUri!));
+                _lmKitService.LoadModel(fileUri!);
             }
             else
             {

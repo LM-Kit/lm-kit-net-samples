@@ -1,10 +1,6 @@
 ﻿using ChatPlayground.Models;
+using ChatPlayground.Services;
 using CommunityToolkit.Mvvm.ComponentModel;
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 
 namespace ChatPlayground.ViewModels
 {
@@ -18,6 +14,7 @@ namespace ChatPlayground.ViewModels
             {
                 _modelInfo = value;
                 Name = _modelInfo.FileName;
+                FileSize = _modelInfo.FileSize.HasValue ? _modelInfo.FileSize.Value : 0;
                 OnPropertyChanged();
             }
         }

@@ -59,9 +59,9 @@ namespace ChatPlayground.ViewModels
                     _selectedModel = value;
                     OnPropertyChanged();
 
-                    if (_selectedModel != null && !_selectedModel.ModelInfo.Equals(LmKitService.LMKitConfig.LoadedModel))
+                    if (_selectedModel != null && _selectedModel.ModelInfo.FileUri != LmKitService.LMKitConfig.LoadedModelUri)
                     {
-                        LoadModel(_selectedModel.ModelInfo);
+                        LoadModel(_selectedModel.ModelInfo.FileUri);
                     }
                 }
             }
@@ -88,9 +88,9 @@ namespace ChatPlayground.ViewModels
 
         public void Initialize()
         {
-            if (LmKitService.LMKitConfig.LoadedModel != null)
+            if (LmKitService.LMKitConfig.LoadedModelUri != null)
             {
-                SelectedModel = ChatPlaygroundHelpers.TryGetExistingModelInfoViewModel(ModelListViewModel.UserModels, LmKitService.LMKitConfig.LoadedModel);
+                SelectedModel = ChatPlaygroundHelpers.TryGetExistingModelInfoViewModel(ModelListViewModel.UserModels, LmKitService.LMKitConfig.LoadedModelUri);
             }
 
             //if (LmKitService.ModelLoadingState != ModelLoadingState.Loaded)
@@ -155,10 +155,25 @@ namespace ChatPlayground.ViewModels
         }
 
         [RelayCommand]
-        public void LoadModel(ModelInfo modelInfo)
+        public void LoadModel(Uri fileUri)
         {
-            LmKitService.LoadModel(modelInfo);
+            ModelInfo? modelInfo = null;
+
+            foreach (var model in ModelListViewModel.UserModels)
+            {
+                if (model.ModelInfo.FileUri == fileUri)
+                {
+                    modelInfo = model.ModelInfo;
+                    break;
+                }
+            }
+
+            if (modelInfo != null)
+            {
+                LmKitService.LoadModel(fileUri);
+            }
         }
+
 
         [RelayCommand]
         private async Task NavigateToModelPage()
@@ -176,7 +191,7 @@ namespace ChatPlayground.ViewModels
 
         private void OnModelLoadingCompleted(object? sender, EventArgs e)
         {
-            SelectedModel = ChatPlaygroundHelpers.TryGetExistingModelInfoViewModel(ModelListViewModel.UserModels, LmKitService.LMKitConfig.LoadedModel!);
+            SelectedModel = ChatPlaygroundHelpers.TryGetExistingModelInfoViewModel(ModelListViewModel.UserModels, LmKitService.LMKitConfig.LoadedModelUri!);
             LoadingProgress = 0;
             ModelLoadingIsFinishingUp = false;
         }

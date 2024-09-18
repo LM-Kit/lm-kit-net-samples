@@ -89,7 +89,7 @@ namespace ChatPlayground.ViewModels
                 _userModels.Remove(modelInfoViewModel);
                 TotalModelSize -= modelInfoViewModel.FileSize;
 
-                if (_lmKitService.LMKitConfig.LoadedModel == modelInfoViewModel.ModelInfo)
+                if (_lmKitService.LMKitConfig.LoadedModelUri == modelInfoViewModel.ModelInfo.FileUri)
                 {
                     _lmKitService.UnloadModel();
                 }

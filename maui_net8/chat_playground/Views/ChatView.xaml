@@ -6,6 +6,7 @@
              xmlns:models="clr-namespace:ChatPlayground.Models"
              xmlns:controls="clr-namespace:ChatPlayground.Controls"
              xmlns:vm="clr-namespace:ChatPlayground.ViewModels"
+             xmlns:converters="clr-namespace:ChatPlayground.Converters"
              xmlns:services="clr-namespace:ChatPlayground.Services"
              xmlns:plainer="clr-namespace:Plainer.Maui.Controls;assembly=Plainer.Maui"
              xmlns:icons="clr-namespace:UraniumUI.Icons.MaterialIcons;assembly=UraniumUI.Icons.MaterialIcons"
@@ -191,6 +192,7 @@
                         <MultiBinding Converter="{StaticResource AllTrueConverter}">
                             <Binding Source="{RelativeSource AncestorType={x:Type vm:AppShellViewModel}}" Path="AppIsInitialized"/>
                             <Binding Source="{RelativeSource AncestorType={x:Type vm:ConversationViewModel}}" Path="IsInitialized"/>
+                            <Binding Source="{RelativeSource AncestorType={x:Type vm:ConversationViewModel}}" Path="LastUsedModel" Converter="{mct:IsNotNullConverter}"/>
                             <Binding Source="{RelativeSource AncestorType={x:Type vm:ChatPageViewModel}}" Path="LmKitService.ModelLoadingState" Converter="{mct:IsEqualConverter}" ConverterParameter="{x:Static services:LmKitModelLoadingState.Unloaded}"/>
                         </MultiBinding>
                     </DataTrigger.Binding>
@@ -241,7 +243,8 @@
                         VerticalOptions="Center"
                         LineBreakMode="HeadTruncation"
                         TextColor="{StaticResource OutlineVariantDark}"
-                        Text="{Binding LastUsedModel.FileName, StringFormat='{}This chat last used \'{0}\''}"/>
+                        Text="{Binding LastUsedModel, Converter={converters:FileNameConverter}, StringFormat='{}This chat last used \'{0}\''}"/>
+                    
                     <Label 
                         x:Name="reloadIcon"
                         Margin="2, 0"

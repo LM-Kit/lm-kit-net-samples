@@ -121,7 +121,7 @@ namespace ChatPlayground.ViewModels
 
         public void Save()
         {
-            _appSettingsService.LastLoadedModel = _config.LoadedModel?.FileUri?.LocalPath;
+            _appSettingsService.LastLoadedModel = _config.LoadedModelUri?.LocalPath;
             _appSettingsService.SystemPrompt = _config.SystemPrompt;
             _appSettingsService.MaximumCompletionTokens = _config.MaximumCompletionTokens;
             _appSettingsService.RequestTimeout = _config.RequestTimeout;

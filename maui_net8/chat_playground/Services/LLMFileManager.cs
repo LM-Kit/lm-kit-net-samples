@@ -470,13 +470,7 @@ public partial class LLMFileManager : ObservableObject, ILLMFileManager
                 FileHelpers.GetModelInfoFromFileUri(fileRecordPathChangedEventArgs.NewPath, ModelsFolderPath,
                 out string publisher, out string repository, out string fileName))
         {
-            ModelInfo updatedModelInfo = new ModelInfo(publisher, repository, fileName)
-            {
-                FileSize = UserModels[index].FileSize,
-                FileUri = fileRecordPathChangedEventArgs.NewPath
-            };
-            
-            UserModels[index] = updatedModelInfo;
+            UserModels[index] = new ModelInfo(publisher, repository, fileName, fileRecordPathChangedEventArgs.NewPath, UserModels[index].FileSize);
         }
     }
     #endregion
@@ -487,7 +481,7 @@ public partial class LLMFileManager : ObservableObject, ILLMFileManager
     {
         if (LMKit.Model.LLM.ValidateFormat(filePath))
         {
-            if (FileHelpers.GetModelInfoFromFileUri(new Uri(filePath), modelFolderPath,
+            if (FileHelpers.GetModelInfoFromPath(filePath, modelFolderPath,
                 out string publisher, out string repository, out string fileName))
             {
 #if BETA_DOWNLOAD_MODELS
@@ -501,9 +495,7 @@ public partial class LLMFileManager : ObservableObject, ILLMFileManager
                 modelInfo.Metadata.FileUri = new Uri(filePath);
 
 #else
-                modelInfo = new ModelInfo(publisher, repository, fileName);
-                modelInfo.FileSize = FileHelpers.GetFileSize(filePath);
-                modelInfo.FileUri = new Uri(filePath);
+                modelInfo = new ModelInfo(publisher, repository, fileName, new Uri(filePath), FileHelpers.GetFileSize(filePath));
 #endif
             }
             else

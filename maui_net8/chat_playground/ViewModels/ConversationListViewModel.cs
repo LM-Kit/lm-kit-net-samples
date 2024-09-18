@@ -1,13 +1,10 @@
 ﻿using ChatPlayground.Data;
-using ChatPlayground.Helpers;
 using ChatPlayground.Models;
 using ChatPlayground.Services;
 using CommunityToolkit.Maui.Core;
 using CommunityToolkit.Mvvm.ComponentModel;
-using LMKit.TextGeneration.Chat;
 using Microsoft.Extensions.Logging;
 using System.Collections.ObjectModel;
-using System.Text.Json;
 
 namespace ChatPlayground.ViewModels
 {
@@ -21,16 +18,12 @@ namespace ChatPlayground.ViewModels
 
         public ObservableCollection<ConversationViewModel> Conversations { get; } = new ObservableCollection<ConversationViewModel>();
 
-        public EventHandler? LogsLoadingCompleted;
-
         public ConversationListViewModel(ILogger<ConversationListViewModel> logger, IPopupService popupService, IChatPlaygroundDatabase database, LMKitService lmKitService, IAppSettingsService appSettingsService)
         {
             _logger = logger;
             _popupService = popupService;
             _database = database;
             _lmKitService = lmKitService;
-            _lmKitService.ModelLoadingCompleted += OnModelLoadingCompleted;
-            _lmKitService.ModelUnloaded += OnModelUnloaded;
             _appSettingsService = appSettingsService;
         }
 
@@ -53,7 +46,7 @@ namespace ChatPlayground.ViewModels
             {
                 ConversationViewModel conversationViewModel = new ConversationViewModel(_appSettingsService, _lmKitService, _database, _popupService, conversation);
 
-                if (conversation.MessageListBlob != null)
+                if (conversation.ChatHistoryData != null)
                 {
                     loadedConversationViewModels.Insert(0, conversationViewModel);
                     conversationViewModel.LoadConversationLogs();
@@ -78,50 +71,6 @@ namespace ChatPlayground.ViewModels
             Conversations.Insert(0, conversationViewModel);
 
             return conversationViewModel;
-        }
-
-        private void InitializeConversations()
-        {
-            var conversationsToInitialize = new List<ConversationViewModel>(Conversations);
-
-            foreach (var conversation in conversationsToInitialize)
-            {
-                if (conversation.ConversationLog.ChatHistoryData != null)
-                {
-                    if (conversation.LastUsedModel != null && conversation.LastUsedModel.Equals(_lmKitService.LMKitConfig.LoadedModel))
-                    {
-                        conversation.UsedDifferentModel = false;
-                    }
-                    else
-                    {
-                        conversation.UsedDifferentModel = true;
-                    }
-                }
-            }
-        }
-
-        private void UnloadConversations()
-        {
-            foreach (var conversation in Conversations)
-            {
-                if (conversation.AwaitingResponse)
-                {
-                    conversation.Cancel();
-
-                }
-
-                conversation.UsedDifferentModel = false;
-            }
-        }
-
-        private void OnModelLoadingCompleted(object? sender, EventArgs e)
-        {
-            InitializeConversations();
-        }
-
-        private void OnModelUnloaded(object? sender, EventArgs e)
-        {
-            UnloadConversations();
         }
     }
 }
