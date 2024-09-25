@@ -20,6 +20,8 @@ internal static class AppConstants
 
     public const string ModelsRoute = "Models";
 
+    public const double ChatMessageMaximumWidth = 800;
+
 #if BETA_DOWNLOAD_MODELS
     //LM-Kit models catalog: https://huggingface.co/lm-kit
     public static readonly ModelInfo[] AvailableModels =

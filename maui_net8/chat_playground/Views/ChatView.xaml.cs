@@ -8,7 +8,6 @@ namespace ChatPlayground.Views;
 public partial class ChatView : ContentView
 {
     double? _previousScrollY = null;
-    bool _nextScrollViewResizedCausedByAssistantResponseProgress;
     bool _nextScrollViewResizeCausedByBindingContextChange;
     bool _nextScrollViewResizeCausedByWindowResize;
     bool _shouldEnforceAutoScroll;
@@ -104,7 +103,10 @@ public partial class ChatView : ContentView
     {
         base.OnHandlerChanged();
 
-        Window.SizeChanged += OnWindowSizeChanged;
+        if (Window != null)
+        {
+            Window.SizeChanged += OnWindowSizeChanged;
+        }
     }
 
     private async Task ForceFocus()
@@ -153,28 +155,17 @@ public partial class ChatView : ContentView
             }
         }
     }
-
-    private void OnWindowSizeChanged(object? sender, EventArgs e)
-    {
-        //if (IsScrolledToEnd)
-        //{
-        //    SetScrollViewToEnd(false);
-        //}
-        //else
-        //{
-        //    IsScrolledToEnd = IsScrollViewScrolledToEnd(messageScrollView);
-        //}
-
-        _nextScrollViewResizeCausedByWindowResize = true;
-    }
-
-    private async void OnEntryKeyReleased(object sender, EventArgs e)
+    private void OnEntryKeyReleased(object sender, EventArgs e)
     {
         if (_conversationViewModel != null && !string.IsNullOrWhiteSpace(_conversationViewModel.InputText) && !_conversationViewModel.AwaitingResponse)
         {
             _conversationViewModel.Send();
-
         }
+    }
+
+    private void OnWindowSizeChanged(object? sender, EventArgs e)
+    {
+        _nextScrollViewResizeCausedByWindowResize = true;
     }
 
     private void OnEntryBorderFocused(object sender, FocusEventArgs e)
@@ -233,7 +224,6 @@ public partial class ChatView : ContentView
     {
         if (e.PropertyName == nameof(ScrollView.ContentSize))
         {
-            //Trace.WriteLine("--------------- SCROLL VIEW RESIZED");
             if (_conversationViewModel != null && _conversationViewModel.IsInitialized)
             {
                 if (_nextScrollViewResizeCausedByBindingContextChange)

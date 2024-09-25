@@ -2,6 +2,7 @@
 <ContentPage xmlns="http://schemas.microsoft.com/dotnet/2021/maui"
              xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
              xmlns:mct="http://schemas.microsoft.com/dotnet/2022/maui/toolkit"
+             xmlns:local="clr-namespace:ChatPlayground"
              xmlns:views="clr-namespace:ChatPlayground.Views"
              xmlns:models="clr-namespace:ChatPlayground.Models"
              xmlns:services="clr-namespace:ChatPlayground.Services"
@@ -138,10 +139,10 @@
                     StrokeThickness="0"
                     StrokeShape="RoundRectangle 4"
                     Grid.Column="1"
-                    Margin="12, 8"
+                    Margin="0, 8"
                     ZIndex="1"
                     InputTransparent="False"
-                    MaximumWidthRequest="800"
+                    MaximumWidthRequest="{x:Static local:AppConstants.ChatMessageMaximumWidth}"
                     Stroke="Transparent">
                     <uranium:StatefulContentView
                         
@@ -163,6 +164,7 @@
                         </uranium:StatefulContentView.Triggers>
 
 
+                        <!--Model dropdown button-->
                         <Grid RowDefinitions="*, auto">
                             <Grid Padding="12, 0" ColumnSpacing="8" ColumnDefinitions="24, *, 24">
                                 <Button 

@@ -8,17 +8,17 @@
 using LMKit.Model;
 using LMKit.Finetuning;
 using LMKit.TextAnalysis;
-using System;
-using System.Collections.Generic;
 using System.Diagnostics;
-using System.IO;
 using static LMKit.TextAnalysis.SarcasmDetection;
+using System.Collections.Generic;
+using System.IO;
+using System;
 
 namespace finetuning.Experiments
 {
     internal static class SarcasmDetectionFinetuning
     {
-        private static readonly string DefaultModelPath = @"https://huggingface.co/TheBloke/TinyLlama-1.1B-1T-OpenOrca-GGUF/resolve/main/tinyllama-1.1b-1t-openorca.Q8_0.gguf?download=true";
+        private static readonly string DefaultModelPath = @"https://huggingface.co/lm-kit/tinyllama-1.0-1.1b-chat-gguf/resolve/main/TinyLlama-1.0-1.1B-Chat-F16.gguf?download=true";
 
         // Early-stop conditions
         private const float StopTrainingAtLoss = 0.01f;
@@ -29,7 +29,8 @@ namespace finetuning.Experiments
 
         private const string BestLoraPath = "sarcasmDetection.lora.best_accuracy.bin";
         private const string BestCheckpointPath = "sarcasmDetection_best_checkpoint.bin";
-        private const string NewModelPath = "sarcasmDetection.gguf";
+        private const string BestModelPath = "sarcasmDetection.best_accuracy.gguf";
+        private const string EvalModelPath = "sarcasmDetection.test.gguf";
         private static readonly float[] LoraTestScales = { 0.75f, 1f, 1.25f, 1.6f };
 
         private static LLM _model;
@@ -78,43 +79,51 @@ namespace finetuning.Experiments
             // Finetuning to a LoRA adapter
             finetuning.Finetune2Lora("sarcasmDetection.lora.last.bin");
 
-            // Creating a model
-            Console.WriteLine("Creating a model...");
-            var merger = new LoraMerger(_model);
-            merger.AddLoraAdapter(new LoraAdapterSource(BestLoraPath, scale: _loraBestScale)); //using the adapter having the best accuracy.
-            merger.Merge(NewModelPath);
-            Console.WriteLine($"Model created at {Path.GetFullPath(NewModelPath)}");
             Console.WriteLine("\nProcess terminated. Press any key to exit");
             _ = Console.ReadKey();
         }
 
         private static double ComputeSarcasmDetectionAccuracy(string loraPath, float loraScale, out TimeSpan elapsed)
         {
-            var model = new LLM(DefaultModelPath);
+            LLM model = null;
 
-            if (!string.IsNullOrWhiteSpace(loraPath))
+            try
             {
-                model.ApplyLoraAdapter(new LoraAdapterSource(loraPath, loraScale));
-            }
-
-            var engine = new SarcasmDetection(model);
-            Stopwatch stopwatch = Stopwatch.StartNew();
-            int successCount = 0;
-
-            foreach (var sample in BlindTestDataset)
-            {
-                var hasSarcasm = engine.IsSarcastic(sample.Item1);
-
-                if (hasSarcasm == sample.Item2)
+                if (!string.IsNullOrWhiteSpace(loraPath))
                 {
-                    successCount++;
+                    var merger = new LoraMerger(_model);
+                    merger.AddLoraAdapter(new LoraAdapterSource(loraPath, loraScale));
+                    merger.Merge(EvalModelPath);
+                    model = new LLM(EvalModelPath);
                 }
+                else
+                {
+                    model = new LLM(DefaultModelPath);
+                }
+
+                var engine = new SarcasmDetection(model);
+                Stopwatch stopwatch = Stopwatch.StartNew();
+                int successCount = 0;
+
+                foreach (var sample in BlindTestDataset)
+                {
+                    var hasSarcasm = engine.IsSarcastic(sample.Item1);
+
+                    if (hasSarcasm == sample.Item2)
+                    {
+                        successCount++;
+                    }
+                }
+
+                stopwatch.Stop();
+                elapsed = stopwatch.Elapsed;
+
+                return (double)successCount / BlindTestDataset.Count * 100;
             }
-
-            stopwatch.Stop();
-            elapsed = stopwatch.Elapsed;
-
-            return (double)successCount / BlindTestDataset.Count * 100;
+            finally
+            {
+                model?.Dispose();
+            }
         }
 
         private static bool EvaluateLoraAccuracy(string loraPath, float loraScale)
@@ -139,7 +148,6 @@ namespace finetuning.Experiments
             else
             {
                 Console.WriteLine($"LoRA adapter accuracy: {Math.Round(accuracy, 2)}% with scale {loraScale} - Best: {Math.Round(_bestAccuracy, 2)}% with scale {_loraBestScale} - Initial: {Math.Round(_initialAccuracy, 2)}% - {Math.Round(speed, 2)} samples/s.");
-
                 return false;
             }
         }
@@ -172,7 +180,7 @@ namespace finetuning.Experiments
 
                     if (e.Loss < 2) //We set a maximum loss limit of 2 to avoid performing unnecessary accuracy computations at the beginning of the training process.
                     {
-                        loraPath = $"sarcasmDetection.lora.best_loss.bin";
+                        loraPath = "sarcasmDetection.lora.best_loss.bin";
                         e.SaveLora(loraPath);
                     }
                 }
@@ -190,6 +198,8 @@ namespace finetuning.Experiments
                         if (EvaluateLoraAccuracy(loraPath, scale))
                         {
                             e.SaveLoraCheckpoint(BestCheckpointPath);
+                            File.Copy(EvalModelPath, BestModelPath, overwrite: true);
+                            Console.WriteLine($"Best model created at {Path.GetFullPath(BestModelPath)}");
                         }
                     }
                 }

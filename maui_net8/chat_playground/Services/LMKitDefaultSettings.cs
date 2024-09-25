@@ -1,6 +1,4 @@
-﻿using ChatPlayground.Models;
-
-namespace ChatPlayground.Services;
+﻿namespace ChatPlayground.Services;
 
 public static class LMKitDefaultSettings
 {

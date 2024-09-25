@@ -1,0 +1,83 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover" />
+    <title>Maui Blazor App</title>
+    <base href="/" />
+    <link rel="stylesheet" href="css/bootstrap/bootstrap.min.css" />
+    <link rel="stylesheet" href="css/app.css" />
+    <link rel="stylesheet" href="Maui Blazor App.styles.css" />
+    <link rel="icon" type="image/png" href="favicon.png" />
+    <link href="https://fonts.googleapis.com/css?family=Roboto:300,400,500,700&display=swap" rel="stylesheet" />
+    <link href="_content/MudBlazor/MudBlazor.min.css" rel="stylesheet" />
+</head>
+
+<body>
+
+    <div class="status-bar-safe-area"></div>
+
+    <div id="app">Loading...</div>
+
+    <div id="blazor-error-ui">
+        An unhandled error has occurred.
+        <a href="" class="reload">Reload</a>
+        <a class="dismiss">🗙</a>
+    </div>
+
+    <script src="_framework/blazor.webview.js" autostart="false"></script>
+    <script src="_content/MudBlazor/MudBlazor.min.js"></script>
+
+    <script>
+        Blazor.registerCustomEventType('cityclicked', {
+            createEventArgs: event => {
+                return {
+                    id: event.detail
+                };
+            }
+        });
+
+        getViewHeight = () => {
+            return window.innerHeight;
+        };
+
+        checkIsWindowScrolledToEnd = () => {
+
+            //if ((window.innerHeight + window.scrollY) >= document.body.offsetHeight) {
+            //    alert("ih " + window.innerHeight + "sy " + window.scrollY + "oh " + document.body.offsetHeight);
+            //}
+
+            return window.innerHeight + window.scrollY >= document.body.offsetHeight;
+        };
+
+        getChatHistoryHeight = () => {
+
+            var body = document.body,
+                html = document.documentElement;
+
+            // https://stackoverflow.com/questions/1145850/how-to-get-height-of-entire-document-with-javascript
+            return Math.max(body.scrollHeight, body.offsetHeight,
+                html.clientHeight, html.scrollHeight, html.offsetHeight);
+        };
+
+        //window.onscroll = function (ev) {
+        //    if ((window.innerHeight + window.scrollY) >= document.body.offsetHeight) {
+        //        alert("you're at the bottom of the page");
+        //    }
+        //};
+        //var targetObj = {};
+        //var targetProxy = new Proxy(documentElement, {
+        //    set: function (target, key, value) {
+        //        console.log(`${key} set to ${value}`);
+        //        target[key] = value;
+        //        return true;
+        //    }
+        //});
+
+        //targetProxy.hello_world = "test"; // console: 'hello_world set to test'
+
+    </script>
+
+</body>
+
+</html>

@@ -106,5 +106,41 @@ public partial class LMKitService
         {
             ChatHistoryChanged?.Invoke(this, e);
         }
+
+        public void SetGeneratedTitle(PromptResult textGenerationResult)
+        {
+            string? conversationTopic = null;
+
+            if (textGenerationResult.TextGenerationResult != null && !string.IsNullOrEmpty(textGenerationResult.TextGenerationResult.Completion))
+            {
+                foreach (var sentance in textGenerationResult.TextGenerationResult.Completion.Split('\n'))
+                {
+                    if (sentance.ToLower().StartsWith("topic"))
+                    {
+                        conversationTopic = sentance.Substring("topic".Length, sentance.Length - "topic".Length);
+                        break;
+                    }
+                    else if (sentance.ToLower().StartsWith("the topic of the sentance is"))
+                    {
+                        conversationTopic = sentance.Substring("the topic of the sentance is".Length, sentance.Length - "the topic of the sentance is".Length);
+                        break;
+                    }
+                    else if (sentance.ToLower().StartsWith("the topic of this sentance is"))
+                    {
+                        conversationTopic = sentance.Substring("the topic of this sentance is".Length, sentance.Length - "the topic of this sentance is".Length);
+                        break;
+                    }
+                }
+            }
+
+            if (conversationTopic != null)
+            {
+                conversationTopic = conversationTopic.TrimStart(' ').TrimStart(':').TrimStart(' ').TrimStart('\'').TrimEnd('.').TrimEnd('\'');
+            }
+
+            var firstUserMessage = ChatHistory!.Messages.FirstOrDefault(message => message.AuthorRole == AuthorRole.User);
+
+            GeneratedTitleSummary = !string.IsNullOrWhiteSpace(conversationTopic) ? conversationTopic : firstUserMessage?.Content ?? "Untitled conversation";
+        }
     }
 }

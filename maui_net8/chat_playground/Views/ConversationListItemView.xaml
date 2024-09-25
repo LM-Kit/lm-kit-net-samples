@@ -10,6 +10,7 @@
              xmlns:icons="clr-namespace:UraniumUI.Icons.MaterialIcons;assembly=UraniumUI.Icons.MaterialIcons"
              xmlns:plainer="clr-namespace:Plainer.Maui.Controls;assembly=Plainer.Maui"
              x:DataType="vm:ConversationViewModel"
+             ToolTipProperties.Text="{Binding Title}"
              x:Class="ChatPlayground.Views.ConversationListItemView"
              x:Name="conversationListItemView"
              >
@@ -111,6 +112,7 @@
                 MaxLines="1"
                 LineBreakMode="TailTruncation"
                 ZIndex="2"
+                Style="{StaticResource Subtitle}"
                 Text="{Binding Title}"
                 VerticalTextAlignment="Center"
                 IsVisible="{Binding EditingTitle, Converter={mct:InvertedBoolConverter}}">
@@ -126,8 +128,7 @@
                 VerticalTextAlignment="Center"
                 PlaceholderColor="Transparent"
                 IsReadOnly="True"
-                Unfocused="ConversationTitleUnfocused"
-                Text="{Binding Title, Mode=OneTime}">
+                Unfocused="ConversationTitleUnfocused">
                 <controls:CustomEntry.Triggers>
                     <DataTrigger TargetType="controls:CustomEntry" Binding="{Binding IsSelected}" Value="True">
                         <Setter Property="TextColor" Value="{StaticResource OnSurfaceDark}"/>

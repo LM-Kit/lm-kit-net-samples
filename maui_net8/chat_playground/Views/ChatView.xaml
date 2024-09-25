@@ -2,6 +2,7 @@
 <ContentView xmlns="http://schemas.microsoft.com/dotnet/2021/maui"
              xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
              xmlns:mct="http://schemas.microsoft.com/dotnet/2022/maui/toolkit"
+             xmlns:local="clr-namespace:ChatPlayground"
              xmlns:views="clr-namespace:ChatPlayground.Views"
              xmlns:models="clr-namespace:ChatPlayground.Models"
              xmlns:controls="clr-namespace:ChatPlayground.Controls"
@@ -11,6 +12,7 @@
              xmlns:plainer="clr-namespace:Plainer.Maui.Controls;assembly=Plainer.Maui"
              xmlns:icons="clr-namespace:UraniumUI.Icons.MaterialIcons;assembly=UraniumUI.Icons.MaterialIcons"
              xmlns:uranium="http://schemas.enisn-projects.io/dotnet/maui/uraniumui"
+             xmlns:blazor="clr-namespace:ChatPlayground.Blazor"
              x:Class="ChatPlayground.Views.ChatView"
              x:DataType="vm:ConversationViewModel"
              IsEnabled="{Binding ., Converter={mct:IsNotNullConverter}}"
@@ -29,6 +31,14 @@
             <Label Text="{Binding Source={x:Reference chatView}, Path=IsScrolledToEnd}"/>
         </HorizontalStackLayout>-->
 
+        <!-- Mesage history Blazor view -->
+        <BlazorWebView IsVisible="False" MaximumWidthRequest="{x:Static local:AppConstants.ChatMessageMaximumWidth}" x:Name="blazorWebView" HostPage="wwwroot/index.html">
+            <BlazorWebView.RootComponents>
+                <RootComponent Selector="#app" ComponentType="{x:Type blazor:Routes}" />
+            </BlazorWebView.RootComponents>
+        </BlazorWebView>
+
+        <!-- Mesage history scroll view -->
         <ScrollView
             Margin="0, 8"
             Scrolled="OnMessageScrollViewScrolled"
@@ -81,6 +91,7 @@
             </VerticalStackLayout>
         </ScrollView>
 
+        <!-- Completion result toast + Scroll button -->
         <Grid 
             ZIndex="1"
             RowDefinitions="*,auto"
@@ -121,6 +132,7 @@
             </Button>
         </Grid>
 
+        <!-- Chat input -->
         <Border  
             Margin="12, 0"
             BackgroundColor="{StaticResource SurfaceContainerLowDark}"
@@ -179,6 +191,7 @@
             </Grid>
         </Border>
 
+        <!-- Last loaded model info -->
         <Grid 
             MaximumWidthRequest="800"
             IsVisible="False" 
@@ -244,7 +257,7 @@
                         LineBreakMode="HeadTruncation"
                         TextColor="{StaticResource OutlineVariantDark}"
                         Text="{Binding LastUsedModel, Converter={converters:FileNameConverter}, StringFormat='{}This chat last used \'{0}\''}"/>
-                    
+
                     <Label 
                         x:Name="reloadIcon"
                         Margin="2, 0"

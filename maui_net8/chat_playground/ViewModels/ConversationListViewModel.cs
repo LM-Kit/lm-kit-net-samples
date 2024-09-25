@@ -72,5 +72,31 @@ namespace ChatPlayground.ViewModels
 
             return conversationViewModel;
         }
+
+        public async Task DeleteConversation(ConversationViewModel conversationViewModel)
+        {
+            if (Conversations.Count != 1 || (Conversations.Count == 1 && !Conversations[0].IsEmpty))
+            {
+                Conversations.Remove(conversationViewModel);
+            }
+            else
+            {
+                return;
+            }
+
+            var deletionTask = conversationViewModel.Delete();
+
+            try
+            {
+                await _database.DeleteConversation(conversationViewModel.ConversationLog);
+            }
+            catch (Exception exception)
+            {
+                _logger.LogError(exception, "Failed to delete conversation from database");
+                return;
+            }
+
+            await deletionTask;
+        }
     }
 }

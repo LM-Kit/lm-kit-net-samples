@@ -40,7 +40,12 @@
                                  TappedCommand="{Binding Command}">
         <HorizontalStackLayout Spacing="4" HorizontalOptions="Center">
             <Label TextColor="{Binding TextColor}" VerticalOptions="Center" Text="{Binding Icon}" FontFamily="MaterialRegular"/>
-            <Label TextColor="{Binding TextColor}" VerticalOptions="Center" Text="{Binding Text}"/>
+            <Label 
+                FontSize="{Binding FontSize}"
+                FontFamily="{Binding FontFamily}"
+                TextColor="{Binding TextColor}" 
+                VerticalOptions="Center" 
+                Text="{Binding Text}"/>
         </HorizontalStackLayout>
     </uranium:StatefulContentView>
 </ContentView>

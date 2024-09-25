@@ -35,6 +35,19 @@ public partial class MessageView : ContentView
         }
     }
 
+    [RelayCommand]
+    public async Task OpenLink()
+    {
+        try
+        {
+            await Launcher.Default.OpenAsync("https://huggingface.co/lm-kit");
+        }
+        catch
+        {
+
+        }
+    }
+
     protected override void OnBindingContextChanged()
     {
         base.OnBindingContextChanged();

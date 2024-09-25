@@ -11,6 +11,9 @@ using SimpleToolkit.SimpleShell;
 using ChatPlayground.Handlers;
 using MetroLog.MicrosoftExtensions;
 using MetroLog.Operators;
+using MudBlazor.Services;
+using ChatPlayground.Blazor.Services;
+using Majorsoft.Blazor.Components.Common.JsInterop;
 
 namespace ChatPlayground
 {
@@ -22,10 +25,7 @@ namespace ChatPlayground
             builder
                 .UseMauiApp<App>()
 
-                .UseMauiCommunityToolkit(options =>
-                {
-                    options.SetShouldEnableSnackbarOnWindows(true);
-                })
+                .UseMauiCommunityToolkit()
                 .UseSimpleShell()
                 .UseUraniumUI()
                 .UseUraniumUIMaterial()
@@ -33,6 +33,19 @@ namespace ChatPlayground
                 {
                     fonts.AddFont("OpenSans-Regular.ttf", "OpenSansRegular");
                     fonts.AddFont("OpenSans-Semibold.ttf", "OpenSansSemibold");
+                    // Roboto
+                    fonts.AddFont("Roboto-Thin.ttf", "RobotoThin");
+                    fonts.AddFont("Roboto-Light.ttf", "RobotoLight");
+                    fonts.AddFont("Roboto-Regular.ttf", "RobotoRegular");
+                    fonts.AddFont("Roboto-Italic.ttf", "RobotoItalic");
+                    fonts.AddFont("Roboto-Bold.ttf", "RobotoBold");
+
+
+                    // Segoe
+                    fonts.AddFont("Segoe UI.ttf", "Segoe");
+                    fonts.AddFont("Segoe UI Semi Light.ttf", "SegoeSemiLight");
+                    fonts.AddFont("Segoe UI Light.ttf", "SegoeLight");
+                    fonts.AddFont("Segoe UI Bold.ttf", "SegoeBold");
 
                     fonts.AddMaterialIconFonts();
                 })
@@ -41,9 +54,15 @@ namespace ChatPlayground
                     handlers.AddCustomHandlers();
                     handlers.AddPlainer();
                 });
+
+            builder.Services.AddMauiBlazorWebView();
+            builder.Services.AddMudServices();
+            builder.Services.AddJsInteropExtensions();
+
 #if DEBUG
+            builder.Services.AddBlazorWebViewDeveloperTools();
             builder.Logging.AddDebug();
-#endif
+#endif       
             
             MauiExceptions.UnhandledException += OnUnhandledException;
 
@@ -62,7 +81,7 @@ namespace ChatPlayground
             builder.Services.AddSingleton<ModelListViewModel>();
             builder.Services.AddSingleton<SettingsViewModel>();
 
-            builder.Services.AddTransient<ChatPageViewModel>();
+            builder.Services.AddSingleton<ChatPageViewModel>();
             builder.Services.AddTransient<ModelsPageViewModel>();
         }
 
@@ -84,6 +103,8 @@ namespace ChatPlayground
             builder.Services.AddSingleton<LMKitService>();
             builder.Services.AddSingleton<LLMFileManager>();
             builder.Services.AddSingleton<HttpClient>();
+
+            builder.Services.AddScoped<ScrollInfoService>();
         }
 
         private static void OnUnhandledException(object sender, UnhandledExceptionEventArgs e)

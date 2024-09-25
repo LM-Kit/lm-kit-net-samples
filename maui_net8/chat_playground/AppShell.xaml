@@ -34,6 +34,7 @@
     <Tab BindingContext="{Binding ModelsTab}" Title="{Binding ModelsTab.Title}" Route="ModelsPage">
         <ShellContent Title="Models" ContentTemplate="{DataTemplate views:ModelsPage}"/>
     </Tab>
+    
     <!--<FlyoutItem Route="ChatPage" Title="AI Chat">
         <ShellContent ContentTemplate="{DataTemplate views:ChatPage}"/>
     </FlyoutItem>-->
@@ -70,10 +71,12 @@
                                     </Border.Triggers>-->
 
                                 <views:LinkView
-                                   Command="{Binding Source={RelativeSource AncestorType={x:Type vm:AppShellViewModel}}, Path=NavigateCommand}"
-                                   CommandParameter="{Binding}"
-                                   TextColor="{StaticResource OutlineVariantDark}"
-                                   Text="{Binding Title}">
+                                    Command="{Binding Source={RelativeSource AncestorType={x:Type vm:AppShellViewModel}}, Path=NavigateCommand}"
+                                    CommandParameter="{Binding}"
+                                    FontFamily="Segoe"
+                                    FontSize="16"
+                                    TextColor="{StaticResource OutlineVariantDark}"
+                                    Text="{Binding Title}">
                                     <views:LinkView.Triggers>
                                         <DataTrigger TargetType="views:LinkView" Binding="{Binding IsSelected}" Value="True">
                                             <Setter Property="TextColor" Value="{StaticResource LmKitPurpleText}"/>

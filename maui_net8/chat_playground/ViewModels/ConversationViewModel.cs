@@ -155,6 +155,13 @@ public partial class ConversationViewModel : ObservableObject
         IsInitialized = true;
     }
 
+    public async Task Delete()
+    {
+        if (AwaitingResponse)
+        {
+            await CancelPendingPrompt(true);
+        }
+    }
 
     [RelayCommand]
     public void Send()
@@ -185,13 +192,12 @@ public partial class ConversationViewModel : ObservableObject
         }
     }
 
-
     [RelayCommand]
-    public void Cancel()
+    public async Task Cancel()
     {
         if (AwaitingResponse)
         {
-            CancelPendingPrompt();
+            await CancelPendingPrompt(false);
         }
     }
 
@@ -250,10 +256,10 @@ public partial class ConversationViewModel : ObservableObject
         _pendingCancellation &= false;
     }
 
-    private void CancelPendingPrompt()
+    private async Task CancelPendingPrompt(bool shouldAwaitTermination)
     {
         _pendingCancellation = true;
-        _lmKitService.CancelPrompt(_lmKitConversation);
+        await _lmKitService.CancelPrompt(_lmKitConversation, shouldAwaitTermination);
     }
 
     private void SaveConversation()
@@ -385,7 +391,7 @@ public partial class ConversationViewModel : ObservableObject
     {
         if (AwaitingResponse)
         {
-            CancelPendingPrompt();
+            CancelPendingPrompt(false);
         }
 
         UsedDifferentModel = false;

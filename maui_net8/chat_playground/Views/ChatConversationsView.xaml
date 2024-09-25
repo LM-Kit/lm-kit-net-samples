@@ -16,16 +16,13 @@
     <Grid ColumnDefinitions="*, auto">
         <Grid RowDefinitions="auto, 1, *">
             <Grid HeightRequest="52" Padding="8" ColumnDefinitions="*, auto">
-                <Label VerticalOptions="Center" Text="Chats"/>
+                <Label Style="{StaticResource Title}" VerticalOptions="Center" Text="Chats"/>
                 <Button
-                    StyleClass="D"
-                    Padding="8, 4"
-                    VerticalOptions="Center"
-                    BackgroundColor="{StaticResource SecondaryDark}"
-                    TextColor="{StaticResource OnSecondaryDark}"
-                    CornerRadius="4"
+                    ToolTipProperties.Text="Start a new chat"
+                    Style="{StaticResource SecondaryActionButtonStyle}"
                     Grid.Column="1" 
-                    Text="New chat" 
+                    FontFamily="MaterialRegular"
+                    Text="{x:Static icons:MaterialRegular.Add}"
                     Command="{Binding StartNewConversationCommand}"/>
             </Grid>
 

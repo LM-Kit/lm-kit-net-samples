@@ -124,7 +124,14 @@ namespace ChatPlayground.ViewModels
         [RelayCommand]
         public async Task OpenHuggingFaceLink()
         {
-            await Launcher.Default.OpenAsync("https://huggingface.co/lm-kit");
+            try
+            {
+                await Launcher.Default.OpenAsync("https://huggingface.co/lm-kit");
+            }
+            catch
+            {
+
+            }
         }
 
 #if BETA_DOWNLOAD_MODELS

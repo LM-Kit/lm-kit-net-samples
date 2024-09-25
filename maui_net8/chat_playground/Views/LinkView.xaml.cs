@@ -18,6 +18,20 @@ public partial class LinkView : ContentView
         set => SetValue(TextProperty, value);
     }
 
+    public static readonly BindableProperty FontSizeProperty = BindableProperty.Create(nameof(FontSize), typeof(int), typeof(LinkView), defaultValue: 14);
+    public int FontSize
+    {
+        get => (int)GetValue(FontSizeProperty);
+        set => SetValue(FontSizeProperty, value);
+    }
+
+    public static readonly BindableProperty FontFamilyProperty = BindableProperty.Create(nameof(FontFamily), typeof(string), typeof(LinkView));
+    public string FontFamily
+    {
+        get => (string)GetValue(FontFamilyProperty);
+        set => SetValue(FontFamilyProperty, value);
+    }
+
     public static readonly BindableProperty IconProperty = BindableProperty.Create(nameof(Icon), typeof(string), typeof(LinkView));
     public string Icon
     {
@@ -35,12 +49,13 @@ public partial class LinkView : ContentView
     public static readonly BindableProperty CommandParameterProperty = BindableProperty.Create(nameof(CommandParameter), typeof(object), typeof(LinkView));
     public object CommandParameter
     {
-        get => (object)GetValue(CommandParameterProperty);
+        get => 
+            (object)GetValue(CommandParameterProperty);
         set => SetValue(CommandParameterProperty, value);
     }
 
     public LinkView()
-	{
-		InitializeComponent();
-	}
+    {
+        InitializeComponent();
+    }
 }

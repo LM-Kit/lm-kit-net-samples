@@ -4,6 +4,8 @@
              xmlns:mct="http://schemas.microsoft.com/dotnet/2022/maui/toolkit"
              xmlns:views="clr-namespace:ChatPlayground.Views"
              xmlns:models="clr-namespace:ChatPlayground.Models"
+             xmlns:controls="clr-namespace:ChatPlayground.Controls"
+             xmlns:converters="clr-namespace:ChatPlayground.Converters"
              xmlns:vm="clr-namespace:ChatPlayground.ViewModels"
              xmlns:services="clr-namespace:ChatPlayground.Services"
              xmlns:plainer="clr-namespace:Plainer.Maui.Controls;assembly=Plainer.Maui"
@@ -13,6 +15,17 @@
              x:Name="messageView"
              x:Class="ChatPlayground.Views.MessageView">
 
+    <ContentView.Resources>
+        <ResourceDictionary>
+            <ControlTemplate x:Key="UserMessageTemplate" x:DataType="vm:MessageViewModel">
+                <Label Text="{Binding Text}"/>
+            </ControlTemplate>
+
+            <ControlTemplate x:Key="AssistantMessageTemplate" x:DataType="vm:MessageViewModel">
+                <Label Text="{Binding Text}"/>
+            </ControlTemplate>
+        </ResourceDictionary>
+    </ContentView.Resources>
     <Grid>
         <Grid.Triggers>
             <DataTrigger TargetType="Grid" Binding="{Binding Sender}" Value="{x:Static models:MessageSender.User}">
@@ -87,17 +100,22 @@
                             <Setter Property="Padding" Value="8, 0"/>
                         </DataTrigger>
                         <DataTrigger TargetType="Border" Binding="{Binding Sender}" Value="{x:Static models:MessageSender.User}">
+                            <Setter Property="BackgroundColor" Value="{StaticResource SurfaceContainerDark}"/>
                             <Setter Property="HorizontalOptions" Value="End"/>
                         </DataTrigger>
                     </Border.Triggers>
-                    <Grid>
-                        <Label Text="{Binding Text}"/>
-
-                        <!--<plainer:EditorView
-                            AutoSize="TextChanges" Margin="0" BackgroundColor="Transparent" IsReadOnly="True" Text="{Binding Text}"/>-->
-
-
-                    </Grid>
+                    <ContentView>
+                        <ContentView>
+                            <ContentView.Triggers>
+                                <DataTrigger TargetType="ContentView" Binding="{Binding Sender}" Value="{x:Static models:MessageSender.User}">
+                                    <Setter Property="ControlTemplate" Value="{StaticResource UserMessageTemplate}"/>
+                                </DataTrigger>
+                                <DataTrigger TargetType="ContentView" Binding="{Binding Sender}" Value="{x:Static models:MessageSender.Assistant}">
+                                    <Setter Property="ControlTemplate" Value="{StaticResource AssistantMessageTemplate}"/>
+                                </DataTrigger>
+                            </ContentView.Triggers>
+                        </ContentView>
+                    </ContentView>
                 </Border>
 
                 <Grid 

@@ -27,6 +27,7 @@ public partial class ConversationListItemView : ContentView
 
     private void ConversationTitleFocused(object sender, FocusEventArgs e)
     {
+        conversationTitleEntry.Text = _conversationViewModel!.Title;
         conversationTitleEntry.CursorPosition = conversationTitleEntry.Text.Length;
     }
 
@@ -40,8 +41,7 @@ public partial class ConversationListItemView : ContentView
     {
         OnActionButtonClicked();
 
-        conversationTitleEntry = FindByName("conversationTitle") as Entry;
-        conversationTitleEntry!.Focus();
+        conversationTitleEntry.Focus();
     }
 
     private void DeleteButtonClicked(object sender, EventArgs e)
@@ -66,7 +66,6 @@ public partial class ConversationListItemView : ContentView
             _conversationViewModel!.Title = conversationTitleEntry.Text.TrimStart().TrimEnd();
         }
 
-        conversationTitleEntry.Text = _conversationViewModel!.Title;
         _conversationViewModel!.EditingTitle = false;
     }
 

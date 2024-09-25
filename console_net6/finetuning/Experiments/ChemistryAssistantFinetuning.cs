@@ -20,7 +20,7 @@ namespace finetuning.Experiments
 {
     internal static class ChemistryAssistantFinetuning
     {
-        private static readonly string DefaultModelPath = @"https://huggingface.co/TheBloke/TinyLlama-1.1B-1T-OpenOrca-GGUF/resolve/main/tinyllama-1.1b-1t-openorca.Q8_0.gguf?download=true";
+        private static readonly string DefaultModelPath = @"https://huggingface.co/lm-kit/tinyllama-1.0-1.1b-chat-gguf/resolve/main/TinyLlama-1.0-1.1B-Chat-F16.gguf?download=true";
         private const string DatasetURI = "https://raw.githubusercontent.com/YuanTony/chemistry-assistant/main/fine-tune-model/train.txt";
         // Early-stop conditions
         private const float StopTrainingAtLoss = 0.01f;
@@ -83,14 +83,17 @@ namespace finetuning.Experiments
             // Finetuning to a LoRA adapter
             finetuning.Finetune2Lora("chemistryAssistant.lora.last.bin");
 
-            // Creating a model
-            Console.WriteLine("Creating a model...");
-            var merger = new LoraMerger(_model);
-            merger.AddLoraAdapter(new LoraAdapterSource(BestLoraPath, scale: _loraBestScale)); // Using the adapter with the best accuracy.
-            merger.Merge(NewModelPath);
-            Console.WriteLine($"Model created at {Path.GetFullPath(NewModelPath)}");
             Console.WriteLine("\nProcess terminated. Press any key to exit");
             _ = Console.ReadKey();
+        }
+
+        private static void BuildModel()
+        {
+            Console.WriteLine("Creating a model...");
+            var merger = new LoraMerger(_model);
+            merger.AddLoraAdapter(new LoraAdapterSource(BestLoraPath, scale: _loraBestScale)); //using the adapter having the best accuracy.
+            merger.Merge(NewModelPath);
+            Console.WriteLine($"Model created at {Path.GetFullPath(NewModelPath)}");
         }
 
         private static double ComputeAccuracy(string loraPath, float loraScale, out TimeSpan elapsed, out bool isBest)
@@ -245,6 +248,7 @@ namespace finetuning.Experiments
                         if (isBest)
                         {
                             e.SaveLoraCheckpoint(BestCheckpointPath);
+                            BuildModel();
                         }
                     }
                 }

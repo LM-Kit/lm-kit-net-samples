@@ -159,14 +159,13 @@
         <BoxView StyleClass="VerticalSeparator" Grid.RowSpan="2"/>
         <Grid RowDefinitions="*, auto" Grid.Column="1">
             <Grid Padding="8" ColumnDefinitions="*, auto">
-                <Label Text="Settings" VerticalOptions="Center"/>
+                <Label Style="{StaticResource Title}" Text="Settings" VerticalOptions="Center"/>
                 <Button 
-                    Padding="8, 4"
-                    VerticalOptions="Center"
-                    BackgroundColor="{StaticResource SecondaryDark}"
-                    TextColor="{StaticResource OnSecondaryDark}"
-                    CornerRadius="4"
-                    Text="Reset default settings" Command="{Binding ResetDefaultValuesCommand}" Grid.Column="1"/>
+                    ToolTipProperties.Text="Reset default settings"
+                    Style="{StaticResource SecondaryActionButtonStyle}"
+                    Text="{x:Static icons:MaterialRegular.Restart_alt}" 
+                    Command="{Binding ResetDefaultValuesCommand}" 
+                    Grid.Column="1"/>
             </Grid>
             <BoxView StyleClass="Separator" Grid.Row="1" Grid.ColumnSpan="2"/>
         </Grid>
