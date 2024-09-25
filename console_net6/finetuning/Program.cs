@@ -10,8 +10,8 @@ namespace finetuning
 
             // Uncomment the finetuning experiment you want to run:
 
-            //SentimentAnalysisFinetuning.RunTraining();
-            SarcasmDetectionFinetuning.RunTraining();
+            SentimentAnalysisFinetuning.RunTraining();
+            //SarcasmDetectionFinetuning.RunTraining();
             //ChemistryAssistantFinetuning.RunTraining();
         }
     }

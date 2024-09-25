@@ -67,7 +67,7 @@ namespace finetuning.Experiments
                                                          neutralSupport: NeutralSentimentSupport);
 
             finetuning.BatchSize = 8;
-            finetuning.Iterations = 1000;
+            finetuning.Iterations = 2000;
             finetuning.ContextSize = 128;
 
             finetuning.TrainingCheckpoint = ""; //can be used to resume a previous training session.

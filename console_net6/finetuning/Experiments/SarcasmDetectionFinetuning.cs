@@ -15,7 +15,7 @@ namespace finetuning.Experiments
 {
     internal static class SarcasmDetectionFinetuning
     {
-        private static readonly string DefaultModelPath = @"d:\sarcasmDetection.best_accuracy.gguf";
+        private static readonly string DefaultModelPath = @"https://huggingface.co/lm-kit/tinyllama-1.0-1.1b-chat-gguf/resolve/main/TinyLlama-1.0-1.1B-Chat-F16.gguf?download=true";
 
         // Early-stop conditions
         private const float StopTrainingAtLoss = 0.01f;
@@ -57,19 +57,21 @@ namespace finetuning.Experiments
             var finetuning = engine.CreateTrainingObject(TrainingDataset.OpenAIEvalsSarcasm,
                                                          maxSamples: 2000,
                                                          shuffle: true,
-                                                         seed: 555);
+                                                         seed: 923);
 
-            finetuning.Iterations = 10000;
+            finetuning.Iterations = 20000;
             finetuning.ContextSize = 128;
 
             finetuning.TrainingCheckpoint = ""; //can be used to resume a previous training session.
 
             finetuning.LoraTrainingParameters.AdamAlpha = 0.0002f;
-            finetuning.BatchSize = 24;
+            finetuning.BatchSize = 8;
 
-    
+            if (SystemUtils.GetTotalMemoryGB() >= 30 &&
+                _model.ParameterCount < 2000000000)
+            {
                 finetuning.UseGradientCheckpointing = false; // switch back to true if the training process consumes all the memory.
-          
+            }
 
             _ = finetuning.FilterSamplesBySize(0, finetuning.ContextSize);
 

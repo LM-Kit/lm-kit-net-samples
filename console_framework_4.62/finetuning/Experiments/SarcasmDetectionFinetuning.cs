@@ -62,7 +62,7 @@ namespace finetuning.Experiments
                                                          shuffle: true,
                                                          seed: 923);
 
-            finetuning.Iterations = 10000;
+            finetuning.Iterations = 20000;
             finetuning.ContextSize = 128;
 
             finetuning.TrainingCheckpoint = ""; //can be used to resume a previous training session.
