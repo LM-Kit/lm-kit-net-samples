@@ -20,7 +20,7 @@ namespace finetuning.Experiments
 {
     internal static class ChemistryAssistantFinetuning
     {
-        private static readonly string DefaultModelPath = @"https://huggingface.co/lm-kit/tinyllama-1.0-1.1b-chat-gguf/resolve/main/TinyLlama-1.0-1.1B-Chat-F16.gguf?download=true";
+        private static readonly string DefaultModelPath = @"https://huggingface.co/lm-kit/llama-3.2-1b-instruct.gguf/resolve/main/Llama-3.2-1B-Instruct-F16.gguf?download=true";
         private const string DatasetURI = "https://raw.githubusercontent.com/YuanTony/chemistry-assistant/main/fine-tune-model/train.txt";
         // Early-stop conditions
         private const float StopTrainingAtLoss = 0.01f;

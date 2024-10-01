@@ -2,10 +2,10 @@
 using LMKit.Model;
 using LMKit.TextGeneration;
 using LMKit.TextGeneration.Sampling;
-using System;
 using System.Collections.Generic;
-using System.IO;
-using System.Net;
+using System.Linq;
+using System.Net.Http;
+using System;
 using System.Text;
 using System.Text.RegularExpressions;
 using System.Threading;
@@ -17,8 +17,9 @@ namespace web_content_info_extractor_to_json
         static readonly string DEFAULT_LLAMA3_1_8B_MODEL_PATH = @"https://huggingface.co/lm-kit/llama-3.1-8b-instruct-gguf/resolve/main/Llama-3.1-8B-Instruct-Q4_K_M.gguf?download=true";
         static readonly string DEFAULT_GEMMA2_9B_MODEL_PATH = @"https://huggingface.co/lm-kit/gemma-2-9b-gguf/resolve/main/gemma-2-9B-Q4_K_M.gguf?download=true";
         static readonly string DEFAULT_PHI3_5_MINI_3_8B_MODEL_PATH = @"https://huggingface.co/lm-kit/phi-3.5-mini-3.8b-instruct-gguf/resolve/main/Phi-3.5-mini-Instruct-Q4_K_M.gguf?download=true";
-        static readonly string DEFAULT_QWEN2_7B_MODEL_PATH = @"https://huggingface.co/lm-kit/qwen-2-7b-instruct-gguf/resolve/main/Qwen-2-7B-Instruct-Q4_K_M.gguf?download=true";
+        static readonly string DEFAULT_QWEN2_5_7B_MODEL_PATH = @"https://huggingface.co/lm-kit/qwen-2.5-7b-instruct-gguf/resolve/main/Qwen-2.5-7B-Instruct-Q4_K_M.gguf?download=true";
         static readonly string DEFAULT_MISTRAL_NEMO_12_2B_MODEL_PATH = @"https://huggingface.co/lm-kit/mistral-nemo-2407-12.2b-instruct-gguf/resolve/main/Mistral-Nemo-2407-12.2B-Instruct-Q4_K_M.gguf?download=true";
+        static readonly string DEFAULT_LLAMA_3_2_1B_MODEL_PATH = @"https://huggingface.co/lm-kit/llama-3.2-1b-instruct.gguf/resolve/main/Llama-3.2-1B-Instruct-Q4_K_M.gguf?download=true";
         static bool _isDownloading;
 
         private static bool ModelDownloadingProgress(string path, long? contentLength, long bytesRead)
@@ -72,7 +73,8 @@ namespace web_content_info_extractor_to_json
             Console.WriteLine("1 - Meta Llama 3.1 8B (requires approximately 6 GB of VRAM)");
             Console.WriteLine("2 - Google Gemma2 9B Medium (requires approximately 7 GB of VRAM)");
             Console.WriteLine("3 - Microsoft Phi-3.5 3.82B Mini (requires approximately 3.3 GB of VRAM)");
-            Console.WriteLine("4 - Alibaba Qwen-2 7.6B (requires approximately 5.6 GB of VRAM)");
+            Console.WriteLine("4 - Alibaba Qwen-2.5 7.6B (requires approximately 5.6 GB of VRAM)");
+            Console.WriteLine("5 - Meta Llama 3.2 1B (requires approximately 1 GB of VRAM)");
             Console.Write("Other entry: A custom model URI\n\n> ");
 
             string input = Console.ReadLine();
@@ -93,7 +95,10 @@ namespace web_content_info_extractor_to_json
                     modelLink = DEFAULT_PHI3_5_MINI_3_8B_MODEL_PATH;
                     break;
                 case "4":
-                    modelLink = DEFAULT_QWEN2_7B_MODEL_PATH;
+                    modelLink = DEFAULT_QWEN2_5_7B_MODEL_PATH;
+                    break;
+                case "5":
+                    modelLink = DEFAULT_LLAMA_3_2_1B_MODEL_PATH;
                     break;
                 default:
                     modelLink = input.Trim().Trim('"'); ;
@@ -109,7 +114,6 @@ namespace web_content_info_extractor_to_json
 
             Console.Clear();
 
-
             SingleTurnConversation chat = new SingleTurnConversation(model)
             {
                 MaximumCompletionTokens = 256,
@@ -122,6 +126,7 @@ namespace web_content_info_extractor_to_json
 'Language': The language in which the content is written.
 'Audience': The intended or target audience for the content."
             };
+
 
             chat.Grammar = Grammar.CreateJsonGrammarFromTextFields(new string[] { "Primary Topic", "Domain or Field", "Language", "Audience" });
 
@@ -187,16 +192,14 @@ namespace web_content_info_extractor_to_json
             doc.LoadHtml(html);
             StringBuilder result = new StringBuilder();
 
-            IEnumerable<HtmlNode> nodes = doc.DocumentNode.Descendants();
+            IEnumerable<HtmlNode> nodes = doc.DocumentNode.Descendants().Where(n =>
+                                          n.NodeType == HtmlNodeType.Text &&
+                                          n.ParentNode.Name != "script" &&
+                                          n.ParentNode.Name != "style");
 
             foreach (HtmlNode node in nodes)
             {
-                if (node.NodeType == HtmlNodeType.Text &&
-                    node.ParentNode.Name != "script" &&
-                    node.ParentNode.Name != "style")
-                {
-                    result.Append(node.InnerText);
-                }
+                result.Append(node.InnerText);
             }
 
             return NormalizeSpacings(result.ToString());
@@ -204,16 +207,11 @@ namespace web_content_info_extractor_to_json
 
         private static string DownloadContent(Uri uri)
         {
-            string tmpFile = Path.GetTempFileName();
-            try
+            using (var client = new HttpClient())
             {
-                using (var client = new WebClient())
-                {
-                    client.Headers.Add("User-Agent: Other");
-                    client.DownloadFile(uri, tmpFile);
-                }
+                client.DefaultRequestHeaders.Add("User-Agent", "Other");
 
-                string content = File.ReadAllText(tmpFile);
+                string content = client.GetStringAsync(uri).Result;
 
                 if (string.IsNullOrWhiteSpace(content))
                 {
@@ -221,10 +219,6 @@ namespace web_content_info_extractor_to_json
                 }
 
                 return content;
-            }
-            finally
-            {
-                File.Delete(tmpFile);
             }
         }
 

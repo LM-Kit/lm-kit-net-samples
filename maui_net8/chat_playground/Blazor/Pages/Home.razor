@@ -15,9 +15,17 @@
 @inject IResizeHandler ResizeHandler
 @inject ILogger<Home> Logger
 
-<div id="chatArea" d-flex flex-grow-1 flex-row class="main-div">
-    <MudButton @onclick=OnScrollToEndButtonClicked>Scroll</MudButton>
-    <div @ref="_chatHistoryDiv" class="message-list-div">
+<div id="container">
+    <div id="chat-info">
+        <div id="scroll-to-end">
+            @if (!IsScrolledToEnd)
+            {
+                <MudFab @onclick="OnScrollToEndButtonClicked" StartIcon="@Icons.Material.Outlined.ArrowDownward" />
+            }
+        </div>
+    </div>
+
+    <div @ref="_chatHistoryDiv" id="message-list">
         @if (Conversation != null)
         {
             <MudStack Spacing="4">
@@ -31,30 +39,48 @@
 </div>
 
 <style>
-    .main-div {
+    #container {
         height: 100vh;
         background-color: #141318;
+        position: relative;
     }
 
-    .message-list-div {
+    #message-list {
         max-width: 800px;
+        overflow-y: scroll;
         margin: auto;
         padding: 8px;
-        background-color: #141318;
+        background-color: transparent;
+    }
+
+    #chat-info {
+        background-color: transparent;
+        left: 50%;
+        transform: translate(-50%, 0);
+        position: fixed;
+        bottom: 0;
+    }
+
+    #scroll-to-end {
+        display: block;
+        margin-left: auto;
+        margin-right: auto;
+        background-color: #201F24;
     }
 </style>
 
 @code
 {
-    private double? _previousScrollY;
+    private bool _ignoreScrollsUntilNextScrollUp;
+    private double? _previousScrollTop;
     private bool _shouldAutoScroll;
-    private double _chatContentHeight;
-    private double _scrollY;
-    private double _windowHeight;
+    private double _scrollTop;
 
     private ElementReference _chatHistoryDiv;
 
     private ConversationViewModel? _conversation;
+
+    public bool IsScrolledToEnd { get; set; }
 
     public ConversationViewModel? Conversation
     {
@@ -72,13 +98,13 @@
                 _conversation.Messages.CollectionChanged += OnConversationMessagesCollectionChanged;
             }
 
-            _previousScrollY = null;
+            _previousScrollTop = null;
+            _ignoreScrollsUntilNextScrollUp = true;
+            IsScrolledToEnd = true;
+
             StateHasChanged();
-            RefreshViewInfo();
         }
     }
-
-    public bool IsScrolledToEnd { get; set; }
 
     protected override async void OnInitialized()
     {
@@ -136,63 +162,77 @@
 
     private async Task PageScrolled(Majorsoft.Blazor.Components.Common.JsInterop.Scroll.ScrollEventArgs args)
     {
-        StateHasChanged();
-        CheckIsScrolledToEnd();
-        _scrollY = args.Y;
+        _scrollTop = args.Y;
 
-        if (_previousScrollY != null)
+        bool shouldCheckIsScrolledToEnd = true;
+        bool? isScrollUp = null;
+
+        if (_previousScrollTop != null)
         {
-            bool isScrollUp = args.Y < _previousScrollY;
+            isScrollUp = args.Y < _previousScrollTop;
 
-            if (isScrollUp && _shouldAutoScroll)
+            if (isScrollUp.Value && _shouldAutoScroll)
             {
                 _shouldAutoScroll = false;
             }
         }
 
-        _previousScrollY = args.Y;
+        if (_ignoreScrollsUntilNextScrollUp)
+        {
+            if (isScrollUp == null || !isScrollUp.Value)
+            {
+                shouldCheckIsScrolledToEnd = false;
+            }
+            else
+            {
+                _ignoreScrollsUntilNextScrollUp = false;
+            }
+        }
+
+        if (shouldCheckIsScrolledToEnd)
+        {
+            await CheckIsScrolledToEnd();
+            StateHasChanged();
+        }
+
+        _previousScrollTop = _scrollTop;
     }
 
     private async Task Resized(ResizeEventArgs args)
     {
-        RetrieveViewHeight();
-        RetrieveChatHistoryHeight();
-        CheckIsScrolledToEnd();
+        if (IsScrolledToEnd)
+        {
+            await ScrollToEnd(false);
+        }
+        else
+        {
+            await CheckIsScrolledToEnd();
+        }
     }
 
     private async Task ScrollToEnd(bool animate = false)
     {
-        await ScrollHandler.ScrollToPageEndAsync();
+        IsScrolledToEnd = true;
+        _ignoreScrollsUntilNextScrollUp = true;
+
+        await ScrollHandler.ScrollToPageEndAsync(animate);
     }
 
-    private void CheckIsScrolledToEnd()
+    private async Task CheckIsScrolledToEnd()
     {
-        IsScrolledToEnd = _chatContentHeight - _windowHeight <= _scrollY;
-        Logger.LogWarning($"[{IsScrolledToEnd}]  {_chatContentHeight} - {_windowHeight}  : {_scrollY}");
-    }
+        var clientHeight = await JS.InvokeAsync<double>("getViewHeight");
+        var chatContentHeight = await JS.InvokeAsync<double>("getScrollHeight");
 
-    private async void RetrieveViewHeight()
-    {
-        _windowHeight = await JS.InvokeAsync<double>("getViewHeight");
-    }
+        IsScrolledToEnd = Math.Abs(chatContentHeight - clientHeight - _scrollTop) < 5 || chatContentHeight <= clientHeight;
 
-    private async void RetrieveChatHistoryHeight()
-    {
-        _chatContentHeight = await JS.InvokeAsync<double>("getChatHistoryHeight");
-        var rect = await _chatHistoryDiv.GetClientRectAsync();
-        _chatContentHeight = rect.Height;
-    }
-
-    private void RefreshViewInfo()
-    {
-        RetrieveChatHistoryHeight();
-        RetrieveViewHeight();
-        CheckIsScrolledToEnd();
+        if (IsScrolledToEnd && _conversation != null && _conversation!.AwaitingResponse)
+        {
+            _shouldAutoScroll |= true;
+        }
     }
 
     public async void OnScrollToEndButtonClicked()
     {
-        await ScrollHandler.ScrollToPageEndAsync();
-        RefreshViewInfo();
+        await ScrollToEnd(true);
     }
 }

@@ -29,23 +29,71 @@
     <script src="_content/MudBlazor/MudBlazor.min.js"></script>
 
     <script>
-        Blazor.registerCustomEventType('cityclicked', {
-            createEventArgs: event => {
-                return {
-                    id: event.detail
-                };
-            }
-        });
+        //Blazor.registerCustomEventType('contentIsScrolledToEnd', {
+        //    createEventArgs: event => {
+        //        return {
+        //            id: event.detail
+        //        };
+        //    }
+        //});
+
+        function addCustomEventListener(dotNetObjectRef) {
+            document.addEventListener('contentIsScrolledToEnd', (event) => {
+                // Calls a method by name with the [JSInokable] attribute (above)
+                dotNetObjectRef.invokeMethodAsync('OnCustomEvent')
+            });
+        }
+
+        // JS file or script tag
+        function getScrollPosition(elementId) {
+            let element = document.getElementById(elementId);
+
+            return {
+                scrollTop: element.scrollTop,
+                scrollLeft: element.scrollLeft,
+                scrollHeight: element.scrollHeight,
+                clientHeight: element.clientHeight
+            };
+        }
+
+        getScrollHeight = () => {
+            const element = document.getElementById("message-list");
+
+            return element.scrollHeight;
+        };
+
+
+        getScrollTop = () => {
+            const element = document.getElementById("message-list");
+
+            return element.offsetTop - document.body.scrollTop;
+            //return window.scrollTop;
+        };
 
         getViewHeight = () => {
             return window.innerHeight;
         };
 
-        checkIsWindowScrolledToEnd = () => {
+        document.getElementById('message-list').addEventListener('scroll', event => {
+            const { scrollHeight, scrollTop, clientHeight } = event.target;
+
+
+            if (Math.abs(scrollHeight - clientHeight - scrollTop) < 1) {
+
+                dispatchEvent(new Event("contentIsScrolledToEnd", { isScrolledToEnd: true }));
+            }
+            else {
+                dispatchEvent(new Event("contentIsScrolledToEnd", { isScrolledToEnd: false }));
+            }
+        });
+
+        checkIsViewScrolledToEnd = () => {
 
             //if ((window.innerHeight + window.scrollY) >= document.body.offsetHeight) {
             //    alert("ih " + window.innerHeight + "sy " + window.scrollY + "oh " + document.body.offsetHeight);
             //}
+
+            return Math.abs(element.scrollHeight - element.clientHeight - element.scrollTop) < 1
 
             return window.innerHeight + window.scrollY >= document.body.offsetHeight;
         };

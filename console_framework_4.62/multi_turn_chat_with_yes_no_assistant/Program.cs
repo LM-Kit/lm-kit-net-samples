@@ -13,7 +13,7 @@ namespace multi_turn_chat_with_yes_no_assistant
         static readonly string DEFAULT_LLAMA3_1_8B_MODEL_PATH = @"https://huggingface.co/lm-kit/llama-3.1-8b-instruct-gguf/resolve/main/Llama-3.1-8B-Instruct-Q4_K_M.gguf?download=true";
         static readonly string DEFAULT_GEMMA2_9B_MODEL_PATH = @"https://huggingface.co/lm-kit/gemma-2-9b-gguf/resolve/main/gemma-2-9B-Q4_K_M.gguf?download=true";
         static readonly string DEFAULT_PHI3_5_MINI_3_8B_MODEL_PATH = @"https://huggingface.co/lm-kit/phi-3.5-mini-3.8b-instruct-gguf/resolve/main/Phi-3.5-mini-Instruct-Q4_K_M.gguf?download=true";
-        static readonly string DEFAULT_QWEN2_7B_MODEL_PATH = @"https://huggingface.co/lm-kit/qwen-2-7b-instruct-gguf/resolve/main/Qwen-2-7B-Instruct-Q4_K_M.gguf?download=true";
+        static readonly string DEFAULT_QWEN2_5_7B_MODEL_PATH = @"https://huggingface.co/lm-kit/qwen-2.5-7b-instruct-gguf/resolve/main/Qwen-2.5-7B-Instruct-Q4_K_M.gguf?download=true";
         static readonly string DEFAULT_MISTRAL_NEMO_12_2B_MODEL_PATH = @"https://huggingface.co/lm-kit/mistral-nemo-2407-12.2b-instruct-gguf/resolve/main/Mistral-Nemo-2407-12.2B-Instruct-Q4_K_M.gguf?download=true";
         static bool _isDownloading;
 
@@ -58,7 +58,7 @@ namespace multi_turn_chat_with_yes_no_assistant
             Console.WriteLine("1 - Meta Llama 3.1 8B (requires approximately 6 GB of VRAM)");
             Console.WriteLine("2 - Google Gemma2 9B Medium (requires approximately 7 GB of VRAM)");
             Console.WriteLine("3 - Microsoft Phi-3.5 3.82B Mini (requires approximately 3.3 GB of VRAM)");
-            Console.WriteLine("4 - Alibaba Qwen-2 7.6B (requires approximately 5.6 GB of VRAM)");
+            Console.WriteLine("4 - Alibaba Qwen-2.5 7.6B (requires approximately 5.6 GB of VRAM)");
             Console.Write("Other entry: A custom model URI\n\n> ");
 
             string input = Console.ReadLine();
@@ -79,7 +79,7 @@ namespace multi_turn_chat_with_yes_no_assistant
                     modelLink = DEFAULT_PHI3_5_MINI_3_8B_MODEL_PATH;
                     break;
                 case "4":
-                    modelLink = DEFAULT_QWEN2_7B_MODEL_PATH;
+                    modelLink = DEFAULT_QWEN2_5_7B_MODEL_PATH;
                     break;
                 default:
                     modelLink = input.Trim().Trim('"');;
