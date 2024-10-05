@@ -5,6 +5,7 @@ Get started with the **LM-Kit Community Edition** today and gain access to power
 👉 [Claim Your Free License Now!](https://lm-kit.com/products/community-edition/)
 
 # 🚀 **NEW** 
+- [Dynamic Sampling](https://lm-kit.com/blog/introducing-dynamic-sampling/)
 - Function Calling Support
 - Vulkan Backend
 
