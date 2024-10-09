@@ -8,11 +8,7 @@ namespace sentiment_analysis
 {
     internal class Program
     {
-        /*
-            # Note: This model has been fine-tuned specifically for the English language. 
-            # For processing multilingual input, please use another model such as LLama3.
-         */
-        static readonly string DEFAULT_MODEL_PATH = @"https://huggingface.co/lm-kit/LM-Kit.Sentiment_Analysis-TinyLlama-1.1B-1T-OpenOrca-en-q4/resolve/main/LM-Kit.Sentiment_Analysis-TinyLlama-1.1B-1T-OpenOrca-en-q4.gguf?download=true";
+        static readonly string DEFAULT_MODEL_PATH = @"https://huggingface.co/lm-kit/lm-kit-sentiment-analysis-2.0-1b-gguf/resolve/main/lm-kit-sentiment-analysis-2.0-1b-q4.gguf?download=true";
         static bool _isDownloading;
 
         private static bool ModelDownloadingProgress(string path, long? contentLength, long bytesRead)
@@ -63,7 +59,7 @@ namespace sentiment_analysis
 
             SentimentAnalysis classifier = new SentimentAnalysis(model)
             {
-                NeutralSupport = false
+                NeutralSupport = false 
             };
 
 
