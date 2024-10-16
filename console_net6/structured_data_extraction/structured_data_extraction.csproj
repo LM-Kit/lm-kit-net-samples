@@ -6,9 +6,23 @@
     <ImplicitUsings>enable</ImplicitUsings>
   </PropertyGroup>
 
+
   <ItemGroup>
 		<PackageReference Include="LM-Kit.NET" Version="2024.10.3" />
 		<PackageReference Include="LM-Kit.NET.Backend.Cuda12.Windows" Version="2024.10.3" />
+  </ItemGroup>
+
+
+  <ItemGroup>
+    <None Update="examples\invoice.txt">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </None>
+    <None Update="examples\job_offer.txt">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </None>
+    <None Update="examples\medical_record.txt">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </None>
   </ItemGroup>
 
 </Project>

@@ -4,10 +4,10 @@
   <PropertyGroup>
     <Configuration Condition=" '$(Configuration)' == '' ">Debug</Configuration>
     <Platform Condition=" '$(Platform)' == '' ">AnyCPU</Platform>
-    <ProjectGuid>{9D9C9C38-7D20-4A0B-B4E2-040788537D43}</ProjectGuid>
+    <ProjectGuid>{A5049DF9-8B22-4225-B5E9-4E705C312051}</ProjectGuid>
     <OutputType>Exe</OutputType>
-    <RootNamespace>multi_turn_chat_with_persistent_session</RootNamespace>
-    <AssemblyName>multi_turn_chat_with_persistent_session</AssemblyName>
+    <RootNamespace>structured_data_extraction</RootNamespace>
+    <AssemblyName>structured_data_extraction</AssemblyName>
     <TargetFrameworkVersion>v4.6.2</TargetFrameworkVersion>
     <FileAlignment>512</FileAlignment>
     <AutoGenerateBindingRedirects>true</AutoGenerateBindingRedirects>
@@ -88,6 +88,16 @@
 
 
   </ItemGroup>
-  <ItemGroup />
+  <ItemGroup>
+    <Content Include="examples\invoice.txt">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </Content>
+    <Content Include="examples\job_offer.txt">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </Content>
+    <Content Include="examples\medical_record.txt">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </Content>
+  </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
 </Project>
