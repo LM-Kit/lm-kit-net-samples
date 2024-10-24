@@ -51,7 +51,7 @@ TOTAL:      €1,044
 Payment Instructions:  
 Bank Name: XYZ Bank  
 Account #: 123456789  
-IBAN: FR76 1234 5678 9012 3456 7890 123  
+IBAN: FR38 1756 9000 4038 9836 6166 K21  
 BIC: XYZBFRPP  
 
 Terms:  

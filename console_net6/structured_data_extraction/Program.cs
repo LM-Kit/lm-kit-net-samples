@@ -12,6 +12,7 @@ namespace structured_data_extraction
         static readonly string DEFAULT_GEMMA2_9B_MODEL_PATH = @"https://huggingface.co/lm-kit/gemma-2-9b-gguf/resolve/main/gemma-2-9B-Q4_K_M.gguf?download=true";
         static readonly string DEFAULT_PHI3_5_MINI_3_8B_MODEL_PATH = @"https://huggingface.co/lm-kit/phi-3.5-mini-3.8b-instruct-gguf/resolve/main/Phi-3.5-mini-Instruct-Q4_K_M.gguf?download=true";
         static readonly string DEFAULT_QWEN2_5_7B_MODEL_PATH = @"https://huggingface.co/lm-kit/qwen-2.5-7b-instruct-gguf/resolve/main/Qwen-2.5-7B-Instruct-Q4_K_M.gguf?download=true";
+        static readonly string DEFAULT_QWEN2_5_05B_MODEL_PATH = @"https://huggingface.co/lm-kit/qwen-2.5-0.5b-instruct-gguf/resolve/main/Qwen-2.5-0.5B-Instruct-Q4_K_M.gguf?download=true";
         static readonly string DEFAULT_MISTRAL_NEMO_12_2B_MODEL_PATH = @"https://huggingface.co/lm-kit/mistral-nemo-2407-12.2b-instruct-gguf/resolve/main/Mistral-Nemo-2407-12.2B-Instruct-Q4_K_M.gguf?download=true";
         static readonly string DEFAULT_LLAMA_3_2_1B_MODEL_PATH = @"https://huggingface.co/lm-kit/llama-3.2-1b-instruct.gguf/resolve/main/Llama-3.2-1B-Instruct-Q4_K_M.gguf?download=true";
         static bool _isDownloading;
@@ -59,7 +60,8 @@ namespace structured_data_extraction
             Console.WriteLine("2 - Google Gemma2 9B Medium (requires approximately 7 GB of VRAM)");
             Console.WriteLine("3 - Microsoft Phi-3.5 3.82B Mini (requires approximately 3.3 GB of VRAM)");
             Console.WriteLine("4 - Alibaba Qwen-2.5 7.6B (requires approximately 5.6 GB of VRAM)");
-            Console.WriteLine("5 - Meta Llama 3.2 1B (requires approximately 1 GB of VRAM)");
+            Console.WriteLine("5 - Alibaba Qwen-2.5 0.5.6B (requires approximately 0.8 GB of VRAM)");
+            Console.WriteLine("6 - Meta Llama 3.2 1B (requires approximately 1 GB of VRAM)");
             Console.Write("Other entry: A custom model URI\n\n> ");
 
             string input = Console.ReadLine();
@@ -83,6 +85,9 @@ namespace structured_data_extraction
                     modelLink = DEFAULT_QWEN2_5_7B_MODEL_PATH;
                     break;
                 case "5":
+                    modelLink = DEFAULT_QWEN2_5_05B_MODEL_PATH;
+                    break;
+                case "6":
                     modelLink = DEFAULT_LLAMA_3_2_1B_MODEL_PATH;
                     break;
                 default:
@@ -143,7 +148,7 @@ namespace structured_data_extraction
                     UseShellExecute = true
                 });
 
-                
+
                 Console.WriteLine("Extracting content...\n");
                 Stopwatch sw = Stopwatch.StartNew();
                 var result = textExtraction.Parse();
@@ -261,13 +266,19 @@ namespace structured_data_extraction
                 ));
 
                 // Payment information
+                var iban = new TextExtractionElement("IBAN", ElementType.String, "International Bank Account Number (IBAN) for the payment.");
+
+                iban.Format.CaseMode = TextExtractionElementFormat.TextCaseMode.UpperCase;
+                iban.Format.DisableSpacingCharacters = true;
+                iban.Format.MaxLength = 34;
+
                 elements.Add(new TextExtractionElement(
                     "Payment Information",
                     new List<TextExtractionElement>
                     {
                     new TextExtractionElement("Bank Name", ElementType.String, "Name of the vendor's bank."),
                     new TextExtractionElement("Bank Account No", ElementType.String, "Vendor's bank account number."),
-                    new TextExtractionElement("IBAN", ElementType.String, "International Bank Account Number (IBAN) for the payment."),
+                    iban,
                     new TextExtractionElement("BIC", ElementType.String, "Bank Identifier Code (BIC) for international transactions.")
                     },
                     isArray: false,
@@ -352,8 +363,8 @@ namespace structured_data_extraction
         new TextExtractionElement("Medication Name", ElementType.String, "Name of the medication prescribed."),
         new TextExtractionElement("Dosage", ElementType.String, "Dosage of the medication."),
         new TextExtractionElement("Frequency", ElementType.String, "Frequency of medication intake."),
-        new TextExtractionElement("Start Date", ElementType.Date, "Date when the medication was started."),
-        new TextExtractionElement("End Date", ElementType.Date, "Date when the medication should be stopped, if applicable.")
+        new TextExtractionElement("Start Date", ElementType.Date, "Date when the medication was started.")
+        
                 },
                 isArray: true,
                 "A list of medications the patient is currently taking."
