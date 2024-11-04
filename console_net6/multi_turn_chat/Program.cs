@@ -79,7 +79,7 @@ namespace multi_turn_chat
                     modelLink = DEFAULT_QWEN2_5_7B_MODEL_PATH;
                     break;
                 default:
-                    modelLink = input.Trim().Trim('"');;
+                    modelLink = input.Trim().Trim('"');
                     break;
             }
 
@@ -101,9 +101,10 @@ namespace multi_turn_chat
                 SystemPrompt = "You are a chatbot that always responds promptly and helpfully to user requests."
             };
 
+            
             chat.AfterTextCompletion += Chat_AfterTextCompletion;
 
-            bool regenerateMode = false;
+            string mode = "chat";
             string prompt = "Hello!";
 
             while (!string.IsNullOrWhiteSpace(prompt))
@@ -113,14 +114,19 @@ namespace multi_turn_chat
                 Console.ResetColor();
                 TextGenerationResult result;
 
-                if (regenerateMode)
+                if (mode == "regenerate")
                 {
-                    result = chat.RegenerateResponse(new CancellationTokenSource(TimeSpan.FromMinutes(2)).Token);
-                    regenerateMode = false;
+                    result = chat.RegenerateResponse(new CancellationTokenSource(TimeSpan.FromMinutes(2000)).Token);
+                    mode = "chat";
+                }
+                else if (mode == "continue")
+                {
+                    result = chat.ContinueLastAssistantResponse(new CancellationTokenSource(TimeSpan.FromMinutes(2000)).Token);
+                    mode = "chat";
                 }
                 else
                 {
-                    result = chat.Submit(prompt, new CancellationTokenSource(TimeSpan.FromMinutes(2)).Token);
+                    result = chat.Submit(prompt, new CancellationTokenSource(TimeSpan.FromMinutes(2000)).Token);
                 }
 
                 Console.Write($"\n(gen. tokens: {result.GeneratedTokens.Count} - stop reason: {result.TerminationReason} - quality score: {Math.Round(result.QualityScore, 2)} - speed: {Math.Round(result.TokenGenerationRate, 2)} tok/s - ctx usage: {result.ContextTokens.Count}/{result.ContextSize})");
@@ -136,7 +142,11 @@ namespace multi_turn_chat
                 }
                 else if (string.Compare(prompt, "/regenerate", ignoreCase: true) == 0)
                 {
-                    regenerateMode = true;
+                    mode = "regenerate";
+                }
+                else if (string.Compare(prompt, "/continue", ignoreCase: true) == 0)
+                {
+                    mode = "continue";
                 }
             }
 
@@ -148,6 +158,7 @@ namespace multi_turn_chat
         {
             Console.WriteLine("-- Special Prompts --");
             Console.WriteLine("Use '/reset' to start a fresh session.");
+            Console.WriteLine("Use '/continue' to continue last assistant message.");
             Console.WriteLine("Use '/regenerate' to obtain a new completion from the last input.\n\n");
         }
         private static void Chat_AfterTextCompletion(object sender, LMKit.TextGeneration.Events.AfterTextCompletionEventArgs e)

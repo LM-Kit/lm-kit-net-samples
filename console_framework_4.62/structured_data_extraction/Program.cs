@@ -4,8 +4,8 @@ using LMKit.Model;
 using System.Collections.Generic;
 using System;
 using System.Diagnostics;
-using System.IO;
 using System.Text;
+using System.IO;
 
 namespace structured_data_extraction
 {
@@ -143,21 +143,19 @@ namespace structured_data_extraction
 
                 Console.Clear();
 
-                textExtraction.SetContent(File.ReadAllText($"examples/{inputFileName}"));
+                string content = File.ReadAllText($"examples/{inputFileName}");
+                textExtraction.SetContent(content);
 
-                Process.Start(new ProcessStartInfo(Path.Combine("examples", inputFileName))
-                {
-                    Verb = "open",
-                    UseShellExecute = true
-                });
+                WriteColor("File content:\n", ConsoleColor.Green);
 
+                Console.Write(content);
 
-                Console.WriteLine("Extracting content...\n");
+                Console.WriteLine("\n\nExtracting elements...\n");
                 Stopwatch sw = Stopwatch.StartNew();
                 var result = textExtraction.Parse();
                 sw.Stop();
 
-                Console.WriteLine("\nExtracted elements:\n");
+                WriteColor("\nExtracted elements:\n", ConsoleColor.Green);
 
                 foreach (var item in result.Elements)
                 {
@@ -165,14 +163,12 @@ namespace structured_data_extraction
                     WriteColor($"{item.ToString()}", ConsoleColor.Blue);
                 }
 
-                Console.WriteLine("\nJSON:\n\n" + result.Json);
+                WriteColor("\nJSON:\n\n", ConsoleColor.Green);
+                Console.WriteLine(result.Json);
 
-                Console.WriteLine("\nExtraction done in " + sw.Elapsed.TotalSeconds.ToString() + " seconds.");
-
-                Console.WriteLine("Hit any key to continue");
+                WriteColor("\nExtraction done in " + sw.Elapsed.TotalSeconds.ToString() + " seconds. Hit any key to continue", ConsoleColor.Green);
                 Console.ReadKey();
             }
-
         }
 
         private static void WriteColor(string text, ConsoleColor color, bool addNL = true)
@@ -367,7 +363,7 @@ namespace structured_data_extraction
         new TextExtractionElement("Dosage", ElementType.String, "Dosage of the medication."),
         new TextExtractionElement("Frequency", ElementType.String, "Frequency of medication intake."),
         new TextExtractionElement("Start Date", ElementType.Date, "Date when the medication was started.")
-        
+
                 },
                 isArray: true,
                 "A list of medications the patient is currently taking."
