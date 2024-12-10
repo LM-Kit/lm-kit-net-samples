@@ -125,19 +125,21 @@ namespace structured_data_extraction
 
                 string content = File.ReadAllText(inputFilePath);
 
-                Console.WriteLine("\n\nExtracting keywords...\n");
+                Console.WriteLine($"\n\nTrying to extract {keywordExtraction.KeywordCount} keywords...\n");
                 Stopwatch sw = Stopwatch.StartNew();
                 var keywords = keywordExtraction.ExtractKeywords(content);
                 sw.Stop();
 
-                WriteColor("\nExtracted elements:\n", ConsoleColor.Green);
+                WriteColor("\nExtracted keywords:\n", ConsoleColor.Green);
 
                 foreach (var item in keywords)
                 {
                     Console.WriteLine($"{item.Value}");
                 }
 
-                WriteColor("\nExtraction done in " + sw.Elapsed.TotalSeconds.ToString() + " seconds | Confidence: " + Math.Round(keywordExtraction.Confidence, 2).ToString() + " | Hit any key to continue", ConsoleColor.Green);
+                int wordCount = content.Split(new string[] { " ", "\r\n", "\n", "\t" }, StringSplitOptions.RemoveEmptyEntries).Length;
+
+                WriteColor("\nExtraction done in " + sw.Elapsed.TotalSeconds.ToString() + " seconds | Word count: " + wordCount.ToString() + " | Confidence: " + Math.Round(keywordExtraction.Confidence, 2).ToString() + " | Hit any key to continue", ConsoleColor.Green);
                 Console.ReadKey();
             }
         }
