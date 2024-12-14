@@ -4,10 +4,10 @@
   <PropertyGroup>
     <Configuration Condition=" '$(Configuration)' == '' ">Debug</Configuration>
     <Platform Condition=" '$(Platform)' == '' ">AnyCPU</Platform>
-    <ProjectGuid>{5ABB27C4-7C7E-41AA-9449-FABBCA8ED050}</ProjectGuid>
+    <ProjectGuid>{814144FD-59F6-4254-860D-180DBACFC346}</ProjectGuid>
     <OutputType>Exe</OutputType>
-    <RootNamespace>text_corrector</RootNamespace>
-    <AssemblyName>text_corrector</AssemblyName>
+    <RootNamespace>text_summarizer</RootNamespace>
+    <AssemblyName>text_summarizer</AssemblyName>
     <TargetFrameworkVersion>v4.6.2</TargetFrameworkVersion>
     <FileAlignment>512</FileAlignment>
     <AutoGenerateBindingRedirects>true</AutoGenerateBindingRedirects>
