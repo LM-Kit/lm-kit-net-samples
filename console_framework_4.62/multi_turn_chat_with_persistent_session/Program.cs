@@ -49,7 +49,9 @@ namespace multi_turn_chat_with_persistent_session
 
         private static void Main(string[] args)
         {
-            LMKit.Licensing.LicenseManager.SetLicenseKey(""); //set an optional license key here if available.
+            // Set an optional license key here if available. 
+            // A free community license can be obtained from: https://lm-kit.com/products/community-edition/
+            LMKit.Licensing.LicenseManager.SetLicenseKey("");
             Console.InputEncoding = Encoding.UTF8;
             Console.OutputEncoding = Encoding.UTF8;
 
@@ -83,7 +85,7 @@ namespace multi_turn_chat_with_persistent_session
                     modelLink = DEFAULT_QWEN2_5_7B_MODEL_PATH;
                     break;
                 default:
-                    modelLink = input.Trim().Trim('"'); ;
+                    modelLink = input.Trim().Trim('"');
                     break;
             }
 
@@ -130,7 +132,7 @@ namespace multi_turn_chat_with_persistent_session
 
                 chat.AfterTextCompletion += Chat_AfterTextCompletion;
                 WriteColor("Assistant: ", ConsoleColor.Green, addNL: false);
-                chat.Submit("hello!");
+                _ = chat.Submit("hello!");
             }
 
             while (true)

@@ -2,7 +2,6 @@
 using LMKit.TextGeneration;
 using LMKit.TextGeneration.Sampling;
 using System;
-using System.IO;
 using System.Text;
 using System.Threading;
 
@@ -48,7 +47,9 @@ namespace multi_turn_chat_with_custom_sampling
 
         private static void Main(string[] args)
         {
-            LMKit.Licensing.LicenseManager.SetLicenseKey(""); //set an optional license key here if available.
+            // Set an optional license key here if available. 
+            // A free community license can be obtained from: https://lm-kit.com/products/community-edition/
+            LMKit.Licensing.LicenseManager.SetLicenseKey("");
             Console.InputEncoding = Encoding.UTF8;
             Console.OutputEncoding = Encoding.UTF8;
 
@@ -82,7 +83,7 @@ namespace multi_turn_chat_with_custom_sampling
                     modelLink = DEFAULT_QWEN2_5_7B_MODEL_PATH;
                     break;
                 default:
-                    modelLink = input.Trim().Trim('"');;
+                    modelLink = input.Trim().Trim('"');
                     break;
             }
 
@@ -95,7 +96,7 @@ namespace multi_turn_chat_with_custom_sampling
             Console.Clear();
             ShowSpecialPrompts();
 
-            MultiTurnConversation chat = new MultiTurnConversation(model, contextSize: 2048)
+            MultiTurnConversation chat = new MultiTurnConversation(model)
             {
                 SystemPrompt = "You are an enthusiastic pet lover chatbot, dedicated to responding promptly and helpfully to every user request.",
                 MaximumCompletionTokens = 1000,

@@ -2,7 +2,6 @@
 using LMKit.TextAnalysis;
 using System;
 using System.Diagnostics;
-using System.IO;
 using System.Text;
 
 namespace sarcasm_detection
@@ -47,7 +46,9 @@ namespace sarcasm_detection
 
         static void Main(string[] args)
         {
-            LMKit.Licensing.LicenseManager.SetLicenseKey(""); //set an optional license key here if available.
+            // Set an optional license key here if available. 
+            // A free community license can be obtained from: https://lm-kit.com/products/community-edition/
+            LMKit.Licensing.LicenseManager.SetLicenseKey("");
             Console.InputEncoding = Encoding.UTF8;
             Console.OutputEncoding = Encoding.UTF8;
 

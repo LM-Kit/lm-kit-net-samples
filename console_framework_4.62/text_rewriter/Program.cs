@@ -1,7 +1,6 @@
 ﻿using LMKit.Model;
 using LMKit.TextEnhancement;
 using System;
-using System.IO;
 using System.Text;
 using System.Threading;
 
@@ -52,7 +51,9 @@ namespace text_rewriter
 
         static void Main(string[] args)
         {
-            LMKit.Licensing.LicenseManager.SetLicenseKey(""); //set an optional license key here if available.
+            // Set an optional license key here if available. 
+            // A free community license can be obtained from: https://lm-kit.com/products/community-edition/
+            LMKit.Licensing.LicenseManager.SetLicenseKey("");
             Console.InputEncoding = Encoding.UTF8;
             Console.OutputEncoding = Encoding.UTF8;
             var language = LMKit.TextGeneration.Language.English; //set end user language here.
@@ -87,7 +88,7 @@ namespace text_rewriter
                     modelLink = DEFAULT_QWEN2_5_7B_MODEL_PATH;
                     break;
                 default:
-                    modelLink = input.Trim().Trim('"');;
+                    modelLink = input.Trim().Trim('"');
                     break;
             }
 
@@ -99,7 +100,6 @@ namespace text_rewriter
 
             Console.Clear();
             TextRewriter rewriter = new TextRewriter(model);
-
             rewriter.AfterTextCompletion += Rewrite_AfterTextCompletion;
             int correctionCount = 0;
 

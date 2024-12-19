@@ -45,7 +45,9 @@ namespace multi_turn_chat
 
         private static void Main(string[] args)
         {
-            LMKit.Licensing.LicenseManager.SetLicenseKey(""); //set an optional license key here if available.
+            // Set an optional license key here if available. 
+            // A free community license can be obtained from: https://lm-kit.com/products/community-edition/
+            LMKit.Licensing.LicenseManager.SetLicenseKey("");
             Console.InputEncoding = Encoding.UTF8;
             Console.OutputEncoding = Encoding.UTF8;
 
@@ -91,7 +93,7 @@ namespace multi_turn_chat
 
             Console.Clear();
             ShowSpecialPrompts();
-            MultiTurnConversation chat = new MultiTurnConversation(model, contextSize: 2048)
+            MultiTurnConversation chat = new MultiTurnConversation(model, contextSize: LMKit.Graphics.DeviceConfiguration.GetOptimalContextSize())
             {
                 MaximumCompletionTokens = 1000,
                 SamplingMode = new RandomSampling()
@@ -101,7 +103,7 @@ namespace multi_turn_chat
                 SystemPrompt = "You are a chatbot that always responds promptly and helpfully to user requests."
             };
 
-            
+
             chat.AfterTextCompletion += Chat_AfterTextCompletion;
 
             string mode = "chat";

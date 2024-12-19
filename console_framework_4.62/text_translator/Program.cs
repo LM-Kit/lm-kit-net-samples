@@ -2,7 +2,6 @@
 using LMKit.TextGeneration;
 using LMKit.Translation;
 using System;
-using System.IO;
 using System.Text;
 using System.Threading;
 
@@ -54,7 +53,9 @@ namespace translator
 
         static void Main(string[] args)
         {
-            LMKit.Licensing.LicenseManager.SetLicenseKey(""); //set an optional license key here if available.
+            // Set an optional license key here if available. 
+            // A free community license can be obtained from: https://lm-kit.com/products/community-edition/
+            LMKit.Licensing.LicenseManager.SetLicenseKey("");
             Console.InputEncoding = Encoding.UTF8;
             Console.OutputEncoding = Encoding.UTF8;
             Language destLanguage = Language.English; //set destination language supported by your model here.
@@ -89,7 +90,7 @@ namespace translator
                     modelLink = DEFAULT_QWEN2_5_7B_MODEL_PATH;
                     break;
                 default:
-                    modelLink = input.Trim().Trim('"');;
+                    modelLink = input.Trim().Trim('"');
                     break;
             }
 

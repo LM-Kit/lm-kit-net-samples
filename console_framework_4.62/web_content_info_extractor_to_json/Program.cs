@@ -2,10 +2,10 @@
 using LMKit.Model;
 using LMKit.TextGeneration;
 using LMKit.TextGeneration.Sampling;
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Net.Http;
-using System;
 using System.Text;
 using System.Text.RegularExpressions;
 using System.Threading;
@@ -54,7 +54,9 @@ namespace web_content_info_extractor_to_json
 
         private static void Main(string[] args)
         {
-            LMKit.Licensing.LicenseManager.SetLicenseKey(""); //set an optional license key here if available.
+            // Set an optional license key here if available. 
+            // A free community license can be obtained from: https://lm-kit.com/products/community-edition/
+            LMKit.Licensing.LicenseManager.SetLicenseKey("");
             Console.InputEncoding = Encoding.UTF8;
             Console.OutputEncoding = Encoding.UTF8;
 
@@ -106,7 +108,7 @@ namespace web_content_info_extractor_to_json
                     modelLink = DEFAULT_LLAMA_3_2_1B_MODEL_PATH;
                     break;
                 default:
-                    modelLink = input.Trim().Trim('"'); ;
+                    modelLink = input.Trim().Trim('"');
                     break;
             }
 
@@ -129,11 +131,9 @@ namespace web_content_info_extractor_to_json
 'Primary Topic': The main subject or theme of the content.
 'Domain or Field': The area of knowledge or industry the content belongs to.
 'Language': The language in which the content is written.
-'Audience': The intended or target audience for the content."
+'Audience': The intended or target audience for the content.",
+                Grammar = Grammar.CreateJsonGrammarFromTextFields(new string[] { "Primary Topic", "Domain or Field", "Language", "Audience" })
             };
-
-
-            chat.Grammar = Grammar.CreateJsonGrammarFromTextFields(new string[] { "Primary Topic", "Domain or Field", "Language", "Audience" });
 
             chat.AfterTextCompletion += Chat_AfterTextCompletion;
 
@@ -204,7 +204,7 @@ namespace web_content_info_extractor_to_json
 
             foreach (HtmlNode node in nodes)
             {
-                result.Append(node.InnerText);
+                _ = result.Append(node.InnerText);
             }
 
             return NormalizeSpacings(result.ToString());

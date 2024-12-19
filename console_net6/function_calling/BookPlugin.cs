@@ -16,7 +16,7 @@ namespace function_calling
 
             HttpResponseMessage response = await client.GetAsync(url);
 
-            response.EnsureSuccessStatusCode();
+            _ = response.EnsureSuccessStatusCode();
 
             Stream content = await response.Content.ReadAsStreamAsync();
 
@@ -39,7 +39,7 @@ namespace function_calling
 
             HttpResponseMessage response = await client.GetAsync(url);
 
-            response.EnsureSuccessStatusCode();
+            _ = response.EnsureSuccessStatusCode();
 
             Stream content = await response.Content.ReadAsStreamAsync();
 
@@ -61,8 +61,7 @@ namespace function_calling
             {
                 JsonElement publishYearElement = docsArray[0].GetProperty("publish_year");
                 publish_year = publishYearElement[0].GetInt32().ToString();
-
-                if (docsArray[0].TryGetProperty("number_of_pages_median", out JsonElement pageCountMedElement))
+                if (docsArray[0].TryGetProperty("number_of_pages_median", out _))
                 {
                     number_of_pages_median = publishYearElement[0].GetInt32().ToString();
                 }
@@ -115,7 +114,7 @@ namespace function_calling
 
             HttpResponseMessage response = await client.GetAsync(url);
 
-            response.EnsureSuccessStatusCode();
+            _ = response.EnsureSuccessStatusCode();
 
             Stream content = await response.Content.ReadAsStreamAsync();
 
@@ -156,7 +155,7 @@ namespace function_calling
 
             HttpResponseMessage response = await client.GetAsync(url);
 
-            response.EnsureSuccessStatusCode();
+            _ = response.EnsureSuccessStatusCode();
 
             Stream content = await response.Content.ReadAsStreamAsync();
 

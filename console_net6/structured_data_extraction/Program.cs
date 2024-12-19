@@ -48,7 +48,9 @@ namespace structured_data_extraction
 
         private static void Main(string[] args)
         {
-            LMKit.Licensing.LicenseManager.SetLicenseKey(""); //set an optional license key here if available.
+            // Set an optional license key here if available. 
+            // A free community license can be obtained from: https://lm-kit.com/products/community-edition/
+            LMKit.Licensing.LicenseManager.SetLicenseKey("");
             Console.InputEncoding = Encoding.UTF8;
             Console.OutputEncoding = Encoding.UTF8;
 
@@ -91,7 +93,7 @@ namespace structured_data_extraction
                     modelLink = DEFAULT_LLAMA_3_2_1B_MODEL_PATH;
                     break;
                 default:
-                    modelLink = input.Trim().Trim('"'); ;
+                    modelLink = input.Trim().Trim('"');
                     break;
             }
 
@@ -157,14 +159,14 @@ namespace structured_data_extraction
                 foreach (var item in result.Elements)
                 {
                     Console.Write($"{item.TextExtractionElement.Name}: ");
-                    WriteColor($"{item.ToString()}", ConsoleColor.Blue);
+                    WriteColor($"{item}", ConsoleColor.Blue);
                 }
 
                 WriteColor("\nJSON:\n\n", ConsoleColor.Green);
                 Console.WriteLine(result.Json);
 
                 WriteColor("\nExtraction done in " + sw.Elapsed.TotalSeconds.ToString() + " seconds. Hit any key to continue", ConsoleColor.Green);
-                Console.ReadKey();
+                _ = Console.ReadKey();
             }
         }
 
@@ -185,12 +187,13 @@ namespace structured_data_extraction
 
         private static List<TextExtractionElement> CreateInvoiceElements(bool extended)
         {
-            List<TextExtractionElement> elements = new List<TextExtractionElement>();
-
-            // Invoice details
-            elements.Add(new TextExtractionElement("Invoice Reference", ElementType.String, "Unique identifier for the invoice."));
-            elements.Add(new TextExtractionElement("Date", ElementType.Date, "The date the invoice was generated."));
-            elements.Add(new TextExtractionElement("Due Date", ElementType.Date, "The deadline for payment of the invoice."));
+            List<TextExtractionElement> elements = new List<TextExtractionElement>
+            {
+                // Invoice details
+                new TextExtractionElement("Invoice Reference", ElementType.String, "Unique identifier for the invoice."),
+                new TextExtractionElement("Date", ElementType.Date, "The date the invoice was generated."),
+                new TextExtractionElement("Due Date", ElementType.Date, "The deadline for payment of the invoice.")
+            };
 
             if (!extended)
             {
@@ -295,37 +298,38 @@ namespace structured_data_extraction
 
         private static List<TextExtractionElement> CreateJobOfferElements()
         {
-            List<TextExtractionElement> elements = new List<TextExtractionElement>();
-
-            elements.Add(new TextExtractionElement("Job Offer Reference", ElementType.String, "The offer ID provided to the candidate."));
-            elements.Add(new TextExtractionElement("Date", ElementType.Date, "The date the job offer was extended."));
-            elements.Add(new TextExtractionElement("Position", ElementType.String, "The role offered to the candidate."));
-            elements.Add(new TextExtractionElement("Start Date", ElementType.Date, "The start date for the new position."));
-            elements.Add(new TextExtractionElement("Salary", ElementType.Float, "The yearly compensation offered to the candidate."));
-            elements.Add(new TextExtractionElement("Location", ElementType.String, "The location of the job (city, country)."));
-            elements.Add(new TextExtractionElement("Company Name", ElementType.String, "The name of the company extending the offer."));
-            elements.Add(new TextExtractionElement("Company Address", ElementType.String, "The full address of the company."));
-            elements.Add(new TextExtractionElement("Job Description", ElementType.String, "A detailed overview of the responsibilities of the position."));
-            elements.Add(new TextExtractionElement("Terms of Employment", ElementType.String, "The conditions under which the candidate will work."));
-            elements.Add(new TextExtractionElement("Contact Email", ElementType.String, "The contact email for questions about the offer."));
-            elements.Add(new TextExtractionElement("Contact Phone", ElementType.String, "The phone number for contact."));
-            elements.Add(new TextExtractionElement("Signature", ElementType.String, "The official representative's signature on the offer letter."));
+            List<TextExtractionElement> elements = new List<TextExtractionElement>
+            {
+                new TextExtractionElement("Job Offer Reference", ElementType.String, "The offer ID provided to the candidate."),
+                new TextExtractionElement("Date", ElementType.Date, "The date the job offer was extended."),
+                new TextExtractionElement("Position", ElementType.String, "The role offered to the candidate."),
+                new TextExtractionElement("Start Date", ElementType.Date, "The start date for the new position."),
+                new TextExtractionElement("Salary", ElementType.Float, "The yearly compensation offered to the candidate."),
+                new TextExtractionElement("Location", ElementType.String, "The location of the job (city, country)."),
+                new TextExtractionElement("Company Name", ElementType.String, "The name of the company extending the offer."),
+                new TextExtractionElement("Company Address", ElementType.String, "The full address of the company."),
+                new TextExtractionElement("Job Description", ElementType.String, "A detailed overview of the responsibilities of the position."),
+                new TextExtractionElement("Terms of Employment", ElementType.String, "The conditions under which the candidate will work."),
+                new TextExtractionElement("Contact Email", ElementType.String, "The contact email for questions about the offer."),
+                new TextExtractionElement("Contact Phone", ElementType.String, "The phone number for contact."),
+                new TextExtractionElement("Signature", ElementType.String, "The official representative's signature on the offer letter.")
+            };
 
             return elements;
         }
 
         private static List<TextExtractionElement> CreateMedicalRecordElements()
         {
-            List<TextExtractionElement> elements = new List<TextExtractionElement>();
+            List<TextExtractionElement> elements = new List<TextExtractionElement>
+            {
+                // Patient Information
+                new TextExtractionElement("Patient Name", ElementType.String, "Full name of the patient."),
+                new TextExtractionElement("Patient ID", ElementType.String, "Unique identifier for the patient."),
+                new TextExtractionElement("Date of Birth", ElementType.Date, "Patient's date of birth."),
+                new TextExtractionElement("Gender", ElementType.String, "Patient's gender."),
 
-            // Patient Information
-            elements.Add(new TextExtractionElement("Patient Name", ElementType.String, "Full name of the patient."));
-            elements.Add(new TextExtractionElement("Patient ID", ElementType.String, "Unique identifier for the patient."));
-            elements.Add(new TextExtractionElement("Date of Birth", ElementType.Date, "Patient's date of birth."));
-            elements.Add(new TextExtractionElement("Gender", ElementType.String, "Patient's gender."));
-
-            // Medical History
-            elements.Add(new TextExtractionElement(
+                // Medical History
+                new TextExtractionElement(
                 "Medical History",
                 new List<TextExtractionElement>
                 {
@@ -335,10 +339,10 @@ namespace structured_data_extraction
                 },
                 isArray: true,
                 "A list of past medical conditions and treatments for the patient."
-            ));
+            ),
 
-            // Vital Signs
-            elements.Add(new TextExtractionElement(
+                // Vital Signs
+                new TextExtractionElement(
                 "Vital Signs",
                 new List<TextExtractionElement>
                 {
@@ -349,10 +353,10 @@ namespace structured_data_extraction
                 },
                 isArray: false,
                 "Patient's vital signs recorded during the medical examination."
-            ));
+            ),
 
-            // Current Medications
-            elements.Add(new TextExtractionElement(
+                // Current Medications
+                new TextExtractionElement(
                 "Medications",
                 new List<TextExtractionElement>
                 {
@@ -364,10 +368,10 @@ namespace structured_data_extraction
                 },
                 isArray: true,
                 "A list of medications the patient is currently taking."
-            ));
+            ),
 
-            // Allergies
-            elements.Add(new TextExtractionElement(
+                // Allergies
+                new TextExtractionElement(
                 "Allergies",
                 new List<TextExtractionElement>
                 {
@@ -377,10 +381,10 @@ namespace structured_data_extraction
                 },
                 isArray: true,
                 "A list of allergies the patient has."
-            ));
+            ),
 
-            // Lab Results
-            elements.Add(new TextExtractionElement(
+                // Lab Results
+                new TextExtractionElement(
                 "Lab Results",
                 new List<TextExtractionElement>
                 {
@@ -391,7 +395,8 @@ namespace structured_data_extraction
                 },
                 isArray: true,
                 "A list of laboratory test results for the patient."
-            ));
+            )
+            };
 
             return elements;
         }

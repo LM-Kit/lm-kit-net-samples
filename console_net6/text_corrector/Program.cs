@@ -51,7 +51,9 @@ namespace text_corrector
 
         static void Main(string[] args)
         {
-            LMKit.Licensing.LicenseManager.SetLicenseKey(""); //set an optional license key here if available.
+            // Set an optional license key here if available. 
+            // A free community license can be obtained from: https://lm-kit.com/products/community-edition/
+            LMKit.Licensing.LicenseManager.SetLicenseKey("");
             Console.InputEncoding = Encoding.UTF8;
             Console.OutputEncoding = Encoding.UTF8;
 
@@ -85,7 +87,7 @@ namespace text_corrector
                     modelLink = DEFAULT_QWEN2_5_7B_MODEL_PATH;
                     break;
                 default:
-                    modelLink = input.Trim().Trim('"');;
+                    modelLink = input.Trim().Trim('"');
                     break;
             }
 

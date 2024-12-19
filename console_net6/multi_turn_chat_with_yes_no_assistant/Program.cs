@@ -45,7 +45,9 @@ namespace multi_turn_chat_with_yes_no_assistant
 
         private static void Main(string[] args)
         {
-            LMKit.Licensing.LicenseManager.SetLicenseKey(""); //set an optional license key here if available.
+            // Set an optional license key here if available. 
+            // A free community license can be obtained from: https://lm-kit.com/products/community-edition/
+            LMKit.Licensing.LicenseManager.SetLicenseKey("");
             Console.InputEncoding = Encoding.UTF8;
             Console.OutputEncoding = Encoding.UTF8;
 
@@ -79,7 +81,7 @@ namespace multi_turn_chat_with_yes_no_assistant
                     modelLink = DEFAULT_QWEN2_5_7B_MODEL_PATH;
                     break;
                 default:
-                    modelLink = input.Trim().Trim('"');;
+                    modelLink = input.Trim().Trim('"');
                     break;
             }
 
@@ -92,14 +94,13 @@ namespace multi_turn_chat_with_yes_no_assistant
             Console.Clear();
             ShowSpecialPrompts();
 
-            MultiTurnConversation chat = new MultiTurnConversation(model, contextSize: 2048)
+            MultiTurnConversation chat = new MultiTurnConversation(model)
             {
                 MaximumCompletionTokens = 20,
                 SamplingMode = new GreedyDecoding(),
-                SystemPrompt = @"You are a fact-checking chatbot. Respond only with yes or no."
+                SystemPrompt = @"You are a fact-checking chatbot. Respond only with yes or no.",
+                Grammar = new Grammar(Grammar.PredefinedGrammar.Boolean)
             };
-
-            chat.Grammar = new Grammar(Grammar.PredefinedGrammar.Boolean);
 
             chat.AfterTextCompletion += Chat_AfterTextCompletion;
 
@@ -136,11 +137,11 @@ namespace multi_turn_chat_with_yes_no_assistant
                 Console.Write("Assistant: ");
                 Console.ResetColor();
                 TextGenerationResult result = chat.Submit(prompt, new CancellationTokenSource(TimeSpan.FromMinutes(2)).Token);
-               
+
                 prompt = "";
 
                 Console.Write($"\n(gen. tokens: {result.GeneratedTokens.Count} - stop reason: {result.TerminationReason} - quality score: {Math.Round(result.QualityScore, 2)} - speed: {Math.Round(result.TokenGenerationRate, 2)} tok/s - ctx usage: {result.ContextTokens.Count}/{result.ContextSize})");
-             }
+            }
 
             Console.WriteLine("The chat ended. Press any key to exit the application.");
             _ = Console.ReadKey();

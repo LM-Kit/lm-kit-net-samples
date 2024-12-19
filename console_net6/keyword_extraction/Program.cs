@@ -47,7 +47,9 @@ namespace structured_data_extraction
 
         private static void Main(string[] args)
         {
-            LMKit.Licensing.LicenseManager.SetLicenseKey(""); //set an optional license key here if available.
+            // Set an optional license key here if available. 
+            // A free community license can be obtained from: https://lm-kit.com/products/community-edition/
+            LMKit.Licensing.LicenseManager.SetLicenseKey("");
             Console.InputEncoding = Encoding.UTF8;
             Console.OutputEncoding = Encoding.UTF8;
 
@@ -90,7 +92,7 @@ namespace structured_data_extraction
                     modelLink = DEFAULT_LLAMA_3_2_1B_MODEL_PATH;
                     break;
                 default:
-                    modelLink = input.Trim().Trim('"'); ;
+                    modelLink = input.Trim().Trim('"');
                     break;
             }
 
@@ -115,7 +117,7 @@ namespace structured_data_extraction
                 if (!File.Exists(inputFilePath))
                 {
                     WriteColor("invalid file path. Hit any key to retry.", ConsoleColor.Red);
-                    Console.ReadKey();
+                    _ = Console.ReadKey();
                     continue;
                 }
 
@@ -138,7 +140,7 @@ namespace structured_data_extraction
                 int wordCount = content.Split(new string[] { " ", "\r\n", "\n", "\t" }, StringSplitOptions.RemoveEmptyEntries).Length;
 
                 WriteColor("\nExtraction done in " + sw.Elapsed.TotalSeconds.ToString() + " seconds | Word count: " + wordCount.ToString() + " | Confidence: " + Math.Round(keywordExtraction.Confidence, 2).ToString() + " | Hit any key to continue", ConsoleColor.Green);
-                Console.ReadKey();
+                _ = Console.ReadKey();
             }
         }
 

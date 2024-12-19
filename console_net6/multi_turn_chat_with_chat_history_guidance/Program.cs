@@ -18,7 +18,7 @@ namespace multi_turn_chat_with_chat_history_guidance
         private static bool ModelDownloadingProgress(string path, long? contentLength, long bytesRead)
         {
             _isDownloading = true;
-         
+
             if (contentLength.HasValue)
             {
                 double progressPercentage = Math.Round((double)bytesRead / contentLength.Value * 100, 2);
@@ -47,7 +47,9 @@ namespace multi_turn_chat_with_chat_history_guidance
 
         private static void Main(string[] args)
         {
-            LMKit.Licensing.LicenseManager.SetLicenseKey(""); //set an optional license key here if available.
+            // Set an optional license key here if available. 
+            // A free community license can be obtained from: https://lm-kit.com/products/community-edition/
+            LMKit.Licensing.LicenseManager.SetLicenseKey("");
             Console.InputEncoding = Encoding.UTF8;
             Console.OutputEncoding = Encoding.UTF8;
 
@@ -81,7 +83,7 @@ namespace multi_turn_chat_with_chat_history_guidance
                     modelLink = DEFAULT_QWEN2_5_7B_MODEL_PATH;
                     break;
                 default:
-                    modelLink = input.Trim().Trim('"');;
+                    modelLink = input.Trim().Trim('"');
                     break;
             }
 
@@ -166,7 +168,7 @@ namespace multi_turn_chat_with_chat_history_guidance
             chatHistory.AddMessage(AuthorRole.User, "What's the best way to manage a remote team?");
             chatHistory.AddMessage(AuthorRole.Assistant, "The best way to manage a remote team is to maintain clear communication, set clear expectations, foster a sense of community, and utilize the right tools for collaboration.\n\nJoke: Why did the remote team have great chemistry? Because they bonded over the cloud! LOL");
 
-            MultiTurnConversation chat = new MultiTurnConversation(model, chatHistory, contextSize: 2048)
+            MultiTurnConversation chat = new MultiTurnConversation(model, chatHistory)
             {
                 MaximumCompletionTokens = 1000,
                 SamplingMode = new RandomSampling()

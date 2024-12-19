@@ -7,8 +7,8 @@
     Minimum Required System RAM: 16 GB.
 */
 
-using LMKit.Model;
 using LMKit.Finetuning;
+using LMKit.Model;
 using LMKit.TextAnalysis;
 using System.Diagnostics;
 using static LMKit.TextAnalysis.SentimentAnalysis;

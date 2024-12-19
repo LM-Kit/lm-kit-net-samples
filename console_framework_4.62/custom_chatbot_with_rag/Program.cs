@@ -1,6 +1,6 @@
-﻿using LMKit;
+﻿using LMKit.Data;
+using LMKit.Global;
 using LMKit.Model;
-using LMKit.Data;
 using LMKit.Retrieval;
 using LMKit.TextGeneration;
 using LMKit.TextGeneration.Sampling;
@@ -11,7 +11,6 @@ using System.IO;
 using System.Net;
 using System.Text;
 using static LMKit.Retrieval.RagEngine;
-using LMKit.Global;
 
 namespace custom_chatbot_with_rag
 {
@@ -26,7 +25,9 @@ namespace custom_chatbot_with_rag
 
         static void Main(string[] args)
         {
-            LMKit.Licensing.LicenseManager.SetLicenseKey(""); //set an optional license key here if available.
+            // Set an optional license key here if available. 
+            // A free community license can be obtained from: https://lm-kit.com/products/community-edition/
+            LMKit.Licensing.LicenseManager.SetLicenseKey("");
             Console.InputEncoding = Encoding.UTF8;
             Console.OutputEncoding = Encoding.UTF8;
 

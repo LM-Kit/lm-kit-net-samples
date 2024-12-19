@@ -60,7 +60,8 @@ namespace text_summarizer
 
         private static void Main(string[] args)
         {
-            // If you have a license key, set it here (optional).
+            // Set an optional license key here if available. 
+            // A free community license can be obtained from: https://lm-kit.com/products/community-edition/
             LMKit.Licensing.LicenseManager.SetLicenseKey("");
 
             Console.InputEncoding = Encoding.UTF8;
@@ -136,7 +137,7 @@ namespace text_summarizer
                 if (!File.Exists(inputFilePath))
                 {
                     WriteColor("Invalid file path. Press any key to try again.", ConsoleColor.Red);
-                    Console.ReadKey();
+                    _ = Console.ReadKey();
                     continue;
                 }
 
@@ -167,7 +168,7 @@ namespace text_summarizer
                     ConsoleColor.Green
                 );
 
-                Console.ReadKey();
+                _ = Console.ReadKey();
             }
         }
 
