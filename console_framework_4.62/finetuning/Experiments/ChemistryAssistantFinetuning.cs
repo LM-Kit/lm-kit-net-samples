@@ -38,7 +38,7 @@ namespace finetuning.Experiments
         private const string NewModelPath = "chemistryAssistant.gguf";
         private static readonly float[] LoraTestScales = { 0.75f, 1f, 1.25f, 1.6f };
 
-        private static LLM _model;
+        private static LM _model;
         private static string _trainingDataset;
         // Dataset used to evaluate the LoRA adapter accuracy.
         private static List<(string, int)> _testingDataset;
@@ -108,7 +108,7 @@ namespace finetuning.Experiments
                 Console.WriteLine("Computing initial model accuracy...");
             }
 
-            var model = new LLM(DefaultModelPath);
+            var model = new LM(DefaultModelPath);
 
             if (!initialAccuracyMode)
             {

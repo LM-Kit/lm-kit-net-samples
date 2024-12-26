@@ -30,7 +30,7 @@ namespace finetuning.Experiments
         private const string EvalModelPath = "sarcasmDetection.test.gguf";
         private static readonly float[] LoraTestScales = { 0.75f, 1f, 1.25f, 1.6f };
 
-        private static LLM _model;
+        private static LM _model;
         private static double _bestLoss;
         private static double _bestAccuracy;
         private static double _initialAccuracy;
@@ -86,7 +86,7 @@ namespace finetuning.Experiments
 
         private static double ComputeSarcasmDetectionAccuracy(string loraPath, float loraScale, out TimeSpan elapsed)
         {
-            LLM model = null;
+            LM model = null;
 
             try
             {
@@ -95,11 +95,11 @@ namespace finetuning.Experiments
                     var merger = new LoraMerger(_model);
                     merger.AddLoraAdapter(new LoraAdapterSource(loraPath, loraScale));
                     merger.Merge(EvalModelPath);
-                    model = new LLM(EvalModelPath);
+                    model = new LM(EvalModelPath);
                 }
                 else
                 {
-                    model = new LLM(DefaultModelPath);
+                    model = new LM(DefaultModelPath);
                 }
 
                 var engine = new SarcasmDetection(model);

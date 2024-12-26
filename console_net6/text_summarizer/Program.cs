@@ -110,7 +110,7 @@ namespace text_summarizer
 
             // Initialize the model
             Uri modelUri = new Uri(modelLink);
-            LLM model = new LLM(
+            LM model = new LM(
                 modelUri,
                 downloadingProgress: ModelDownloadingProgress,
                 loadingProgress: ModelLoadingProgress

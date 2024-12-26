@@ -19,8 +19,8 @@ namespace custom_chatbot_with_rag
         static readonly string DEFAULT_EMBEDDINGS_MODEL_PATH = @"https://huggingface.co/lm-kit/bge-1.5-gguf/resolve/main/bge-small-en-v1.5-f16.gguf?download=true";
         static readonly string DEFAULT_CHAT_MODEL_PATH = @"https://huggingface.co/lm-kit/llama-3.1-8b-instruct-gguf/resolve/main/Llama-3.1-8B-Instruct-Q4_K_M.gguf?download=true";
         static bool _isDownloading;
-        static LLM _chatModel;
-        static LLM _embeddingModel;
+        static LM _chatModel;
+        static LM _embeddingModel;
         static readonly List<DataSource> _dataSources = new List<DataSource>();
 
         static void Main(string[] args)
@@ -186,7 +186,7 @@ namespace custom_chatbot_with_rag
                 }
             }
 
-            _chatModel = new LLM(modelUri,
+            _chatModel = new LM(modelUri,
                                    downloadingProgress: ModelDownloadingProgress,
                                    loadingProgress: ModelLoadingProgress);
         }
@@ -206,7 +206,7 @@ namespace custom_chatbot_with_rag
                 }
             }
 
-            _embeddingModel = new LLM(modelUri,
+            _embeddingModel = new LM(modelUri,
                                    downloadingProgress: ModelDownloadingProgress);
         }
 

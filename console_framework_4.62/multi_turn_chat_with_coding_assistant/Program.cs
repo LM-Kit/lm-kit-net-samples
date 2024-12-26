@@ -77,7 +77,7 @@ namespace multi_turn_chat_with_coding_assistant
 
             //Loading model
             Uri modelUri = new Uri(modelLink);
-            LLM model = new LLM(modelUri,
+            LM model = new LM(modelUri,
                                     downloadingProgress: ModelDownloadingProgress,
                                     loadingProgress: ModelLoadingProgress);
 

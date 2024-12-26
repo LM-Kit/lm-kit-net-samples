@@ -114,7 +114,7 @@ namespace web_content_info_extractor_to_json
 
             //Loading model
             Uri modelUri = new Uri(modelLink);
-            LLM model = new LLM(modelUri,
+            LM model = new LM(modelUri,
                                     downloadingProgress: ModelDownloadingProgress,
                                     loadingProgress: ModelLoadingProgress);
 

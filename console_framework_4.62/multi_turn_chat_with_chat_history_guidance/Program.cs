@@ -87,7 +87,7 @@ namespace multi_turn_chat_with_chat_history_guidance
 
             //Loading model
             Uri modelUri = new Uri(modelLink);
-            LLM model = new LLM(modelUri,
+            LM model = new LM(modelUri,
                                     downloadingProgress: ModelDownloadingProgress,
                                     loadingProgress: ModelLoadingProgress);
 
@@ -139,7 +139,7 @@ namespace multi_turn_chat_with_chat_history_guidance
             _ = Console.ReadKey();
         }
 
-        private static MultiTurnConversation CreateChat(LLM model)
+        private static MultiTurnConversation CreateChat(LM model)
         {
             ChatHistory chatHistory = new ChatHistory(model);
 

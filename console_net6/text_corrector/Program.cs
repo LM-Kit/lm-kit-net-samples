@@ -93,7 +93,7 @@ namespace text_corrector
 
             //Loading model
             Uri modelUri = new Uri(modelLink);
-            LLM model = new LLM(modelUri,
+            LM model = new LM(modelUri,
                                     downloadingProgress: ModelDownloadingProgress,
                                     loadingProgress: ModelLoadingProgress);
 

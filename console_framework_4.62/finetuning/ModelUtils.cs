@@ -8,7 +8,7 @@ namespace finetuning
     {
         private static bool _isDownloading;
 
-        public static LLM LoadModel(string modelPath)
+        public static LM LoadModel(string modelPath)
         {
             // Loading model
             Uri modelUri = new Uri(modelPath);
@@ -24,7 +24,7 @@ namespace finetuning
                 }
             }
 
-            LLM model = new LLM(modelUri,
+            LM model = new LM(modelUri,
                                downloadingProgress: ModelUtils.ModelDownloadingProgress,
                                loadingProgress: ModelUtils.ModelLoadingProgress);
             Console.Clear();

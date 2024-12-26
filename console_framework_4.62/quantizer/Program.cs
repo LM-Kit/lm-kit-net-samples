@@ -29,7 +29,7 @@ namespace text_rewriter
                 {
                     if (File.Exists(input))
                     {
-                        if (LLM.ValidateFormat(input))
+                        if (LM.ValidateFormat(input))
                         {
                             modelPath = input;
                         }
@@ -71,6 +71,9 @@ namespace text_rewriter
             }
 
             DoQuantization(modelPath, format);
+
+            Console.Write("The operation ended. Hit any key to continue");
+            _ = Console.ReadKey();
         }
 
         private static bool IsValidQuantizationFormat(string format)
@@ -105,39 +108,39 @@ namespace text_rewriter
 
             string dstModelPath = Path.Combine(Path.GetDirectoryName(modelPath), dstFileName + "-" + format + ".gguf");
 
-            LLM.Precision quantizationFormat;
+            LM.Precision quantizationFormat;
 
             switch (format)
             {
                 case "Q2_K":
-                    quantizationFormat = LLM.Precision.MOSTLY_Q2_K;
+                    quantizationFormat = LM.Precision.MOSTLY_Q2_K;
                     break;
                 case "Q3_K_S":
-                    quantizationFormat = LLM.Precision.MOSTLY_Q3_K_S;
+                    quantizationFormat = LM.Precision.MOSTLY_Q3_K_S;
                     break;
                 case "Q3_K_M":
-                    quantizationFormat = LLM.Precision.MOSTLY_Q3_K_M;
+                    quantizationFormat = LM.Precision.MOSTLY_Q3_K_M;
                     break;
                 case "Q3_K_L":
-                    quantizationFormat = LLM.Precision.MOSTLY_Q3_K_L;
+                    quantizationFormat = LM.Precision.MOSTLY_Q3_K_L;
                     break;
                 case "Q4_K_S":
-                    quantizationFormat = LLM.Precision.MOSTLY_Q4_K_S;
+                    quantizationFormat = LM.Precision.MOSTLY_Q4_K_S;
                     break;
                 case "Q4_K_M":
-                    quantizationFormat = LLM.Precision.MOSTLY_Q4_K_M;
+                    quantizationFormat = LM.Precision.MOSTLY_Q4_K_M;
                     break;
                 case "Q5_K_S":
-                    quantizationFormat = LLM.Precision.MOSTLY_Q5_K_S;
+                    quantizationFormat = LM.Precision.MOSTLY_Q5_K_S;
                     break;
                 case "Q5_K_M":
-                    quantizationFormat = LLM.Precision.MOSTLY_Q5_K_M;
+                    quantizationFormat = LM.Precision.MOSTLY_Q5_K_M;
                     break;
                 case "Q6_K":
-                    quantizationFormat = LLM.Precision.MOSTLY_Q6_K;
+                    quantizationFormat = LM.Precision.MOSTLY_Q6_K;
                     break;
                 case "Q8_0":
-                    quantizationFormat = LLM.Precision.MOSTLY_Q8_0;
+                    quantizationFormat = LM.Precision.MOSTLY_Q8_0;
                     break;
                 default:
                     throw new InvalidOperationException("unhandled quantization format");
@@ -147,13 +150,6 @@ namespace text_rewriter
             Quantizer quantizer = new Quantizer(modelPath);
 
             quantizer.Quantize(dstModelPath, quantizationFormat);
-        }
-
-        private static void WriteLineColor(string text, ConsoleColor color)
-        {
-            Console.ForegroundColor = color;
-            Console.WriteLine(text);
-            Console.ResetColor();
         }
     }
 }

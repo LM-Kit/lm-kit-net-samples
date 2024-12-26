@@ -53,7 +53,7 @@ namespace sarcasm_detection
 
             //Loading model
             Uri modelUri = new Uri(DEFAULT_MODEL_PATH);
-            LLM model = new LLM(modelUri,
+            LM model = new LM(modelUri,
                                     downloadingProgress: ModelDownloadingProgress,
                                     loadingProgress: ModelLoadingProgress);
 
