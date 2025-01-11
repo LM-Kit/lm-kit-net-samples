@@ -4,11 +4,11 @@ using System.Runtime.InteropServices;
 // General Information about an assembly is controlled through the following
 // set of attributes. Change these attribute values to modify the information
 // associated with an assembly.
-[assembly: AssemblyTitle("keyword_extraction")]
+[assembly: AssemblyTitle("multi_turn_chat_with_vision")]
 [assembly: AssemblyDescription("")]
 [assembly: AssemblyConfiguration("")]
 [assembly: AssemblyCompany("")]
-[assembly: AssemblyProduct("keyword_extraction")]
+[assembly: AssemblyProduct("multi_turn_chat_with_vision")]
 [assembly: AssemblyCopyright("Copyright ©  2024 - 2025")]
 [assembly: AssemblyTrademark("")]
 [assembly: AssemblyCulture("")]
@@ -19,7 +19,7 @@ using System.Runtime.InteropServices;
 [assembly: ComVisible(false)]
 
 // The following GUID is for the ID of the typelib if this project is exposed to COM
-[assembly: Guid("9990FEE6-5DFF-4ECB-8C6B-DEE85F6C48F1")]
+[assembly: Guid("16FB4B3E-FC47-4E39-981F-46C86344B0B5")]
 
 // Version information for an assembly consists of the following four values:
 //

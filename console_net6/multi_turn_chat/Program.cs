@@ -93,7 +93,7 @@ namespace multi_turn_chat
 
             Console.Clear();
             ShowSpecialPrompts();
-            MultiTurnConversation chat = new MultiTurnConversation(model, contextSize: LMKit.Graphics.DeviceConfiguration.GetOptimalContextSize())
+            MultiTurnConversation chat = new MultiTurnConversation(model)
             {
                 MaximumCompletionTokens = 1000,
                 SamplingMode = new RandomSampling()
@@ -118,17 +118,17 @@ namespace multi_turn_chat
 
                 if (mode == "regenerate")
                 {
-                    result = chat.RegenerateResponse(new CancellationTokenSource(TimeSpan.FromMinutes(2000)).Token);
+                    result = chat.RegenerateResponse(new CancellationTokenSource(TimeSpan.FromMinutes(2)).Token);
                     mode = "chat";
                 }
                 else if (mode == "continue")
                 {
-                    result = chat.ContinueLastAssistantResponse(new CancellationTokenSource(TimeSpan.FromMinutes(2000)).Token);
+                    result = chat.ContinueLastAssistantResponse(new CancellationTokenSource(TimeSpan.FromMinutes(2)).Token);
                     mode = "chat";
                 }
                 else
                 {
-                    result = chat.Submit(prompt, new CancellationTokenSource(TimeSpan.FromMinutes(2000)).Token);
+                    result = chat.Submit(prompt, new CancellationTokenSource(TimeSpan.FromMinutes(2)).Token);
                 }
 
                 Console.Write($"\n(gen. tokens: {result.GeneratedTokens.Count} - stop reason: {result.TerminationReason} - quality score: {Math.Round(result.QualityScore, 2)} - speed: {Math.Round(result.TokenGenerationRate, 2)} tok/s - ctx usage: {result.ContextTokens.Count}/{result.ContextSize})");

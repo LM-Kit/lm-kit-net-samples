@@ -4,10 +4,10 @@
   <PropertyGroup>
     <Configuration Condition=" '$(Configuration)' == '' ">Debug</Configuration>
     <Platform Condition=" '$(Platform)' == '' ">AnyCPU</Platform>
-    <ProjectGuid>{7C904875-2703-4A9D-A461-7E8390216A48}</ProjectGuid>
+    <ProjectGuid>{791BC352-D8CE-4B9E-87F2-F6FB8A533301}</ProjectGuid>
     <OutputType>Exe</OutputType>
-    <RootNamespace>quantizer</RootNamespace>
-    <AssemblyName>quantizer</AssemblyName>
+    <RootNamespace>multi_turn_chat_with_vision</RootNamespace>
+    <AssemblyName>multi_turn_chat_with_vision</AssemblyName>
     <TargetFrameworkVersion>v4.6.2</TargetFrameworkVersion>
     <FileAlignment>512</FileAlignment>
     <AutoGenerateBindingRedirects>true</AutoGenerateBindingRedirects>
@@ -91,6 +91,8 @@
 
 
   </ItemGroup>
-  <ItemGroup />
+  <ItemGroup>
+    <Folder Include="models\" />
+  </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
 </Project>
