@@ -1,4 +1,5 @@
-﻿using LMKit.Model;
+﻿using LMKit.Data;
+using LMKit.Model;
 using LMKit.TextGeneration;
 using LMKit.TextGeneration.Chat;
 using LMKit.TextGeneration.Sampling;
