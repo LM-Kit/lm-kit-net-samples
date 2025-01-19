@@ -172,7 +172,7 @@ LM-Kit.NET is distributed as a single **NuGet** package, making it incredibly ea
 
 ## **Supported .NET Frameworks**
 
-- **.NET 4.6.2** through **.NET 8**
+- **.NET 4.6.2** through **.NET 9**
 
 ---
 
