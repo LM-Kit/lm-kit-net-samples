@@ -11,8 +11,8 @@
   </ItemGroup>
 
   <ItemGroup>
-		<PackageReference Include="LM-Kit.NET" Version="2025.1.3" />
-		<PackageReference Include="LM-Kit.NET.Backend.Cuda12.Windows" Version="2025.1.3" />
+		<PackageReference Include="LM-Kit.NET" Version="2025.1.4" />
+		<PackageReference Include="LM-Kit.NET.Backend.Cuda12.Windows" Version="2025.1.4" />
   </ItemGroup>
 
 </Project>
