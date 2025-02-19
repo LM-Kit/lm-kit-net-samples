@@ -8,10 +8,10 @@
   <PropertyGroup>
     <Configuration Condition=" '$(Configuration)' == '' ">Debug</Configuration>
     <Platform Condition=" '$(Platform)' == '' ">AnyCPU</Platform>
-    <ProjectGuid>{D303134B-6A22-4153-A453-B70D83735175}</ProjectGuid>
+    <ProjectGuid>{230F92F7-F656-4D77-BFBC-F0C4D502BB68}</ProjectGuid>
     <OutputType>Exe</OutputType>
-    <RootNamespace>multi_turn_chat</RootNamespace>
-    <AssemblyName>multi_turn_chat</AssemblyName>
+    <RootNamespace>multi_turn_yes_no_assistant</RootNamespace>
+    <AssemblyName>multi_turn_yes_no_assistant</AssemblyName>
     <TargetFrameworkVersion>v4.6.2</TargetFrameworkVersion>
     <FileAlignment>512</FileAlignment>
     <AutoGenerateBindingRedirects>true</AutoGenerateBindingRedirects>
@@ -99,6 +99,7 @@
     <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="MemoryBuilder.cs" />
     <Compile Include="Program.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
   </ItemGroup>
@@ -106,6 +107,7 @@
     <None Include="App.config" />
     <None Include="packages.config" />
   </ItemGroup>
+  <ItemGroup />
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
   <Target Name="EnsureNuGetPackageBuildImports" BeforeTargets="PrepareForBuild">
     <PropertyGroup>
