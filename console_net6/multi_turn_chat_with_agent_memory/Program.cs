@@ -41,7 +41,7 @@ namespace multi_turn_chat_with_memory
         }
 
         /*
-          How many employess our customers usually have?
+          How many employees do our customers usually have?
           In which industries are they working?
         */
 

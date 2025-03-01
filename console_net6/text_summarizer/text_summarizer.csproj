@@ -8,8 +8,8 @@
 
 
   <ItemGroup>
-		<PackageReference Include="LM-Kit.NET" Version="2025.2.4" />
-		<PackageReference Include="LM-Kit.NET.Backend.Cuda12.Windows" Version="2025.2.5" />
+		<PackageReference Include="LM-Kit.NET" Version="2025.3.1" />
+		<PackageReference Include="LM-Kit.NET.Backend.Cuda12.Windows" Version="2025.3.1" />
   </ItemGroup>
 
 
