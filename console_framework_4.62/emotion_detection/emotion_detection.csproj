@@ -1,9 +1,8 @@
 ﻿<?xml version="1.0" encoding="utf-8"?>
 <Project ToolsVersion="15.0" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
-  <Import Project="packages\LM-Kit.NET.Backend.Cuda12.Windows.2025.3.1\build\netstandard2.0\LM-Kit.NET.Backend.Cuda12.Windows.props" Condition="Exists('packages\LM-Kit.NET.Backend.Cuda12.Windows.2025.3.1\build\netstandard2.0\LM-Kit.NET.Backend.Cuda12.Windows.props')" />
+  <Import Project="packages\LM-Kit.NET.Backend.Cuda12.Windows.2025.3.2\build\netstandard2.0\LM-Kit.NET.Backend.Cuda12.Windows.props" Condition="Exists('packages\LM-Kit.NET.Backend.Cuda12.Windows.2025.3.2\build\netstandard2.0\LM-Kit.NET.Backend.Cuda12.Windows.props')" />
   <Import Project="packages\LM-Kit.NET.Backend.Cuda12.Deps.Windows.2025.3.1\build\netstandard2.0\LM-Kit.NET.Backend.Cuda12.Deps.Windows.props" Condition="Exists('packages\LM-Kit.NET.Backend.Cuda12.Deps.Windows.2025.3.1\build\netstandard2.0\LM-Kit.NET.Backend.Cuda12.Deps.Windows.props')" />
   <Import Project="packages\LM-Kit.NET.Backend.Cuda12.Deps.Windows.Part0.2025.3.1\build\netstandard2.0\LM-Kit.NET.Backend.Cuda12.Deps.Windows.Part0.props" Condition="Exists('packages\LM-Kit.NET.Backend.Cuda12.Deps.Windows.Part0.2025.3.1\build\netstandard2.0\LM-Kit.NET.Backend.Cuda12.Deps.Windows.Part0.props')" />
-  <Import Project="packages\LM-Kit.NET.2025.3.1\build\netstandard2.0\LM-Kit.NET.props" Condition="Exists('packages\LM-Kit.NET.2025.3.1\build\netstandard2.0\LM-Kit.NET.props')" />
   <Import Project="$(MSBuildExtensionsPath)\$(MSBuildToolsVersion)\Microsoft.Common.props" Condition="Exists('$(MSBuildExtensionsPath)\$(MSBuildToolsVersion)\Microsoft.Common.props')" />
   <PropertyGroup>
     <Configuration Condition=" '$(Configuration)' == '' ">Debug</Configuration>
@@ -42,10 +41,6 @@
     <Prefer32Bit>false</Prefer32Bit>
   </PropertyGroup>
   <ItemGroup>
-    <Reference Include="LM-Kit.NET, Version=2025.3.1.0, Culture=neutral, PublicKeyToken=505a37ad83edd029">
-      <HintPath>packages\LM-Kit.NET.2025.3.1\lib\netstandard2.0\LM-Kit.NET.dll</HintPath>
-      <Private>True</Private>
-    </Reference>
     <Reference Include="Microsoft.Bcl.AsyncInterfaces, Version=9.0.0.2, Culture=neutral, PublicKeyToken=cc7b13ffcd2ddd51">
       <HintPath>packages\Microsoft.Bcl.AsyncInterfaces.9.0.2\lib\net462\Microsoft.Bcl.AsyncInterfaces.dll</HintPath>
       <Private>True</Private>
@@ -112,11 +107,10 @@
     <PropertyGroup>
       <ErrorText>This project references NuGet package(s) that are missing on this computer. Enable NuGet Package Restore to download them.  For more information, see http://go.microsoft.com/fwlink/?LinkID=322105.The missing file is {0}.</ErrorText>
     </PropertyGroup>
-    <Error Condition="!Exists('packages\LM-Kit.NET.2025.3.1\build\netstandard2.0\LM-Kit.NET.props')" Text="$([System.String]::Format('$(ErrorText)', 'packages\LM-Kit.NET.2025.3.1\build\netstandard2.0\LM-Kit.NET.props'))" />
     <Error Condition="!Exists('packages\LM-Kit.NET.Backend.Cuda12.Deps.Windows.Part0.2025.3.1\build\netstandard2.0\LM-Kit.NET.Backend.Cuda12.Deps.Windows.Part0.props')" Text="$([System.String]::Format('$(ErrorText)', 'packages\LM-Kit.NET.Backend.Cuda12.Deps.Windows.Part0.2025.3.1\build\netstandard2.0\LM-Kit.NET.Backend.Cuda12.Deps.Windows.Part0.props'))" />
     <Error Condition="!Exists('packages\LM-Kit.NET.Backend.Cuda12.Deps.Windows.2025.3.1\build\netstandard2.0\LM-Kit.NET.Backend.Cuda12.Deps.Windows.props')" Text="$([System.String]::Format('$(ErrorText)', 'packages\LM-Kit.NET.Backend.Cuda12.Deps.Windows.2025.3.1\build\netstandard2.0\LM-Kit.NET.Backend.Cuda12.Deps.Windows.props'))" />
     <Error Condition="!Exists('packages\LM-Kit.NET.Backend.Cuda12.Deps.Windows.2025.3.1\build\netstandard2.0\LM-Kit.NET.Backend.Cuda12.Deps.Windows.targets')" Text="$([System.String]::Format('$(ErrorText)', 'packages\LM-Kit.NET.Backend.Cuda12.Deps.Windows.2025.3.1\build\netstandard2.0\LM-Kit.NET.Backend.Cuda12.Deps.Windows.targets'))" />
-    <Error Condition="!Exists('packages\LM-Kit.NET.Backend.Cuda12.Windows.2025.3.1\build\netstandard2.0\LM-Kit.NET.Backend.Cuda12.Windows.props')" Text="$([System.String]::Format('$(ErrorText)', 'packages\LM-Kit.NET.Backend.Cuda12.Windows.2025.3.1\build\netstandard2.0\LM-Kit.NET.Backend.Cuda12.Windows.props'))" />
+    <Error Condition="!Exists('packages\LM-Kit.NET.Backend.Cuda12.Windows.2025.3.2\build\netstandard2.0\LM-Kit.NET.Backend.Cuda12.Windows.props')" Text="$([System.String]::Format('$(ErrorText)', 'packages\LM-Kit.NET.Backend.Cuda12.Windows.2025.3.2\build\netstandard2.0\LM-Kit.NET.Backend.Cuda12.Windows.props'))" />
   </Target>
   <Import Project="packages\LM-Kit.NET.Backend.Cuda12.Deps.Windows.2025.3.1\build\netstandard2.0\LM-Kit.NET.Backend.Cuda12.Deps.Windows.targets" Condition="Exists('packages\LM-Kit.NET.Backend.Cuda12.Deps.Windows.2025.3.1\build\netstandard2.0\LM-Kit.NET.Backend.Cuda12.Deps.Windows.targets')" />
 </Project>
