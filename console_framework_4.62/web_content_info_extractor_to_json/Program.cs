@@ -15,7 +15,7 @@ namespace web_content_info_extractor_to_json
     internal class Program
     {
         static readonly string DEFAULT_LLAMA3_1_8B_MODEL_PATH = @"https://huggingface.co/lm-kit/llama-3.1-8b-instruct-gguf/resolve/main/Llama-3.1-8B-Instruct-Q4_K_M.gguf?download=true";
-        static readonly string DEFAULT_GEMMA2_9B_MODEL_PATH = @"https://huggingface.co/lm-kit/gemma-2-9b-gguf/resolve/main/gemma-2-9B-Q4_K_M.gguf?download=true";
+        static readonly string DEFAULT_GEMMA3_4B_MODEL_PATH = @"https://huggingface.co/lm-kit/gemma-3-4b-instruct-gguf/resolve/main/gemma-3-it-4B-Q4_K_M.gguf?download=true";
         static readonly string DEFAULT_PHI4_MINI_3_8B_MODEL_PATH = @"https://huggingface.co/lm-kit/phi-4-mini-3.8b-instruct-gguf/resolve/main/Phi-4-mini-Instruct-Q4_K_M.gguf?download=true";
         static readonly string DEFAULT_QWEN2_5_7B_MODEL_PATH = @"https://huggingface.co/lm-kit/qwen-2.5-7b-instruct-gguf/resolve/main/Qwen-2.5-7B-Instruct-Q4_K_M.gguf?download=true";
         static readonly string DEFAULT_QWEN2_5_05B_MODEL_PATH = @"https://huggingface.co/lm-kit/qwen-2.5-0.5b-instruct-gguf/resolve/main/Qwen-2.5-0.5B-Instruct-Q4_K_M.gguf?download=true";
@@ -75,7 +75,7 @@ namespace web_content_info_extractor_to_json
             Console.WriteLine("Please select the model you want to use:\n");
             Console.WriteLine("0 - Mistral Nemo 2407 12.2B (requires approximately 7.7 GB of VRAM)");
             Console.WriteLine("1 - Meta Llama 3.1 8B (requires approximately 6 GB of VRAM)");
-            Console.WriteLine("2 - Google Gemma2 9B Medium (requires approximately 7 GB of VRAM)");
+            Console.WriteLine("2 - Google Gemma 3 4B Medium (requires approximately 4 GB of VRAM)");
             Console.WriteLine("3 - Microsoft Phi-4 Mini 3.82B Mini (requires approximately 3.3 GB of VRAM)");
             Console.WriteLine("4 - Alibaba Qwen-2.5 7.6B (requires approximately 5.6 GB of VRAM)");
             Console.WriteLine("5 - Alibaba Qwen-2.5 0.5.6B (requires approximately 0.8 GB of VRAM)");
@@ -95,7 +95,7 @@ namespace web_content_info_extractor_to_json
                     modelLink = DEFAULT_LLAMA3_1_8B_MODEL_PATH;
                     break;
                 case "2":
-                    modelLink = DEFAULT_GEMMA2_9B_MODEL_PATH;
+                    modelLink = DEFAULT_GEMMA3_4B_MODEL_PATH;
                     break;
                 case "3":
                     modelLink = DEFAULT_PHI4_MINI_3_8B_MODEL_PATH;
