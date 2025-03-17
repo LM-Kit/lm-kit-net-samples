@@ -11,10 +11,6 @@ namespace multi_turn_chat_with_vision
 {
     internal class Program
     {
-        static readonly string DEFAULT_MINI_CPM_O_2_6_MODEL_PATH = @"https://huggingface.co/lm-kit/minicpm-o-2.6-lmk/resolve/main/MiniCPM-o-V-2.6-Q4_K_M.lmk?download=true";
-        static readonly string DEFAULT_QWEN_2_VL_2B_MODEL_PATH = @"https://huggingface.co/lm-kit/qwen2-vl-2b-instruct-lmk/resolve/main/Qwen2-VL-2B-Instruct-Q4_K_M.lmk?download=true";
-        static readonly string DEFAULT_QWEN_2_VL_8_3B_MODEL_PATH = @"https://huggingface.co/lm-kit/qwen2-vl-8.3b-instruct-lmk/resolve/main/Qwen2-VL-8.3B-Instruct-Q4_K_M.lmk?download=true";
-
         static bool _isDownloading;
 
         private static bool ModelDownloadingProgress(string path, long? contentLength, long bytesRead)
@@ -56,9 +52,12 @@ namespace multi_turn_chat_with_vision
 
             Console.Clear();
             Console.WriteLine("Please select the model you want to use:\n");
-            Console.WriteLine("0 - MiniCPM 2.6 o Vision 8.1B (requires approximately 6.5 GB of VRAM)");
-            Console.WriteLine("1 - Alibaba Qwen 2 Vision 2.2B (requires approximately 3 GB of VRAM)");
-            Console.WriteLine("2 - Alibaba Qwen 2 Vision 8.3B (requires approximately 7.3 GB of VRAM)");
+            Console.WriteLine("0 - MiniCPM 2.6 o Vision 8.1B (requires approximately 5.9 GB of VRAM)");
+            Console.WriteLine("1 - Alibaba Qwen 2 Vision 2.2B (requires approximately 3.3 GB of VRAM)");
+            Console.WriteLine("2 - Alibaba Qwen 2 Vision 8.3B (requires approximately 6.5 GB of VRAM)");
+            Console.WriteLine("3 - Google Gemma 3 Vision 4B (requires approximately 5.7 GB of VRAM)");
+            Console.WriteLine("4 - Google Gemma 3 Vision 12B (requires approximately 11 GB of VRAM)");
+
             Console.Write("Other entry: A custom model URI\n\n> ");
 
             string input = Console.ReadLine();
@@ -67,16 +66,22 @@ namespace multi_turn_chat_with_vision
             switch (input.Trim())
             {
                 case "0":
-                    modelLink = DEFAULT_MINI_CPM_O_2_6_MODEL_PATH;
+                    modelLink = ModelCard.GetPredefinedModelCardByModelID("minicpm-o").ModelUri.ToString();
                     break;
                 case "1":
-                    modelLink = DEFAULT_QWEN_2_VL_2B_MODEL_PATH;
+                    modelLink = ModelCard.GetPredefinedModelCardByModelID("qwen2-vl:2b").ModelUri.ToString();
                     break;
                 case "2":
-                    modelLink = DEFAULT_QWEN_2_VL_8_3B_MODEL_PATH;
+                    modelLink = ModelCard.GetPredefinedModelCardByModelID("qwen2-vl:8b").ModelUri.ToString();
+                    break;
+                case "3":
+                    modelLink = ModelCard.GetPredefinedModelCardByModelID("gemma3:4b").ModelUri.ToString();
+                    break;
+                case "4":
+                    modelLink = ModelCard.GetPredefinedModelCardByModelID("gemma3:12b").ModelUri.ToString();
                     break;
                 default:
-                    modelLink = input.Trim().Trim('"');
+                    modelLink = input.Trim().Trim('"').Trim('"');
                     break;
             }
 

@@ -47,10 +47,11 @@ namespace language_detection_from_image
 
             Console.Clear();
             Console.WriteLine("Please select the model you want to use:\n");
-            Console.WriteLine("0 - Alibaba Qwen 2 Vision 2.2B (requires approximately 3.2 GB of VRAM)");
-            Console.WriteLine("1 - Alibaba Qwen 2 Vision 8.3B (requires approximately 6.4 GB of VRAM)");
-            Console.WriteLine("2 - OpenBMB MiniCPM o 2.6 Vision 8.1B (requires approximately 5.7 GB of VRAM)");
-
+            Console.WriteLine("0 - MiniCPM 2.6 o Vision 8.1B (requires approximately 5.9 GB of VRAM)");
+            Console.WriteLine("1 - Alibaba Qwen 2 Vision 2.2B (requires approximately 3.3 GB of VRAM)");
+            Console.WriteLine("2 - Alibaba Qwen 2 Vision 8.3B (requires approximately 6.5 GB of VRAM)");
+            Console.WriteLine("3 - Google Gemma 3 Vision 4B (requires approximately 5.7 GB of VRAM)");
+            Console.WriteLine("4 - Google Gemma 3 Vision 12B (requires approximately 11 GB of VRAM)");
 
             Console.Write("Other entry: A custom model URI\n\n> ");
 
@@ -60,15 +61,20 @@ namespace language_detection_from_image
             switch (input.Trim())
             {
                 case "0":
-                    modelLink = ModelCard.GetPredefinedModelCardByModelID("qwen2-vl:2b").ModelUri.ToString();
-                    break;
-                case "1":
-                    modelLink = ModelCard.GetPredefinedModelCardByModelID("qwen2-vl:8b").ModelUri.ToString();
-                    break;
-                case "2":
                     modelLink = ModelCard.GetPredefinedModelCardByModelID("minicpm-o").ModelUri.ToString();
                     break;
-
+                case "1":
+                    modelLink = ModelCard.GetPredefinedModelCardByModelID("qwen2-vl:2b").ModelUri.ToString();
+                    break;
+                case "2":
+                    modelLink = ModelCard.GetPredefinedModelCardByModelID("qwen2-vl:8b").ModelUri.ToString();
+                    break;
+                case "3":
+                    modelLink = ModelCard.GetPredefinedModelCardByModelID("gemma3:4b").ModelUri.ToString();
+                    break;
+                case "4":
+                    modelLink = ModelCard.GetPredefinedModelCardByModelID("gemma3:12b").ModelUri.ToString();
+                    break;
                 default:
                     modelLink = input.Trim().Trim('"').Trim('"');
                     break;

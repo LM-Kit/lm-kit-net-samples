@@ -140,8 +140,8 @@ namespace custom_chatbot_with_rag
             }
 
             //creating a new DataSource object using the RAG
-            Stopwatch stopwatch = Stopwatch.StartNew();
             string eBookContent = DownloadContent(uri);
+            Stopwatch stopwatch = Stopwatch.StartNew();
             RagEngine ragEngine = new RagEngine(_embeddingModel);
             DataSource dataSource = ragEngine.ImportText(eBookContent, new TextChunking() { MaxChunkSize = 500 }, dataSourceIdentifier);
             stopwatch.Stop();
