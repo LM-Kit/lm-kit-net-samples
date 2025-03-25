@@ -188,31 +188,13 @@ namespace web_content_info_extractor_to_json
             Console.Write(e.Text);
         }
 
-        private static string NormalizeSpacings(string text)
+        private static string ExtractHtmlText(string html)
         {
-            text = new Regex("[ ]{2,}", RegexOptions.None).Replace(text.Replace("\t", ""), " ").Replace("\r\n", "\n").Replace("\n ", "\n").Trim();
-            text = Regex.Replace(text, "(\\n){2,}", "\n", RegexOptions.IgnoreCase);
+            LMKit.Data.Attachment attachment = new LMKit.Data.Attachment(Encoding.UTF8.GetBytes(html), "page.html");
+
+            string text = attachment.GetText();
 
             return text;
-        }
-
-        private static string ExtractHtmlText(string html)
-        {//note Loïc: while this solution may not be optimal, it appears to be effective for the task at hand.
-            HtmlDocument doc = new HtmlDocument();
-            doc.LoadHtml(html);
-            StringBuilder result = new StringBuilder();
-
-            IEnumerable<HtmlNode> nodes = doc.DocumentNode.Descendants().Where(n =>
-                                          n.NodeType == HtmlNodeType.Text &&
-                                          n.ParentNode.Name != "script" &&
-                                          n.ParentNode.Name != "style");
-
-            foreach (HtmlNode node in nodes)
-            {
-                _ = result.Append(node.InnerText);
-            }
-
-            return NormalizeSpacings(result.ToString());
         }
 
         private static string DownloadContent(Uri uri)
