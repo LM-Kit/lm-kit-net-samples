@@ -1,4 +1,6 @@
 ﻿using LMKit.Data;
+using LMKit.Data.Storage;
+using LMKit.Data.Storage.Qdrant;
 using LMKit.Global;
 using LMKit.Model;
 using LMKit.Retrieval;
@@ -8,7 +10,7 @@ using System.Diagnostics;
 using System.Text;
 using static LMKit.Retrieval.RagEngine;
 
-namespace custom_chatbot_with_rag
+namespace custom_chatbot_with_rag_qdrant_vector_store
 {
     internal class Program
     {
@@ -18,6 +20,7 @@ namespace custom_chatbot_with_rag
         static LM _chatModel;
         static LM _embeddingModel;
         static readonly List<DataSource> _dataSources = new List<DataSource>();
+        static IVectorStore _store;
 
         static void Main(string[] args)
         {
@@ -26,6 +29,11 @@ namespace custom_chatbot_with_rag
             LMKit.Licensing.LicenseManager.SetLicenseKey("");
             Console.InputEncoding = Encoding.UTF8;
             Console.OutputEncoding = Encoding.UTF8;
+
+            //Initializing store
+            //we're using local environment that we've started with: docker run -p 6333:6333 -p 6334:6334
+            //check this tutorial to setup qdrant local environment: https://qdrant.tech/documentation/quickstart/
+            _store = new QdrantEmbeddingStore(new Uri("http://localhost:6334")); 
 
             //Loading models
             LoadChatModel();
@@ -43,15 +51,15 @@ namespace custom_chatbot_with_rag
 
             //Loading some famous eBooks
             WriteLineColor("Loading Romeo and Juliet eBook...", ConsoleColor.Green);
-            _dataSources.Add(LoadUriAsDataSource(new Uri("https://gutenberg.org/cache/epub/1513/pg1513.txt"), "Romeo and Juliet", "romeo_and_juliet.dat"));
+            _dataSources.Add(LoadUriAsDataSource(new Uri("https://gutenberg.org/cache/epub/1513/pg1513.txt"), "Romeo and Juliet"));
 
             WriteLineColor("Loading Moby Dick eBook...", ConsoleColor.Green);
-            _dataSources.Add(LoadUriAsDataSource(new Uri("https://gutenberg.org/cache/epub/2701/pg2701.txt"), "Moby Dick", "moby_dick.dat"));
+            _dataSources.Add(LoadUriAsDataSource(new Uri("https://gutenberg.org/cache/epub/2701/pg2701.txt"), "Moby Dick"));
 
             WriteLineColor("Loading Pride and Prejudice eBook...", ConsoleColor.Green);
-            _dataSources.Add(LoadUriAsDataSource(new Uri("https://gutenberg.org/cache/epub/1342/pg1342.txt"), "Pride and Prejudice", "pride_and_prejudice.dat"));
+            _dataSources.Add(LoadUriAsDataSource(new Uri("https://gutenberg.org/cache/epub/1342/pg1342.txt"), "Pride and Prejudice"));
 
-            RagEngine ragEngine = new RagEngine(_embeddingModel);
+            RagEngine ragEngine = new RagEngine(_embeddingModel, vectorStore: _store);
             SingleTurnConversation chat = new SingleTurnConversation(_chatModel)
             {
                 SystemPrompt = "You are an expert RAG assistant, specialized in answering questions about various books.",
@@ -127,24 +135,21 @@ namespace custom_chatbot_with_rag
             Console.Write(e.Text);
         }
 
-        private static DataSource LoadUriAsDataSource(Uri uri, string dataSourceIdentifier, string dataSourcePath)
+        private static DataSource LoadUriAsDataSource(Uri uri, string dataSourceIdentifier)
         {
-            if (File.Exists(dataSourcePath))
+            if (_store.CollectionExistsAsync(dataSourceIdentifier).Result)
             {//using cached version
-                Console.WriteLine($"   > {dataSourceIdentifier} obtained from previously serialized DataSource object.");
-                return DataSource.Deserialize(dataSourcePath, _embeddingModel);
+                Console.WriteLine($"   > {dataSourceIdentifier} loading datasource from store.");
+                return DataSource.LoadFromStore(_store, dataSourceIdentifier, _embeddingModel);
             }
 
             //creating a new DataSource object using the RAG
             string eBookContent = DownloadContent(uri);
             Stopwatch stopwatch = Stopwatch.StartNew();
-            RagEngine ragEngine = new RagEngine(_embeddingModel);
+            RagEngine ragEngine = new RagEngine(_embeddingModel, _store);
             DataSource dataSource = ragEngine.ImportText(eBookContent, new TextChunking() { MaxChunkSize = 500 }, dataSourceIdentifier, "default");
             stopwatch.Stop();
             Console.WriteLine($"   > {dataSourceIdentifier} loaded in {Math.Round(stopwatch.Elapsed.TotalSeconds, 1)} seconds");
-
-            //caching to file
-            dataSource.Serialize(dataSourcePath);
 
             return dataSource;
         }

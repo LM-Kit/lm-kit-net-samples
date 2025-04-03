@@ -17,7 +17,7 @@ namespace custom_chatbot_with_rag
     internal class Program
     {
         static readonly string DEFAULT_EMBEDDINGS_MODEL_PATH = @"https://huggingface.co/lm-kit/bge-1.5-gguf/resolve/main/bge-small-en-v1.5-f16.gguf?download=true";
-        static readonly string DEFAULT_CHAT_MODEL_PATH = @"https://huggingface.co/lm-kit/llama-3.1-8b-instruct-gguf/resolve/main/Llama-3.1-8B-Instruct-Q4_K_M.gguf?download=true";
+        static readonly string DEFAULT_CHAT_MODEL_PATH = @"https://huggingface.co/lm-kit/gemma-3-4b-instruct-lmk/resolve/main/gemma-3-4b-it-Q4_K_M.lmk?download=true";
         static bool _isDownloading;
         static LM _chatModel;
         static LM _embeddingModel;
@@ -84,7 +84,7 @@ namespace custom_chatbot_with_rag
 
                 if (partitions.Count > 0)
                 {
-                    WriteLineColor($"\nAnswer from {partitions[0].Partition.Owner.Owner.Identifier}:\n", ConsoleColor.Green);
+                    WriteLineColor($"\nAnswer from {partitions[0].DataSourceIdentifier}:\n", ConsoleColor.Green);
                     _ = ragEngine.QueryPartitions(query, partitions, chat);
                 }
                 else
@@ -143,7 +143,7 @@ namespace custom_chatbot_with_rag
             string eBookContent = DownloadContent(uri);
             Stopwatch stopwatch = Stopwatch.StartNew();
             RagEngine ragEngine = new RagEngine(_embeddingModel);
-            DataSource dataSource = ragEngine.ImportText(eBookContent, new TextChunking() { MaxChunkSize = 500 }, dataSourceIdentifier);
+            DataSource dataSource = ragEngine.ImportText(eBookContent, new TextChunking() { MaxChunkSize = 500 }, dataSourceIdentifier, "default");
             stopwatch.Stop();
             Console.WriteLine($"   > {dataSourceIdentifier} loaded in {Math.Round(stopwatch.Elapsed.TotalSeconds, 1)} seconds");
 
