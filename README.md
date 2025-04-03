@@ -6,11 +6,15 @@ Get started with the **LM-Kit Community Edition** today and gain access to power
 
 ---
 
-# 🚀 **NEW** 
-- [Dynamic Sampling - Up to 75% Error Reduction and 2x Faster Processing for LLMs](https://lm-kit.com/blog/introducing-dynamic-sampling/)
-- Function Calling Support
-- Vulkan Backend
-- [**LM-Kit Goes Multimodal: Introducing Vision Support**](https://lm-kit.com/blog/lmkit-goes-multimodal/)
+# 🚀 **What’s New**
+
+- ✨ [Dynamic Sampling – Up to 75% Error Reduction and 2x Faster Processing for LLMs](https://lm-kit.com/blog/introducing-dynamic-sampling/)
+- 🧩 Function Calling Support – Dynamically invoke functions directly from model outputs.
+- 🎮 Vulkan Backend – Accelerated multi-GPU support for AMD, Intel, and NVIDIA.
+- 👁️ [LM-Kit Goes Multimodal: Introducing Vision Support](https://lm-kit.com/blog/lmkit-goes-multimodal/) – Image understanding now available.
+- 🔗 [New Vector Database Connector (Open Source, Qdrant Support)](https://github.com/LM-Kit/lm-kit-net-data-connectors) – Easily integrate semantic search and hybrid RAG pipelines.
+- 🧠 [Semantic Kernel Integration (Open Source)](https://github.com/LM-Kit/lm-kit-net-semantic-kernel) – Build intelligent workflows with Microsoft’s Semantic Kernel + LM-Kit.NET.
+
 
 ---
 
