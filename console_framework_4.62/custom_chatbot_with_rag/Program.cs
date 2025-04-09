@@ -94,7 +94,7 @@ namespace custom_chatbot_with_rag
                 // Determine the number of top partitions to select based on GPU support.
                 // If GPU is available, select the top 3 partitions; otherwise, select only the top 1 to maintain acceptable speed.
                 int topK = Runtime.HasGpuSupport ? 3 : 1;
-                List<TextPartitionSimilarity> partitions = _ragEngine.FindMatchingPartitions(query, topK, forceUniqueDataSource: true);
+                List<TextPartitionSimilarity> partitions = _ragEngine.FindMatchingPartitions(query, topK, forceUniqueSection: true);
 
                 if (partitions.Count > 0)
                 {
