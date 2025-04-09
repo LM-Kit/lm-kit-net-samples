@@ -8,7 +8,6 @@ using System;
 using System.Collections.Generic;
 using System.Diagnostics;
 using System.IO;
-using System.Net;
 using System.Text;
 using static LMKit.Retrieval.RagEngine;
 
@@ -21,7 +20,9 @@ namespace custom_chatbot_with_rag
         static bool _isDownloading;
         static LM _chatModel;
         static LM _embeddingModel;
-        static readonly List<DataSource> _dataSources = new List<DataSource>();
+        static RagEngine _ragEngine;
+        static DataSource _dataSource;
+        const string COLLECTION_NAME = "Ebooks";
 
         static void Main(string[] args)
         {
@@ -45,24 +46,37 @@ namespace custom_chatbot_with_rag
                            "*********************************************************************************************\n",
                            ConsoleColor.Blue);
 
+            const string DATA_SOURCE_PATH = COLLECTION_NAME + ".dat";
+
+            if (File.Exists(DATA_SOURCE_PATH))
+            {
+                _dataSource = DataSource.LoadFromFile(DATA_SOURCE_PATH, _embeddingModel, readOnly: false);
+            }
+            else
+            {
+                _dataSource = DataSource.CreateFileDataSource(DATA_SOURCE_PATH, COLLECTION_NAME, _embeddingModel);
+            }
+
+            _ragEngine = new RagEngine(_embeddingModel);
+
+            _ragEngine.AddDataSource(_dataSource);
+
             //Loading some famous eBooks
             WriteLineColor("Loading Romeo and Juliet eBook...", ConsoleColor.Green);
-            _dataSources.Add(LoadUriAsDataSource(new Uri("https://gutenberg.org/cache/epub/1513/pg1513.txt"), "Romeo and Juliet", "romeo_and_juliet.dat"));
+            LoadEbook("romeo_and_juliet.txt", "Romeo and Juliet");
 
             WriteLineColor("Loading Moby Dick eBook...", ConsoleColor.Green);
-            _dataSources.Add(LoadUriAsDataSource(new Uri("https://gutenberg.org/cache/epub/2701/pg2701.txt"), "Moby Dick", "moby_dick.dat"));
+            LoadEbook("moby_dick.txt", "Moby Dick");
 
             WriteLineColor("Loading Pride and Prejudice eBook...", ConsoleColor.Green);
-            _dataSources.Add(LoadUriAsDataSource(new Uri("https://gutenberg.org/cache/epub/1342/pg1342.txt"), "Pride and Prejudice", "pride_and_prejudice.dat"));
+            LoadEbook("pride_and_prejudice.txt", "Pride and Prejudice");
 
-            RagEngine ragEngine = new RagEngine(_embeddingModel);
+
             SingleTurnConversation chat = new SingleTurnConversation(_chatModel)
             {
                 SystemPrompt = "You are an expert RAG assistant, specialized in answering questions about various books.",
                 SamplingMode = new GreedyDecoding()
             };
-
-            ragEngine.AddDataSources(_dataSources);
 
             chat.AfterTextCompletion += AfterTextCompletion;
 
@@ -80,16 +94,16 @@ namespace custom_chatbot_with_rag
                 // Determine the number of top partitions to select based on GPU support.
                 // If GPU is available, select the top 3 partitions; otherwise, select only the top 1 to maintain acceptable speed.
                 int topK = Runtime.HasGpuSupport ? 3 : 1;
-                List<TextPartitionSimilarity> partitions = ragEngine.FindMatchingPartitions(query, topK, forceUniqueDataSource: true);
+                List<TextPartitionSimilarity> partitions = _ragEngine.FindMatchingPartitions(query, topK, forceUniqueDataSource: true);
 
                 if (partitions.Count > 0)
                 {
-                    WriteLineColor($"\nAnswer from {partitions[0].DataSourceIdentifier}:\n", ConsoleColor.Green);
-                    _ = ragEngine.QueryPartitions(query, partitions, chat);
+                    WriteLineColor($"\nAnswer from {partitions[0].SectionIdentifier}:\n", ConsoleColor.Green);
+                    _ = _ragEngine.QueryPartitions(query, partitions, chat);
                 }
                 else
                 {
-                    Console.WriteLine("\n  >> No relevant information found in the loaded sources to answer your query. Please try asking a different question.");
+                    Console.WriteLine("\n >> No relevant information found in the loaded sources to answer your query. Please try asking a different question.");
                 }
             }
 
@@ -131,45 +145,22 @@ namespace custom_chatbot_with_rag
             Console.Write(e.Text);
         }
 
-        private static DataSource LoadUriAsDataSource(Uri uri, string dataSourceIdentifier, string dataSourcePath)
+        private static void LoadEbook(string fileName, string sectionIdentifier)
         {
-            if (File.Exists(dataSourcePath))
-            {//using cached version
-                Console.WriteLine($"   > {dataSourceIdentifier} obtained from previously serialized DataSource object.");
-                return DataSource.Deserialize(dataSourcePath, _embeddingModel);
+            if (_dataSource.HasSection(sectionIdentifier))
+            {
+                Console.WriteLine($"   > {sectionIdentifier} is already in the collection.");
+                return;  //we already have this ebook in the collection
             }
 
-            //creating a new DataSource object using the RAG
-            string eBookContent = DownloadContent(uri);
+            //importing the ebook into a new section
+            string eBookContent = File.ReadAllText(fileName);
             Stopwatch stopwatch = Stopwatch.StartNew();
-            RagEngine ragEngine = new RagEngine(_embeddingModel);
-            DataSource dataSource = ragEngine.ImportText(eBookContent, new TextChunking() { MaxChunkSize = 500 }, dataSourceIdentifier, "default");
+            _ragEngine.ImportText(eBookContent, new TextChunking() { MaxChunkSize = 500 }, COLLECTION_NAME, sectionIdentifier);
             stopwatch.Stop();
-            Console.WriteLine($"   > {dataSourceIdentifier} loaded in {Math.Round(stopwatch.Elapsed.TotalSeconds, 1)} seconds");
-
-            //caching to file
-            dataSource.Serialize(dataSourcePath);
-
-            return dataSource;
+            Console.WriteLine($"   > {sectionIdentifier} loaded in {Math.Round(stopwatch.Elapsed.TotalSeconds, 1)} seconds");
         }
 
-        private static string DownloadContent(Uri uri)
-        {
-            string tmpFile = Path.GetTempFileName();
-            try
-            {
-                using (var client = new WebClient())
-                {
-                    client.DownloadFile(uri, tmpFile);
-                }
-
-                return File.ReadAllText(tmpFile);
-            }
-            finally
-            {
-                File.Delete(tmpFile);
-            }
-        }
 
         private static void LoadChatModel()
         {
@@ -187,8 +178,8 @@ namespace custom_chatbot_with_rag
             }
 
             _chatModel = new LM(modelUri,
-                                   downloadingProgress: ModelDownloadingProgress,
-                                   loadingProgress: ModelLoadingProgress);
+                                downloadingProgress: ModelDownloadingProgress,
+                                loadingProgress: ModelLoadingProgress);
         }
 
         private static void LoadEmbeddingModel()

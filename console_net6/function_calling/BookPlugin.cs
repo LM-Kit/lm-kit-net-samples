@@ -49,9 +49,9 @@ namespace function_calling
                                               .Cast<JsonElement>()
                                               .ToList();
 
-            string publish_year = "unknown";
+            string firstPublishYear = "unknown";
             string authors = "unknown";
-            string number_of_pages_median = "unknown";
+            string numberOfPagesMedian = "unknown";
             string isbn = "unknown";
             string publisher = "unknown";
             string formats = "unknown";
@@ -59,11 +59,11 @@ namespace function_calling
 
             if (docsArray.Count > 0)
             {
-                JsonElement publishYearElement = docsArray[0].GetProperty("publish_year");
-                publish_year = publishYearElement[0].GetInt32().ToString();
+                JsonElement publishYearElement = docsArray[0].GetProperty("first_publish_year");
+                firstPublishYear = publishYearElement.GetInt32().ToString();
                 if (docsArray[0].TryGetProperty("number_of_pages_median", out _))
                 {
-                    number_of_pages_median = publishYearElement[0].GetInt32().ToString();
+                    numberOfPagesMedian = publishYearElement[0].GetInt32().ToString();
                 }
 
                 if (docsArray[0].TryGetProperty("ebook_access", out JsonElement ebookAccessElement))
@@ -98,9 +98,9 @@ namespace function_calling
             }
 
             return "Title: " + title + "\n" +
-                   "First publish year: " + publish_year + "\n" +
+                   "First publish year: " + firstPublishYear + "\n" +
                    "Authors: " + authors + "\n" +
-                   "Number of pages median: " + number_of_pages_median + "\n" +
+                   "Number of pages median: " + numberOfPagesMedian + "\n" +
                    "Formats: " + formats + "\n" +
                    "E-book access: " + ebookAccess + "\n" +
                    "ISBN: " + isbn + "\n" +

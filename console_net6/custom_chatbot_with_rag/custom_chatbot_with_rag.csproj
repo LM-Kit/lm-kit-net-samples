@@ -7,8 +7,20 @@
   </PropertyGroup>
 
   <ItemGroup>
-		<PackageReference Include="LM-Kit.NET" Version="2025.4.5" />
-		<PackageReference Include="LM-Kit.NET.Backend.Cuda12.Windows" Version="2025.4.2" />
+		<PackageReference Include="LM-Kit.NET" Version="2025.4.7" />
+		<PackageReference Include="LM-Kit.NET.Backend.Cuda12.Windows" Version="2025.4.3" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <None Update="moby_dick.txt">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </None>
+    <None Update="pride_and_prejudice.txt">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </None>
+    <None Update="romeo_and_juliet.txt">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </None>
   </ItemGroup>
 
 </Project>
