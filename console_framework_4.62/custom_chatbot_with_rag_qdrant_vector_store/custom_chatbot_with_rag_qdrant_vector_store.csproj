@@ -66,8 +66,8 @@
       <HintPath>packages\LM-Kit.NET.2025.4.8\lib\netstandard2.0\LM-Kit.NET.dll</HintPath>
       <Private>True</Private>
     </Reference>
-    <Reference Include="LM-Kit.NET.Data.Connectors.Qdrant, Version=2025.4.3.0, Culture=neutral, PublicKeyToken=46993c109629ad37">
-      <HintPath>packages\LM-Kit.NET.Data.Connectors.Qdrant.2025.4.3\lib\netstandard2.0\LM-Kit.NET.Data.Connectors.Qdrant.dll</HintPath>
+    <Reference Include="LM-Kit.NET.Data.Connectors.Qdrant, Version=2025.4.4.0, Culture=neutral, PublicKeyToken=46993c109629ad37">
+      <HintPath>packages\LM-Kit.NET.Data.Connectors.Qdrant.2025.4.4\lib\netstandard2.0\LM-Kit.NET.Data.Connectors.Qdrant.dll</HintPath>
       <Private>True</Private>
     </Reference>
     <Reference Include="Microsoft.Bcl.AsyncInterfaces, Version=9.0.0.4, Culture=neutral, PublicKeyToken=cc7b13ffcd2ddd51">
