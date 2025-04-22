@@ -81,6 +81,7 @@ namespace web_content_info_extractor_to_json
             Console.WriteLine("5 - Alibaba Qwen-2.5 0.5.6B (requires approximately 0.8 GB of VRAM)");
             Console.WriteLine("6 - Meta Llama 3.2 1B (requires approximately 1 GB of VRAM)");
             Console.WriteLine("7 - Microsoft Phi-4 14.7B Mini (requires approximately 11 GB of VRAM)");
+            Console.WriteLine("8 - IBM Granite 8B (requires approximately 6 GB of VRAM)");
             Console.Write("Other entry: A custom model URI\n\n> ");
 
             string input = Console.ReadLine();
@@ -111,6 +112,9 @@ namespace web_content_info_extractor_to_json
                     break;
                 case "7":
                     modelLink = DEFAULT_PHI4_14_7B_MODEL_PATH;
+                    break;
+                case "8":
+                    modelLink = DEFAULT_GRANITE_3_3_8B_MODEL_PATH;
                     break;
                 default:
                     modelLink = input.Trim().Trim('"');

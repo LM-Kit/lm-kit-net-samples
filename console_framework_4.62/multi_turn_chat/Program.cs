@@ -15,6 +15,7 @@ namespace multi_turn_chat
         static readonly string DEFAULT_QWEN2_5_7B_MODEL_PATH = @"https://huggingface.co/lm-kit/qwen-2.5-7b-instruct-gguf/resolve/main/Qwen-2.5-7B-Instruct-Q4_K_M.gguf?download=true";
         static readonly string DEFAULT_MISTRAL_NEMO_12_2B_MODEL_PATH = @"https://huggingface.co/lm-kit/mistral-nemo-2407-12.2b-instruct-gguf/resolve/main/Mistral-Nemo-2407-12.2B-Instruct-Q4_K_M.gguf?download=true";
         static readonly string DEFAULT_PHI4_14_7B_MODEL_PATH = @"https://huggingface.co/lm-kit/phi-4-14.7b-instruct-gguf/resolve/main/Phi-4-14.7B-Instruct-Q4_K_M.gguf?download=true";
+        static readonly string DEFAULT_GRANITE_3_3_8B_MODEL_PATH = @"https://huggingface.co/lm-kit/granite-3.3-8b-instruct-gguf/resolve/main/granite-3.3-8B-Instruct-Q4_K_M.gguf?download=true";
         static bool _isDownloading;
 
         private static bool ModelDownloadingProgress(string path, long? contentLength, long bytesRead)
@@ -62,6 +63,7 @@ namespace multi_turn_chat
             Console.WriteLine("3 - Microsoft Phi-4 Mini 3.82B Mini (requires approximately 3.3 GB of VRAM)");
             Console.WriteLine("4 - Alibaba Qwen-2.5 7.6B (requires approximately 5.6 GB of VRAM)");
             Console.WriteLine("5 - Microsoft Phi-4 14.7B Mini (requires approximately 11 GB of VRAM)");
+            Console.WriteLine("6 - IBM Granite 8B (requires approximately 6 GB of VRAM)");
             Console.Write("Other entry: A custom model URI\n\n> ");
 
             string input = Console.ReadLine();
@@ -87,6 +89,9 @@ namespace multi_turn_chat
                 case "5":
                     modelLink = DEFAULT_PHI4_14_7B_MODEL_PATH;
                     break;
+                case "6":
+                    modelLink = DEFAULT_GRANITE_3_3_8B_MODEL_PATH;
+					break;
                 default:
                     modelLink = input.Trim().Trim('"');
                     break;

@@ -18,6 +18,7 @@ namespace structured_data_extraction
         static readonly string DEFAULT_QWEN2_5_05B_MODEL_PATH = @"https://huggingface.co/lm-kit/qwen-2.5-0.5b-instruct-gguf/resolve/main/Qwen-2.5-0.5B-Instruct-Q4_K_M.gguf?download=true";
         static readonly string DEFAULT_MISTRAL_NEMO_12_2B_MODEL_PATH = @"https://huggingface.co/lm-kit/mistral-nemo-2407-12.2b-instruct-gguf/resolve/main/Mistral-Nemo-2407-12.2B-Instruct-Q4_K_M.gguf?download=true";
         static readonly string DEFAULT_PHI4_14_7B_MODEL_PATH = @"https://huggingface.co/lm-kit/phi-4-14.7b-instruct-gguf/resolve/main/Phi-4-14.7B-Instruct-Q4_K_M.gguf?download=true";
+        static readonly string DEFAULT_GRANITE_3_3_8B_MODEL_PATH = @"https://huggingface.co/lm-kit/granite-3.3-8b-instruct-gguf/resolve/main/granite-3.3-8B-Instruct-Q4_K_M.gguf?download=true";
         static readonly string DEFAULT_LLAMA_3_2_1B_MODEL_PATH = @"https://huggingface.co/lm-kit/llama-3.2-1b-instruct.gguf/resolve/main/Llama-3.2-1B-Instruct-Q4_K_M.gguf?download=true";
         static bool _isDownloading;
 
@@ -69,6 +70,7 @@ namespace structured_data_extraction
             Console.WriteLine("5 - Alibaba Qwen-2.5 0.5.6B (requires approximately 0.8 GB of VRAM)");
             Console.WriteLine("6 - Meta Llama 3.2 1B (requires approximately 1 GB of VRAM)");
             Console.WriteLine("7 - Microsoft Phi-4 14.7B Mini (requires approximately 11 GB of VRAM)");
+            Console.WriteLine("8 - IBM Granite 8B (requires approximately 6 GB of VRAM)");
             Console.Write("Other entry: A custom model URI\n\n> ");
 
             string input = Console.ReadLine();
@@ -99,6 +101,9 @@ namespace structured_data_extraction
                     break;
                 case "7":
                     modelLink = DEFAULT_PHI4_14_7B_MODEL_PATH;
+                    break;
+                case "8":
+                    modelLink = DEFAULT_GRANITE_3_3_8B_MODEL_PATH;
                     break;
                 default:
                     modelLink = input.Trim().Trim('"');
