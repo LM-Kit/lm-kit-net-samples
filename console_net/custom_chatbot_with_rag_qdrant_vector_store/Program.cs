@@ -1,4 +1,6 @@
-﻿using LMKit.Data;
+﻿using System.Diagnostics;
+using System.Text;
+using LMKit.Data;
 using LMKit.Data.Storage;
 using LMKit.Data.Storage.Qdrant;
 using LMKit.Global;
@@ -6,9 +8,6 @@ using LMKit.Model;
 using LMKit.Retrieval;
 using LMKit.TextGeneration;
 using LMKit.TextGeneration.Sampling;
-using System.Diagnostics;
-using System.Text;
-using static LMKit.Retrieval.RagEngine;
 
 namespace custom_chatbot_with_rag_qdrant_vector_store
 {
@@ -84,7 +83,7 @@ namespace custom_chatbot_with_rag_qdrant_vector_store
                 // Determine the number of top partitions to select based on GPU support.
                 // If GPU is available, select the top 3 partitions; otherwise, select only the top 1 to maintain acceptable speed.
                 int topK = Runtime.HasGpuSupport ? 3 : 1;
-                List<TextPartitionSimilarity> partitions = ragEngine.FindMatchingPartitions(query, topK, forceUniqueSection: true);
+                List<PartitionSimilarity> partitions = ragEngine.FindMatchingPartitions(query, topK, forceUniqueSection: true);
 
                 if (partitions.Count > 0)
                 {
