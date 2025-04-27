@@ -39,11 +39,11 @@ namespace custom_chatbot_with_rag
             Console.Clear();
             WriteLineColor("*********************************************************************************************\n" +
                            "* In this demo, we are loading various eBooks, which can be queried semantically.\n" +
-                           "* You can ask questions about the content of the loaded eBooks,\n" +
+                           "* You can ask questions about the content of the loaded eBooks, \n" +
                            "* and the system will use a Retrieval-Augmented Generation (RAG) approach to provide answers.\n" +
                            "* This means that the chatbot will first retrieve relevant information from the eBooks\n" +
                            "* and then generate a coherent response based on that information.\n" +
-                           "*********************************************************************************************\n",
+                           "*********************************************************************************************\n", 
                            ConsoleColor.Blue);
 
             const string DATA_SOURCE_PATH = COLLECTION_NAME + ".dat";
@@ -74,7 +74,7 @@ namespace custom_chatbot_with_rag
 
             SingleTurnConversation chat = new SingleTurnConversation(_chatModel)
             {
-                SystemPrompt = "You are an expert RAG assistant, specialized in answering questions about various books.",
+                SystemPrompt = "You are an expert RAG assistant, specialized in answering questions about various books.", 
                 SamplingMode = new GreedyDecoding()
             };
 
@@ -177,8 +177,8 @@ namespace custom_chatbot_with_rag
                 }
             }
 
-            _chatModel = new LM(modelUri,
-                                downloadingProgress: ModelDownloadingProgress,
+            _chatModel = new LM(modelUri, 
+                                downloadingProgress: ModelDownloadingProgress, 
                                 loadingProgress: ModelLoadingProgress);
         }
 
@@ -197,7 +197,7 @@ namespace custom_chatbot_with_rag
                 }
             }
 
-            _embeddingModel = new LM(modelUri,
+            _embeddingModel = new LM(modelUri, 
                                    downloadingProgress: ModelDownloadingProgress);
         }
 
