@@ -9,12 +9,12 @@ Get started with the **LM-Kit Community Edition** today and gain access to power
 # 🚀 **What’s New**
 
 - ✨ [Dynamic Sampling – Up to 75% Error Reduction and 2x Faster Processing for LLMs](https://lm-kit.com/blog/introducing-dynamic-sampling/)
-- 🧩 Function Calling Support – Dynamically invoke functions directly from model outputs.
-- 🎮 Vulkan Backend – Accelerated multi-GPU support for AMD, Intel, and NVIDIA.
-- 👁️ [LM-Kit Goes Multimodal: Introducing Vision Support](https://lm-kit.com/blog/lmkit-goes-multimodal/) – Image understanding now available.
-- 🔗 [New Vector Database Connector (Open Source, Qdrant Support)](https://github.com/LM-Kit/lm-kit-net-data-connectors) – Easily integrate semantic search and hybrid RAG pipelines.
-- 🧠 [Semantic Kernel Integration (Open Source)](https://github.com/LM-Kit/lm-kit-net-semantic-kernel) – Build intelligent workflows with Microsoft’s Semantic Kernel + LM-Kit.NET.
-
+- 🧩 Function Calling Support - Dynamically invoke functions directly from model outputs.
+- 🎮 Vulkan Backend - Accelerated multi-GPU support for AMD, Intel, and NVIDIA.
+- 👁️ [LM-Kit Goes Multimodal: Introducing Vision Support](https://lm-kit.com/blog/lmkit-goes-multimodal/) - Image understanding now available.
+- 🧠 [Semantic Kernel Integration (Open Source)](https://github.com/LM-Kit/lm-kit-net-semantic-kernel) - Build intelligent workflows with Microsoft’s Semantic Kernel + LM-Kit.NET.
+- 🔗 [New Vector Database Connector (Open Source, Qdrant Support)](https://github.com/LM-Kit/lm-kit-net-data-connectors) - Easily integrate semantic search and hybrid RAG pipelines.
+- 🧬 [New Built-in Vector Database Engine](https://lm-kit.com/blog/lmkit-made-embedding-storage-effortless/) - Store and Retrieve Embeddings at Any Scale.
 
 ---
 
@@ -73,7 +73,7 @@ LM-Kit.NET offers a wide array of advanced AI features that can be seamlessly in
   Invoke specialized functions in your application on-demand to handle diverse tasks.
 
 - **Semantic Embeddings**  
-  Transform textual data into meaningful numeric representations for improved retrieval and analysis.
+  Transform textual or image data into meaningful numeric representations for improved retrieval and analysis.
 
 - **Customizable Data Extraction**  
   Extract and organize information from diverse sources using flexible schemas.
