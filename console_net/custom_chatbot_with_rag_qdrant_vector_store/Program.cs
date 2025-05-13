@@ -139,7 +139,7 @@ namespace custom_chatbot_with_rag_qdrant_vector_store
             if (_store.CollectionExistsAsync(dataSourceIdentifier).Result)
             {//using cached version
                 Console.WriteLine($"   > {dataSourceIdentifier} loading datasource from store.");
-                return DataSource.LoadFromStore(_store, dataSourceIdentifier, _embeddingModel);
+                return DataSource.LoadFromStore(_store, dataSourceIdentifier);
             }
 
             //creating a new DataSource object using the RAG
