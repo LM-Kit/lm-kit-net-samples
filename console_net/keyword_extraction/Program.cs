@@ -1,7 +1,7 @@
-﻿using LMKit.Model;
-using LMKit.TextAnalysis;
-using System.Diagnostics;
+﻿using System.Diagnostics;
 using System.Text;
+using LMKit.Model;
+using LMKit.TextAnalysis;
 
 namespace structured_data_extraction
 {
@@ -107,12 +107,12 @@ namespace structured_data_extraction
             }
 
             //Loading model
-            Uri modelUri = new Uri(modelLink);
-            LM model = new LM(modelUri,
+            Uri modelUri = new(modelLink);
+            LM model = new(modelUri,
                                     downloadingProgress: ModelDownloadingProgress,
                                     loadingProgress: ModelLoadingProgress);
 
-            KeywordExtraction keywordExtraction = new KeywordExtraction(model)
+            KeywordExtraction keywordExtraction = new(model)
             {
                 KeywordCount = 8
             };

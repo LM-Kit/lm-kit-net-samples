@@ -1,12 +1,11 @@
-﻿using LMKit.Data;
+﻿using System.Diagnostics;
+using System.Text;
+using LMKit.Data;
 using LMKit.Global;
 using LMKit.Model;
 using LMKit.Retrieval;
 using LMKit.TextGeneration;
 using LMKit.TextGeneration.Sampling;
-using System.Diagnostics;
-using System.Text;
-using static LMKit.Retrieval.RagEngine;
 
 namespace custom_chatbot_with_rag
 {
@@ -69,7 +68,7 @@ namespace custom_chatbot_with_rag
             LoadEbook("pride_and_prejudice.txt", "Pride and Prejudice");
 
 
-            SingleTurnConversation chat = new SingleTurnConversation(_chatModel)
+            SingleTurnConversation chat = new(_chatModel)
             {
                 SystemPrompt = "You are an expert RAG assistant, specialized in answering questions about various books.",
                 SamplingMode = new GreedyDecoding()
@@ -161,7 +160,7 @@ namespace custom_chatbot_with_rag
 
         private static void LoadChatModel()
         {
-            Uri modelUri = new Uri(DEFAULT_CHAT_MODEL_PATH);
+            Uri modelUri = new(DEFAULT_CHAT_MODEL_PATH);
 
             if (modelUri.IsFile && !File.Exists(modelUri.LocalPath))
             {
@@ -181,7 +180,7 @@ namespace custom_chatbot_with_rag
 
         private static void LoadEmbeddingModel()
         {
-            Uri modelUri = new Uri(DEFAULT_EMBEDDINGS_MODEL_PATH);
+            Uri modelUri = new(DEFAULT_EMBEDDINGS_MODEL_PATH);
 
             if (modelUri.IsFile && !File.Exists(modelUri.LocalPath))
             {

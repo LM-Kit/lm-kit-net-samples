@@ -1,7 +1,7 @@
-﻿using LMKit.Model;
+﻿using System.Text;
+using LMKit.Model;
 using LMKit.TextGeneration;
 using LMKit.TextGeneration.Sampling;
-using System.Text;
 
 namespace single_turn_chat
 {
@@ -96,13 +96,13 @@ namespace single_turn_chat
             }
 
             //Loading model
-            Uri modelUri = new Uri(modelLink);
-            LM model = new LM(modelUri,
+            Uri modelUri = new(modelLink);
+            LM model = new(modelUri,
                                     downloadingProgress: ModelDownloadingProgress,
                                     loadingProgress: ModelLoadingProgress);
 
             Console.Clear();
-            SingleTurnConversation chat = new SingleTurnConversation(model)
+            SingleTurnConversation chat = new(model)
             {
                 MaximumCompletionTokens = 1000,
                 SamplingMode = new RandomSampling()

@@ -10,11 +10,11 @@
          - macOS: 38.89%. At iteration 2570.
 */
 
+using System.Diagnostics;
 using LMKit.Finetuning;
 using LMKit.Model;
 using LMKit.TextGeneration;
 using LMKit.TextGeneration.Sampling;
-using System.Diagnostics;
 
 namespace finetuning.Experiments
 {

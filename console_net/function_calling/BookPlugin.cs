@@ -1,13 +1,13 @@
-﻿using LMKit.FunctionCalling;
-using System.ComponentModel;
+﻿using System.ComponentModel;
 using System.Text.Json;
 using System.Text.RegularExpressions;
+using LMKit.FunctionCalling;
 
 namespace function_calling
 {
     internal class BookPlugin
     {
-        private readonly HttpClient client = new HttpClient();
+        private readonly HttpClient client = new();
 
         [LMFunction("GetAvailableBookCountByAuthor", "Retrieves the count of books available by a specified author.")]
         public async Task<int> GetAvailableBookCountByAuthor([Description("The name of the author whose available books are being counted.")] string author)

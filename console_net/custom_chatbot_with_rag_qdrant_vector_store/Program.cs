@@ -18,7 +18,7 @@ namespace custom_chatbot_with_rag_qdrant_vector_store
         static bool _isDownloading;
         static LM _chatModel;
         static LM _embeddingModel;
-        static readonly List<DataSource> _dataSources = new List<DataSource>();
+        static readonly List<DataSource> _dataSources = new();
         static IVectorStore _store;
 
         static void Main(string[] args)
@@ -32,7 +32,7 @@ namespace custom_chatbot_with_rag_qdrant_vector_store
             //Initializing store
             //we're using local environment that we've started with: docker run -p 6333:6333 -p 6334:6334
             //check this tutorial to setup qdrant local environment: https://qdrant.tech/documentation/quickstart/
-            _store = new QdrantEmbeddingStore(new Uri("http://localhost:6334")); 
+            _store = new QdrantEmbeddingStore(new Uri("http://localhost:6334"));
 
             //Loading models
             LoadChatModel();
@@ -58,8 +58,8 @@ namespace custom_chatbot_with_rag_qdrant_vector_store
             WriteLineColor("Loading Pride and Prejudice eBook...", ConsoleColor.Green);
             _dataSources.Add(LoadUriAsDataSource(new Uri("https://gutenberg.org/cache/epub/1342/pg1342.txt"), "Pride and Prejudice"));
 
-            RagEngine ragEngine = new RagEngine(_embeddingModel, vectorStore: _store);
-            SingleTurnConversation chat = new SingleTurnConversation(_chatModel)
+            RagEngine ragEngine = new(_embeddingModel, vectorStore: _store);
+            SingleTurnConversation chat = new(_chatModel)
             {
                 SystemPrompt = "You are an expert RAG assistant, specialized in answering questions about various books.",
                 SamplingMode = new GreedyDecoding()
@@ -145,7 +145,7 @@ namespace custom_chatbot_with_rag_qdrant_vector_store
             //creating a new DataSource object using the RAG
             string eBookContent = DownloadContent(uri);
             Stopwatch stopwatch = Stopwatch.StartNew();
-            RagEngine ragEngine = new RagEngine(_embeddingModel, _store);
+            RagEngine ragEngine = new(_embeddingModel, _store);
             DataSource dataSource = ragEngine.ImportText(eBookContent, new TextChunking() { MaxChunkSize = 500 }, dataSourceIdentifier, "default");
             stopwatch.Stop();
             Console.WriteLine($"   > {dataSourceIdentifier} loaded in {Math.Round(stopwatch.Elapsed.TotalSeconds, 1)} seconds");
@@ -161,7 +161,7 @@ namespace custom_chatbot_with_rag_qdrant_vector_store
 
         private static void LoadChatModel()
         {
-            Uri modelUri = new Uri(DEFAULT_CHAT_MODEL_PATH);
+            Uri modelUri = new(DEFAULT_CHAT_MODEL_PATH);
 
             if (modelUri.IsFile && !File.Exists(modelUri.LocalPath))
             {
@@ -181,7 +181,7 @@ namespace custom_chatbot_with_rag_qdrant_vector_store
 
         private static void LoadEmbeddingModel()
         {
-            Uri modelUri = new Uri(DEFAULT_EMBEDDINGS_MODEL_PATH);
+            Uri modelUri = new(DEFAULT_EMBEDDINGS_MODEL_PATH);
 
             if (modelUri.IsFile && !File.Exists(modelUri.LocalPath))
             {

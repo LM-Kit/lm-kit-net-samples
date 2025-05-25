@@ -1,8 +1,8 @@
-﻿using LMKit.Model;
+﻿using System.Text;
+using LMKit.Model;
 using LMKit.TextGeneration;
 using LMKit.TextGeneration.Chat;
 using LMKit.TextGeneration.Sampling;
-using System.Text;
 
 namespace multi_turn_chat_with_chat_history_guidance
 {
@@ -99,8 +99,8 @@ namespace multi_turn_chat_with_chat_history_guidance
             }
 
             //Loading model
-            Uri modelUri = new Uri(modelLink);
-            LM model = new LM(modelUri,
+            Uri modelUri = new(modelLink);
+            LM model = new(modelUri,
                                     downloadingProgress: ModelDownloadingProgress,
                                     loadingProgress: ModelLoadingProgress);
 
@@ -154,7 +154,7 @@ namespace multi_turn_chat_with_chat_history_guidance
 
         private static MultiTurnConversation CreateChat(LM model)
         {
-            ChatHistory chatHistory = new ChatHistory(model);
+            ChatHistory chatHistory = new(model);
 
             chatHistory.AddMessage(AuthorRole.System, "You are Michael, a hilarious assistant. Respond promptly to all user requests, ensuring each reply ALWAYS concludes with a fitting joke. Do not repeat any jokes that have already been told.");
 
@@ -179,7 +179,7 @@ namespace multi_turn_chat_with_chat_history_guidance
             chatHistory.AddMessage(AuthorRole.User, "What's the best way to manage a remote team?");
             chatHistory.AddMessage(AuthorRole.Assistant, "The best way to manage a remote team is to maintain clear communication, set clear expectations, foster a sense of community, and utilize the right tools for collaboration.\n\nJoke: Why did the remote team have great chemistry? Because they bonded over the cloud! LOL");
 
-            MultiTurnConversation chat = new MultiTurnConversation(model, chatHistory)
+            MultiTurnConversation chat = new(model, chatHistory)
             {
                 MaximumCompletionTokens = 1000,
                 SamplingMode = new RandomSampling()

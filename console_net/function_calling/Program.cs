@@ -1,6 +1,6 @@
-﻿using LMKit.FunctionCalling;
+﻿using System.Text;
+using LMKit.FunctionCalling;
 using LMKit.Model;
-using System.Text;
 
 namespace function_calling
 {
@@ -95,14 +95,14 @@ namespace function_calling
             }
 
             //Loading model
-            Uri modelUri = new Uri(modelLink);
-            LM model = new LM(modelUri,
+            Uri modelUri = new(modelLink);
+            LM model = new(modelUri,
                                      downloadingProgress: ModelDownloadingProgress,
                                      loadingProgress: ModelLoadingProgress);
 
             Console.Clear();
             ShowInfo();
-            SingleFunctionCall functionCalling = new SingleFunctionCall(model)
+            SingleFunctionCall functionCalling = new(model)
             {
                 InvokeFunctions = true
             };

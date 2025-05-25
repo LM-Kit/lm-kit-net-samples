@@ -1,7 +1,7 @@
-﻿using LMKit.Model;
+﻿using System.Text;
+using LMKit.Model;
 using LMKit.TextGeneration;
 using LMKit.TextGeneration.Sampling;
-using System.Text;
 
 namespace multi_turn_chat_with_custom_sampling
 {
@@ -97,15 +97,15 @@ namespace multi_turn_chat_with_custom_sampling
             }
 
             //Loading model
-            Uri modelUri = new Uri(modelLink);
-            LM model = new LM(modelUri,
+            Uri modelUri = new(modelLink);
+            LM model = new(modelUri,
                                      downloadingProgress: ModelDownloadingProgress,
                                      loadingProgress: ModelLoadingProgress);
 
             Console.Clear();
             ShowSpecialPrompts();
 
-            MultiTurnConversation chat = new MultiTurnConversation(model)
+            MultiTurnConversation chat = new(model)
             {
                 SystemPrompt = "You are an enthusiastic pet lover chatbot, dedicated to responding promptly and helpfully to every user request.",
                 MaximumCompletionTokens = 1000,

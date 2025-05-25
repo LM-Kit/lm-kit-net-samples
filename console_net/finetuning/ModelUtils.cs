@@ -9,7 +9,7 @@ namespace finetuning
         public static LM LoadModel(string modelPath)
         {
             // Loading model
-            Uri modelUri = new Uri(modelPath);
+            Uri modelUri = new(modelPath);
 
             if (modelUri.IsFile && !File.Exists(modelUri.LocalPath))
             {
@@ -22,7 +22,7 @@ namespace finetuning
                 }
             }
 
-            LM model = new LM(modelUri,
+            LM model = new(modelUri,
                                downloadingProgress: ModelUtils.ModelDownloadingProgress,
                                loadingProgress: ModelUtils.ModelLoadingProgress);
             Console.Clear();

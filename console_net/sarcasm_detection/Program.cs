@@ -1,7 +1,7 @@
-﻿using LMKit.Model;
-using LMKit.TextAnalysis;
-using System.Diagnostics;
+﻿using System.Diagnostics;
 using System.Text;
+using LMKit.Model;
+using LMKit.TextAnalysis;
 
 namespace sarcasm_detection
 {
@@ -52,8 +52,8 @@ namespace sarcasm_detection
             Console.OutputEncoding = Encoding.UTF8;
 
             //Loading model
-            Uri modelUri = new Uri(DEFAULT_MODEL_PATH);
-            LM model = new LM(modelUri,
+            Uri modelUri = new(DEFAULT_MODEL_PATH);
+            LM model = new(modelUri,
                                     downloadingProgress: ModelDownloadingProgress,
                                     loadingProgress: ModelLoadingProgress);
 
@@ -62,7 +62,7 @@ namespace sarcasm_detection
             Console.WriteLine($"Please enter the text you would like to classify as either sarcastic or sincere.");
             Console.ResetColor();
 
-            SarcasmDetection classifier = new SarcasmDetection(model);
+            SarcasmDetection classifier = new(model);
 
 
             while (true)

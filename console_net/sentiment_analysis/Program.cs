@@ -1,7 +1,7 @@
-﻿using LMKit.Model;
-using LMKit.TextAnalysis;
-using System.Diagnostics;
+﻿using System.Diagnostics;
 using System.Text;
+using LMKit.Model;
+using LMKit.TextAnalysis;
 
 
 namespace sentiment_analysis
@@ -49,8 +49,8 @@ namespace sentiment_analysis
             Console.OutputEncoding = Encoding.UTF8;
 
             //Loading model
-            Uri modelUri = new Uri(DEFAULT_MODEL_PATH);
-            LM model = new LM(modelUri,
+            Uri modelUri = new(DEFAULT_MODEL_PATH);
+            LM model = new(modelUri,
                                     downloadingProgress: ModelDownloadingProgress,
                                     loadingProgress: ModelLoadingProgress);
 
@@ -59,7 +59,7 @@ namespace sentiment_analysis
             Console.WriteLine($"Please enter text to classify as positive or negative sentiment.");
             Console.ResetColor();
 
-            SentimentAnalysis classifier = new SentimentAnalysis(model)
+            SentimentAnalysis classifier = new(model)
             {
                 NeutralSupport = false
             };

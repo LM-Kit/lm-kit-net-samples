@@ -1,7 +1,7 @@
-﻿using LMKit.Model;
+﻿using System.Text;
+using LMKit.Model;
 using LMKit.TextGeneration;
 using LMKit.Translation;
-using System.Text;
 
 
 namespace translator
@@ -103,13 +103,13 @@ namespace translator
             }
 
             //Loading model
-            Uri modelUri = new Uri(modelLink);
-            LM model = new LM(modelUri,
+            Uri modelUri = new(modelLink);
+            LM model = new(modelUri,
                                     downloadingProgress: ModelDownloadingProgress,
                                     loadingProgress: ModelLoadingProgress);
 
             Console.Clear();
-            TextTranslation translator = new TextTranslation(model);
+            TextTranslation translator = new(model);
 
             translator.AfterTextCompletion += Translation_AfterTextCompletion;
             int translationCount = 0;

@@ -1,7 +1,7 @@
-﻿using LMKit.Model;
-using LMKit.TextAnalysis;
-using System.Diagnostics;
+﻿using System.Diagnostics;
 using System.Text;
+using LMKit.Model;
+using LMKit.TextAnalysis;
 
 namespace emotion_detection
 {
@@ -96,8 +96,8 @@ namespace emotion_detection
             }
 
             //Loading model
-            Uri modelUri = new Uri(modelLink);
-            LM model = new LM(modelUri,
+            Uri modelUri = new(modelLink);
+            LM model = new(modelUri,
                                     downloadingProgress: ModelDownloadingProgress,
                                     loadingProgress: ModelLoadingProgress);
 
@@ -106,7 +106,7 @@ namespace emotion_detection
             Console.WriteLine($"Please enter text to classify the emotion. The emotion will be identified as one of the following: neutral, happiness, anger, sadness, or fear.");
             Console.ResetColor();
 
-            EmotionDetection classifier = new EmotionDetection(model)
+            EmotionDetection classifier = new(model)
             {
                 NeutralSupport = true
             };

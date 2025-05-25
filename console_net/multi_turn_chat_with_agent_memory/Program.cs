@@ -1,9 +1,9 @@
-﻿using LMKit.Model;
+﻿using System.Diagnostics;
+using System.Text;
+using LMKit.Model;
 using LMKit.TextGeneration;
 using LMKit.TextGeneration.Sampling;
 using multi_turn_chat_with_agent_memory;
-using System.Diagnostics;
-using System.Text;
 
 namespace multi_turn_chat_with_memory
 {
@@ -65,14 +65,14 @@ namespace multi_turn_chat_with_memory
 
             Console.Clear();
 
-            MultiTurnConversation chat = new MultiTurnConversation(model, contextSize: 4096)
+            MultiTurnConversation chat = new(model, contextSize: 4096)
             {
                 MaximumCompletionTokens = 1000,
                 SamplingMode = new GreedyDecoding(),
                 SystemPrompt = "You are BeeBop, our agent dedicated to providing information about the ideal customer profile of ACMEE Company. Provide clear and concise answers and include only factual content."
             };
 
-            MultiTurnConversation chatMemory = new MultiTurnConversation(model, contextSize: 4096)
+            MultiTurnConversation chatMemory = new(model, contextSize: 4096)
             {
                 MaximumCompletionTokens = 1000,
                 SamplingMode = new GreedyDecoding(),

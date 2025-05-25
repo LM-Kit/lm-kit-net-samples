@@ -1,8 +1,7 @@
-﻿using LMKit.Model;
+﻿using System.Text;
+using LMKit.Model;
 using LMKit.TextGeneration;
 using LMKit.TextGeneration.Sampling;
-using System.Text;
-using System.Text.RegularExpressions;
 
 namespace web_content_info_extractor_to_json
 {
@@ -117,15 +116,15 @@ namespace web_content_info_extractor_to_json
             }
 
             //Loading model
-            Uri modelUri = new Uri(modelLink);
-            LM model = new LM(modelUri,
+            Uri modelUri = new(modelLink);
+            LM model = new(modelUri,
                                     downloadingProgress: ModelDownloadingProgress,
                                     loadingProgress: ModelLoadingProgress);
 
 
             Console.Clear();
 
-            SingleTurnConversation chat = new SingleTurnConversation(model)
+            SingleTurnConversation chat = new(model)
             {
                 MaximumCompletionTokens = 256,
                 MaximumInputTokens = model.GpuLayerCount > 0 ? 3840 : 1024,
@@ -188,8 +187,8 @@ namespace web_content_info_extractor_to_json
         }
 
         private static string ExtractHtmlText(string html)
-        { 
-            LMKit.Data.Attachment attachment = new LMKit.Data.Attachment(Encoding.UTF8.GetBytes(html), "page.html");
+        {
+            LMKit.Data.Attachment attachment = new(Encoding.UTF8.GetBytes(html), "page.html");
 
             string text = attachment.GetText();
 

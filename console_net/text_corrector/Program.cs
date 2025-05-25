@@ -1,6 +1,6 @@
-﻿using LMKit.Model;
+﻿using System.Text;
+using LMKit.Model;
 using LMKit.TextEnhancement;
-using System.Text;
 
 // Interesting test cases inspired by common grammar mistakes are discussed in this article: https://www.indeed.com/career-advice/career-development/common-grammar-mistakes
 
@@ -102,13 +102,13 @@ namespace text_corrector
             }
 
             //Loading model
-            Uri modelUri = new Uri(modelLink);
-            LM model = new LM(modelUri,
+            Uri modelUri = new(modelLink);
+            LM model = new(modelUri,
                                     downloadingProgress: ModelDownloadingProgress,
                                     loadingProgress: ModelLoadingProgress);
 
             Console.Clear();
-            TextCorrection corrector = new TextCorrection(model);
+            TextCorrection corrector = new(model);
 
             corrector.AfterTextCompletion += Correction_AfterTextCompletion;
             int correctionCount = 0;

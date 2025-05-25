@@ -1,7 +1,7 @@
-﻿using LMKit.Model;
-using LMKit.TextGeneration;
-using System.Diagnostics;
+﻿using System.Diagnostics;
 using System.Text;
+using LMKit.Model;
+using LMKit.TextGeneration;
 
 namespace text_summarizer
 {
@@ -112,15 +112,15 @@ namespace text_summarizer
             }
 
             // Initialize the model
-            Uri modelUri = new Uri(modelLink);
-            LM model = new LM(
+            Uri modelUri = new(modelLink);
+            LM model = new(
                 modelUri,
                 downloadingProgress: ModelDownloadingProgress,
                 loadingProgress: ModelLoadingProgress
             );
 
             // Configure Summarizer
-            Summarizer summarizer = new Summarizer(model)
+            Summarizer summarizer = new(model)
             {
                 GenerateContent = true,
                 GenerateTitle = true,

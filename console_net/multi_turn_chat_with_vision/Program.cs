@@ -1,10 +1,9 @@
-﻿using LMKit.Data;
+﻿using System.Text;
+using LMKit.Data;
 using LMKit.Model;
 using LMKit.TextGeneration;
 using LMKit.TextGeneration.Chat;
 using LMKit.TextGeneration.Sampling;
-using System;
-using System.Text;
 
 namespace multi_turn_chat_with_vision
 {
@@ -85,14 +84,14 @@ namespace multi_turn_chat_with_vision
             }
 
             //Loading model
-            Uri modelUri = new Uri(modelLink);
-            LM model = new LM(modelUri,
+            Uri modelUri = new(modelLink);
+            LM model = new(modelUri,
                               downloadingProgress: ModelDownloadingProgress,
                               loadingProgress: ModelLoadingProgress);
 
             Console.Clear();
             ShowSpecialPrompts();
-            MultiTurnConversation chat = new MultiTurnConversation(model)
+            MultiTurnConversation chat = new(model)
             {
                 MaximumCompletionTokens = 1000,
                 SamplingMode = new RandomSampling()

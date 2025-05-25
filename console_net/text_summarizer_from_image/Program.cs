@@ -1,7 +1,7 @@
-﻿using LMKit.Data;
+﻿using System.Diagnostics;
+using LMKit.Data;
 using LMKit.Model;
 using LMKit.TextGeneration;
-using System.Diagnostics;
 
 namespace text_summarizer_from_image
 {
@@ -81,13 +81,13 @@ namespace text_summarizer_from_image
             }
 
             //Loading model
-            Uri modelUri = new Uri(modelLink);
-            LM model = new LM(modelUri,
+            Uri modelUri = new(modelLink);
+            LM model = new(modelUri,
                                     downloadingProgress: ModelDownloadingProgress,
                                     loadingProgress: ModelLoadingProgress);
 
             Console.Clear();
-            Summarizer summarizer = new Summarizer(model)
+            Summarizer summarizer = new(model)
             {
                 GenerateTitle = true,
                 GenerateContent = true,

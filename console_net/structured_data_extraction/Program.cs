@@ -1,8 +1,8 @@
-﻿using LMKit.Data;
+﻿using System.Diagnostics;
+using System.Text;
+using LMKit.Data;
 using LMKit.Extraction;
 using LMKit.Model;
-using System.Diagnostics;
-using System.Text;
 
 namespace structured_data_extraction
 {
@@ -108,13 +108,13 @@ namespace structured_data_extraction
             }
 
             //Loading model
-            Uri modelUri = new Uri(modelLink);
-            LM model = new LM(modelUri,
+            Uri modelUri = new(modelLink);
+            LM model = new(modelUri,
                                     downloadingProgress: ModelDownloadingProgress,
                                     loadingProgress: ModelLoadingProgress);
 
 
-            TextExtraction textExtraction = new TextExtraction(model);
+            TextExtraction textExtraction = new(model);
 
             while (true)
             {
@@ -197,7 +197,7 @@ namespace structured_data_extraction
 
         private static List<TextExtractionElement> CreateInvoiceElements(bool extended)
         {
-            List<TextExtractionElement> elements = new List<TextExtractionElement>
+            List<TextExtractionElement> elements = new()
             {
                 // Invoice details
                 new TextExtractionElement("Invoice Reference", ElementType.String, "Unique identifier for the invoice."),
@@ -216,10 +216,10 @@ namespace structured_data_extraction
                     "Items",
                     new List<TextExtractionElement>
                     {
-                    new TextExtractionElement("Description", ElementType.String, "Detailed description of the item or service."),
-                    new TextExtractionElement("Quantity", ElementType.Integer, "Number of units of the item or service."),
-                    new TextExtractionElement("Unit Price", ElementType.Float, "Price per unit of the item or service."),
-                    new TextExtractionElement("Total", ElementType.Float, "Total cost for the item (Quantity x Unit Price).")
+                    new("Description", ElementType.String, "Detailed description of the item or service."),
+                    new("Quantity", ElementType.Integer, "Number of units of the item or service."),
+                    new("Unit Price", ElementType.Float, "Price per unit of the item or service."),
+                    new("Total", ElementType.Float, "Total cost for the item (Quantity x Unit Price).")
                     },
                     isArray: true,
                     "List of all items or services included in the invoice."
@@ -230,20 +230,20 @@ namespace structured_data_extraction
                     "Customer",
                     new List<TextExtractionElement>
                     {
-                    new TextExtractionElement("Name", ElementType.String, "Full name of the customer."),
-                    new TextExtractionElement("Email", ElementType.String, "Customer's email address."),
-                    new TextExtractionElement(
+                    new("Name", ElementType.String, "Full name of the customer."),
+                    new("Email", ElementType.String, "Customer's email address."),
+                    new(
                         "Postal Address",
                         new List<TextExtractionElement>
                         {
-                            new TextExtractionElement("Street Address", ElementType.String),
-                            new TextExtractionElement("Postal Code", ElementType.String),
-                            new TextExtractionElement("City", ElementType.String),
-                            new TextExtractionElement("Country", ElementType.String)
+                            new("Street Address", ElementType.String),
+                            new("Postal Code", ElementType.String),
+                            new("City", ElementType.String),
+                            new("Country", ElementType.String)
                         },
                         isArray: false
                     ),
-                    new TextExtractionElement("Phone Number", ElementType.String, "Customer's phone number.")
+                    new("Phone Number", ElementType.String, "Customer's phone number.")
                                 },
                                 isArray: false,
                                 "Detailed information about the customer."
@@ -254,21 +254,21 @@ namespace structured_data_extraction
                     "Vendor",
                     new List<TextExtractionElement>
                     {
-                    new TextExtractionElement("Name", ElementType.String, "Vendor's business name."),
-                    new TextExtractionElement("Email", ElementType.String, "Vendor's contact email."),
-                    new TextExtractionElement("Country", ElementType.String, "Country where the vendor is located."),
-                    new TextExtractionElement(
+                    new("Name", ElementType.String, "Vendor's business name."),
+                    new("Email", ElementType.String, "Vendor's contact email."),
+                    new("Country", ElementType.String, "Country where the vendor is located."),
+                    new(
                         "Postal Address",
                         new List<TextExtractionElement>
                         {
-                            new TextExtractionElement("Street Address", ElementType.String),
-                            new TextExtractionElement("Postal Code", ElementType.String),
-                            new TextExtractionElement("City", ElementType.String),
-                            new TextExtractionElement("Country", ElementType.String)
+                            new("Street Address", ElementType.String),
+                            new("Postal Code", ElementType.String),
+                            new("City", ElementType.String),
+                            new("Country", ElementType.String)
                         },
                         isArray: false
                     ),
-                    new TextExtractionElement("Phone Number", ElementType.String, "Vendor's contact phone number.")
+                    new("Phone Number", ElementType.String, "Vendor's contact phone number.")
                     },
                     isArray: false,
                     "Detailed information about the vendor."
@@ -285,10 +285,10 @@ namespace structured_data_extraction
                     "Payment Information",
                     new List<TextExtractionElement>
                     {
-                    new TextExtractionElement("Bank Name", ElementType.String, "Name of the vendor's bank."),
-                    new TextExtractionElement("Bank Account No", ElementType.String, "Vendor's bank account number."),
+                    new("Bank Name", ElementType.String, "Name of the vendor's bank."),
+                    new("Bank Account No", ElementType.String, "Vendor's bank account number."),
                     iban,
-                    new TextExtractionElement("BIC", ElementType.String, "Bank Identifier Code (BIC) for international transactions.")
+                    new("BIC", ElementType.String, "Bank Identifier Code (BIC) for international transactions.")
                     },
                     isArray: false,
                     "Details related to the payment method and bank information."
@@ -308,7 +308,7 @@ namespace structured_data_extraction
 
         private static List<TextExtractionElement> CreateJobOfferElements()
         {
-            List<TextExtractionElement> elements = new List<TextExtractionElement>
+            List<TextExtractionElement> elements = new()
             {
                 new TextExtractionElement("Job Offer Reference", ElementType.String, "The offer ID provided to the candidate."),
                 new TextExtractionElement("Date", ElementType.Date, "The date the job offer was extended."),
@@ -330,7 +330,7 @@ namespace structured_data_extraction
 
         private static List<TextExtractionElement> CreateMedicalRecordElements()
         {
-            List<TextExtractionElement> elements = new List<TextExtractionElement>
+            List<TextExtractionElement> elements = new()
             {
                 // Patient Information
                 new TextExtractionElement("Patient Name", ElementType.String, "Full name of the patient."),
@@ -343,9 +343,9 @@ namespace structured_data_extraction
                 "Medical History",
                 new List<TextExtractionElement>
                 {
-        new TextExtractionElement("Condition", ElementType.String, "Name of the medical condition or disease."),
-        new TextExtractionElement("Diagnosis Date", ElementType.Date, "Date when the condition was diagnosed."),
-        new TextExtractionElement("Treatment", ElementType.String, "Treatment or procedure administered for the condition.")
+        new("Condition", ElementType.String, "Name of the medical condition or disease."),
+        new("Diagnosis Date", ElementType.Date, "Date when the condition was diagnosed."),
+        new("Treatment", ElementType.String, "Treatment or procedure administered for the condition.")
                 },
                 isArray: true,
                 "A list of past medical conditions and treatments for the patient."
@@ -356,10 +356,10 @@ namespace structured_data_extraction
                 "Vital Signs",
                 new List<TextExtractionElement>
                 {
-        new TextExtractionElement("Heart Rate", ElementType.Float, "Patient's heart rate in beats per minute."),
-        new TextExtractionElement("Blood Pressure", ElementType.String, "Patient's blood pressure measurement."),
-        new TextExtractionElement("Temperature", ElementType.Float, "Patient's body temperature in degrees Celsius."),
-        new TextExtractionElement("Respiratory Rate", ElementType.Float, "Patient's breathing rate in breaths per minute.")
+        new("Heart Rate", ElementType.Float, "Patient's heart rate in beats per minute."),
+        new("Blood Pressure", ElementType.String, "Patient's blood pressure measurement."),
+        new("Temperature", ElementType.Float, "Patient's body temperature in degrees Celsius."),
+        new("Respiratory Rate", ElementType.Float, "Patient's breathing rate in breaths per minute.")
                 },
                 isArray: false,
                 "Patient's vital signs recorded during the medical examination."
@@ -370,10 +370,10 @@ namespace structured_data_extraction
                 "Medications",
                 new List<TextExtractionElement>
                 {
-        new TextExtractionElement("Medication Name", ElementType.String, "Name of the medication prescribed."),
-        new TextExtractionElement("Dosage", ElementType.String, "Dosage of the medication."),
-        new TextExtractionElement("Frequency", ElementType.String, "Frequency of medication intake."),
-        new TextExtractionElement("Start Date", ElementType.Date, "Date when the medication was started.")
+        new("Medication Name", ElementType.String, "Name of the medication prescribed."),
+        new("Dosage", ElementType.String, "Dosage of the medication."),
+        new("Frequency", ElementType.String, "Frequency of medication intake."),
+        new("Start Date", ElementType.Date, "Date when the medication was started.")
 
                 },
                 isArray: true,
@@ -385,9 +385,9 @@ namespace structured_data_extraction
                 "Allergies",
                 new List<TextExtractionElement>
                 {
-        new TextExtractionElement("Allergen", ElementType.String, "Substance that causes the allergic reaction."),
-        new TextExtractionElement("Reaction", ElementType.String, "Description of the allergic reaction."),
-        new TextExtractionElement("Severity", ElementType.String, "Severity of the allergic reaction (e.g., mild, moderate, severe).")
+        new("Allergen", ElementType.String, "Substance that causes the allergic reaction."),
+        new("Reaction", ElementType.String, "Description of the allergic reaction."),
+        new("Severity", ElementType.String, "Severity of the allergic reaction (e.g., mild, moderate, severe).")
                 },
                 isArray: true,
                 "A list of allergies the patient has."
@@ -398,10 +398,10 @@ namespace structured_data_extraction
                 "Lab Results",
                 new List<TextExtractionElement>
                 {
-        new TextExtractionElement("Test Name", ElementType.String, "Name of the laboratory test conducted."),
-        new TextExtractionElement("Test Date", ElementType.Date, "Date the test was conducted."),
-        new TextExtractionElement("Result", ElementType.String, "Result of the laboratory test."),
-        new TextExtractionElement("Reference Range", ElementType.String, "Normal range for the test result.")
+        new("Test Name", ElementType.String, "Name of the laboratory test conducted."),
+        new("Test Date", ElementType.Date, "Date the test was conducted."),
+        new("Result", ElementType.String, "Result of the laboratory test."),
+        new("Reference Range", ElementType.String, "Normal range for the test result.")
                 },
                 isArray: true,
                 "A list of laboratory test results for the patient."

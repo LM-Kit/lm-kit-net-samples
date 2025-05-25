@@ -1,6 +1,6 @@
-﻿using LMKit.Model;
+﻿using System.Text;
+using LMKit.Model;
 using LMKit.TextEnhancement;
-using System.Text;
 
 namespace text_rewriter
 {
@@ -101,13 +101,13 @@ namespace text_rewriter
             }
 
             //Loading model
-            Uri modelUri = new Uri(modelLink);
-            LM model = new LM(modelUri,
+            Uri modelUri = new(modelLink);
+            LM model = new(modelUri,
                                     downloadingProgress: ModelDownloadingProgress,
                                     loadingProgress: ModelLoadingProgress);
 
             Console.Clear();
-            TextRewriter rewriter = new TextRewriter(model);
+            TextRewriter rewriter = new(model);
 
             rewriter.AfterTextCompletion += Rewrite_AfterTextCompletion;
             int correctionCount = 0;

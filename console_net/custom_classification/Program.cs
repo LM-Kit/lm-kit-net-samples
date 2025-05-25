@@ -1,7 +1,7 @@
-﻿using LMKit.Model;
-using LMKit.TextAnalysis;
-using System.Diagnostics;
+﻿using System.Diagnostics;
 using System.Text;
+using LMKit.Model;
+using LMKit.TextAnalysis;
 
 
 namespace custom_classification
@@ -109,8 +109,8 @@ namespace custom_classification
             }
 
             //Loading model
-            Uri modelUri = new Uri(modelLink);
-            LM model = new LM(modelUri,
+            Uri modelUri = new(modelLink);
+            LM model = new(modelUri,
                                     downloadingProgress: ModelDownloadingProgress,
                                     loadingProgress: ModelLoadingProgress);
 
@@ -119,7 +119,7 @@ namespace custom_classification
             Console.WriteLine($"Please enter a text to be classified within one of these categories:\n{String.Join(", ", CLASSIFICATION_CATEGORIES)}.");
             Console.ResetColor();
 
-            Categorization classifier = new Categorization(model);
+            Categorization classifier = new(model);
 
 
             while (true)

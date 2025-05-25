@@ -1,7 +1,7 @@
-﻿using LMKit.Data;
+﻿using System.Diagnostics;
+using LMKit.Data;
 using LMKit.Model;
 using LMKit.Translation;
-using System.Diagnostics;
 
 namespace language_detection_from_image
 {
@@ -81,13 +81,13 @@ namespace language_detection_from_image
             }
 
             //Loading model
-            Uri modelUri = new Uri(modelLink);
-            LM model = new LM(modelUri,
+            Uri modelUri = new(modelLink);
+            LM model = new(modelUri,
                                     downloadingProgress: ModelDownloadingProgress,
                                     loadingProgress: ModelLoadingProgress);
 
             Console.Clear();
-            TextTranslation translator = new TextTranslation(model);
+            TextTranslation translator = new(model);
 
             while (true)
             {

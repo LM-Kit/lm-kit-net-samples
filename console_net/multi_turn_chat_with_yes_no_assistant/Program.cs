@@ -1,7 +1,7 @@
-﻿using LMKit.Model;
+﻿using System.Text;
+using LMKit.Model;
 using LMKit.TextGeneration;
 using LMKit.TextGeneration.Sampling;
-using System.Text;
 
 namespace multi_turn_chat_with_yes_no_assistant
 {
@@ -96,15 +96,15 @@ namespace multi_turn_chat_with_yes_no_assistant
             }
 
             //Loading model
-            Uri modelUri = new Uri(modelLink);
-            LM model = new LM(modelUri,
+            Uri modelUri = new(modelLink);
+            LM model = new(modelUri,
                                     downloadingProgress: ModelDownloadingProgress,
                                     loadingProgress: ModelLoadingProgress);
 
             Console.Clear();
             ShowSpecialPrompts();
 
-            MultiTurnConversation chat = new MultiTurnConversation(model)
+            MultiTurnConversation chat = new(model)
             {
                 MaximumCompletionTokens = 20,
                 SamplingMode = new GreedyDecoding(),

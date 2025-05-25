@@ -144,7 +144,7 @@ namespace text_rewriter
             }
 
             Console.WriteLine($"Generating {dstModelPath} with precision {quantizationFormat}...");
-            Quantizer quantizer = new Quantizer(modelPath);
+            Quantizer quantizer = new(modelPath);
 
             quantizer.Quantize(dstModelPath, quantizationFormat);
         }

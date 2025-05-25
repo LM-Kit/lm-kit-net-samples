@@ -80,7 +80,7 @@ namespace image_similarity_search
             // 7. Use the results
             //    Each returned partition contains its section identifier (e.g. "cat1")
             //    and similarity score—ideal for presenting the top-k closest images.
-           
+
             Console.WriteLine("Top similar images:");
             Console.WriteLine("===================================");
             foreach (var partition in similarPartitions)
