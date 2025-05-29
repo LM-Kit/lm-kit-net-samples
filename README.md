@@ -112,7 +112,7 @@ LM-Kit.NET offers a wide array of advanced AI features that can be seamlessly in
 ## **Run Local LLMs and SLMs on Any Device**
 
 LM-Kit.NET is powered by [llama.cpp](https://github.com/ggerganov/llama.cpp), ensuring best-in-class performance across a variety of hardware setups with minimal configuration and zero external dependencies.  
-All processing happens **on-device** (edge computing), giving you full control and tunability for inference. Additionally, LM-Kit.NET supports an expanding list of model architectures, including **LLaMA-2**, **LLaMA-3**, **Mistral**, **Falcon**, **Phi 4**, **Qwen2-VL**, and more.
+All processing happens **on-device** (edge computing), giving you full control and tunability for inference. Additionally, LM-Kit.NET supports an expanding list of model architectures, including **Gemma-3**, **LLaMA-3**, **LLaMA-4**, **Mistral**, **Falcon**, **Phi 4**, **Qwen2.5-VL**, and more.
 
 ---
 
