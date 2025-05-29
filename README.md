@@ -15,6 +15,9 @@ Get started with the **LM-Kit Community Edition** today and gain access to power
 - 🧠 [Semantic Kernel Integration (Open Source)](https://github.com/LM-Kit/lm-kit-net-semantic-kernel) - Build intelligent workflows with Microsoft’s Semantic Kernel + LM-Kit.NET.
 - 🔗 [New Vector Database Connector (Open Source, Qdrant Support)](https://github.com/LM-Kit/lm-kit-net-data-connectors) - Easily integrate semantic search and hybrid RAG pipelines.
 - 🧬 [New Built-in Vector Database Engine](https://lm-kit.com/blog/lmkit-made-embedding-storage-effortless/) - Store and Retrieve Embeddings at Any Scale.
+- 🌐 Multimodal RAG with Reranking Support - Improve accuracy with multimodal retrieval-augmented generation and reranking.
+  
+👉 [See full changelog](https://docs.lm-kit.com/lm-kit-net/guides/changelog.html)
 
 ---
 
@@ -30,8 +33,7 @@ Get started with the **LM-Kit Community Edition** today and gain access to power
 ### **Product Overview & API Reference**
 LM-Kit.NET delivers **Multimodal Generative AI** solutions for .NET, facilitating the creation and customization of AI Agents as well as comprehensive multi-agent coordination. Its capabilities—ranging from data processing, text analysis, and translation to text generation and model optimization—integrate smoothly into your .NET projects. By leveraging cutting-edge AI techniques, LM-Kit.NET empowers developers to build advanced solutions with minimal complexity.
 
-Find additional documentation and detailed guides in the **LM-Kit Docs**:  
-[https://docs.lm-kit.com](https://docs.lm-kit.com)
+👉 Find additional documentation and detailed guides in the **LM-Kit Docs**:  [https://docs.lm-kit.com](https://docs.lm-kit.com)
 
 ---
 
