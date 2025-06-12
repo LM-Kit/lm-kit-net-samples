@@ -7,10 +7,10 @@
 	</PropertyGroup>
 
 	<ItemGroup>
-		<PackageReference Include="LM-Kit.NET" Version="2025.5.5" />
-		<PackageReference Include="LM-Kit.NET.Backend.Cuda12.Windows" Version="2025.5.5" />
+		<PackageReference Include="LM-Kit.NET" Version="2025.6.2" />
+		<PackageReference Include="LM-Kit.NET.Backend.Cuda12.Windows" Version="2025.6.2" />
 		<PackageReference Include="LM-Kit.NET.SemanticKernel" Version="2025.2.1" />
-		<PackageReference Include="Microsoft.SemanticKernel" Version="1.54.0" />
+		<PackageReference Include="Microsoft.SemanticKernel" Version="1.55.0" />
 		<PackageReference Include="Microsoft.SemanticKernel.Plugins.Memory" Version="1.16.2-alpha" />
 	</ItemGroup>
 
