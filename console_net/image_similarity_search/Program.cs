@@ -73,7 +73,6 @@ namespace image_similarity_search
             //    We expect "cat1" and "cat2" to be the closest matches.
             var similarPartitions = VectorSearch.FindMatchingPartitions(
                 dataSources: [collection],
-                model: model,
                 vector: queryVector
             );
 
