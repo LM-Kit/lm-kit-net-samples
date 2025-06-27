@@ -1,7 +1,8 @@
-﻿using System.Diagnostics;
-using LMKit.Data;
+﻿using LMKit.Data;
 using LMKit.Model;
 using LMKit.Translation;
+using System.Diagnostics;
+using System.Text;
 
 namespace language_detection_from_image
 {
@@ -44,6 +45,8 @@ namespace language_detection_from_image
             // Set an optional license key here if available. 
             // A free community license can be obtained from: https://lm-kit.com/products/community-edition/
             LMKit.Licensing.LicenseManager.SetLicenseKey("");
+            Console.InputEncoding = Encoding.UTF8;
+            Console.OutputEncoding = Encoding.UTF8;
 
             Console.Clear();
             Console.WriteLine("Please select the model you want to use:\n");

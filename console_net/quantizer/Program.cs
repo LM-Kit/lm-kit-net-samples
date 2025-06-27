@@ -1,5 +1,6 @@
 ﻿using LMKit.Model;
 using LMKit.Quantization;
+using System.Text;
 
 namespace text_rewriter
 {
@@ -11,6 +12,8 @@ namespace text_rewriter
             // Set an optional license key here if available. 
             // A free community license can be obtained from: https://lm-kit.com/products/community-edition/
             LMKit.Licensing.LicenseManager.SetLicenseKey("");
+            Console.InputEncoding = Encoding.UTF8;
+            Console.OutputEncoding = Encoding.UTF8;
 
             string modelPath = "";
 

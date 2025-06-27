@@ -4,11 +4,11 @@ using System.Runtime.InteropServices;
 // General Information about an assembly is controlled through the following
 // set of attributes. Change these attribute values to modify the information
 // associated with an assembly.
-[assembly: AssemblyTitle("language_detection_from_image")]
+[assembly: AssemblyTitle("audio_transcription")]
 [assembly: AssemblyDescription("")]
 [assembly: AssemblyConfiguration("")]
 [assembly: AssemblyCompany("")]
-[assembly: AssemblyProduct("language_detection_from_image")]
+[assembly: AssemblyProduct("audio_transcription")]
 [assembly: AssemblyCopyright("Copyright ©  2024 - 2025")]
 [assembly: AssemblyTrademark("")]
 [assembly: AssemblyCulture("")]
