@@ -16,6 +16,9 @@ Get started with the **LM-Kit Community Edition** today and gain access to power
 - 🔗 [New Vector Database Connector (Open Source, Qdrant Support)](https://github.com/LM-Kit/lm-kit-net-data-connectors) - Easily integrate semantic search and hybrid RAG pipelines.
 - 🧬 [New Built-in Vector Database Engine](https://lm-kit.com/blog/lmkit-made-embedding-storage-effortless/) - Store and Retrieve Embeddings at Any Scale.
 - 🌐 Multimodal RAG with Reranking Support - Improve accuracy with multimodal retrieval-augmented generation and reranking.
+- 🏷️ [Multimodal Named Entity Recognition](https://lm-kit.com/solutions/content-analysis/#ner) - Detect and classify entities (people, organizations, locations, etc.) across text and images.
+- 🛡️ [Multimodal PII Extraction](https://lm-kit.com/solutions/content-analysis/#pii-extraction) - Identify and extract personally identifiable information from text and images for compliance.
+- 🎙️ [Speech-to-Text Support](https://lm-kit.com/solutions/language-processing/speech-to-text/) - Convert spoken audio into highly accurate text transcripts, supporting 100 languages.
   
 👉 [See full changelog](https://docs.lm-kit.com/lm-kit-net/guides/changelog.html)
 
