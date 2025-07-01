@@ -146,7 +146,7 @@ namespace audio_transcription
                     // Highlight completion with a green banner
                     Console.ForegroundColor = ConsoleColor.Green;
                     Console.WriteLine("┌────────────────── Transcription Complete ──────────────────┐");
-                   Console.WriteLine($"│   ✅🔊 Done in {sw.Elapsed:mm\\:ss\\.fff}  │");
+                   Console.WriteLine($"│   ✅ Done in {sw.Elapsed:mm\\:ss\\.ff}        🔊 Audio length: {audio.Duration:mm\\:ss\\.ff}     │");
                     Console.WriteLine("└────────────────────────────────────────────────────────────┘");
                     Console.ResetColor();
 

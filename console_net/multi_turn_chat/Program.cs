@@ -98,9 +98,10 @@ namespace multi_turn_chat
 
             //Loading model
             Uri modelUri = new(modelLink);
-            LM model = new(modelUri,
-                                     downloadingProgress: ModelDownloadingProgress,
-                                     loadingProgress: ModelLoadingProgress);
+            LM model = new(
+                modelUri,
+                downloadingProgress: ModelDownloadingProgress,
+                loadingProgress: ModelLoadingProgress);
 
             Console.Clear();
             ShowSpecialPrompts();
@@ -139,7 +140,9 @@ namespace multi_turn_chat
                 }
                 else
                 {
-                    result = chat.Submit(prompt, new CancellationTokenSource(TimeSpan.FromMinutes(2)).Token);
+                    result = chat.Submit(
+                        prompt,
+                        new CancellationTokenSource(TimeSpan.FromMinutes(2)).Token);
                 }
 
                 Console.Write($"\n(gen. tokens: {result.GeneratedTokens.Count} - stop reason: {result.TerminationReason} - quality score: {Math.Round(result.QualityScore, 2)} - speed: {Math.Round(result.TokenGenerationRate, 2)} tok/s - ctx usage: {result.ContextTokens.Count}/{result.ContextSize})");
@@ -174,7 +177,9 @@ namespace multi_turn_chat
             Console.WriteLine("Use '/continue' to continue last assistant message.");
             Console.WriteLine("Use '/regenerate' to obtain a new completion from the last input.\n\n");
         }
-        private static void Chat_AfterTextCompletion(object sender, LMKit.TextGeneration.Events.AfterTextCompletionEventArgs e)
+        private static void Chat_AfterTextCompletion(
+            object sender,
+            LMKit.TextGeneration.Events.AfterTextCompletionEventArgs e)
         {
             Console.Write(e.Text);
         }
