@@ -16,6 +16,9 @@ Get started with the **LM-Kit Community Edition** today and gain access to power
 - 🔗 [New Vector Database Connector (Open Source, Qdrant Support)](https://github.com/LM-Kit/lm-kit-net-data-connectors) - Easily integrate semantic search and hybrid RAG pipelines.
 - 🧬 [New Built-in Vector Database Engine](https://lm-kit.com/blog/lmkit-made-embedding-storage-effortless/) - Store and Retrieve Embeddings at Any Scale.
 - 🌐 Multimodal RAG with Reranking Support - Improve accuracy with multimodal retrieval-augmented generation and reranking.
+- 🏷️ [Multimodal Named Entity Recognition](https://lm-kit.com/solutions/content-analysis/#ner) - Detect and classify entities (people, organizations, locations, etc.) across text and images.
+- 🛡️ [Multimodal PII Extraction](https://lm-kit.com/solutions/content-analysis/#pii-extraction) - Identify and extract personally identifiable information from text and images for compliance.
+- 🎙️ [Speech-to-Text Support](https://lm-kit.com/solutions/language-processing/speech-to-text/) - Convert spoken audio into highly accurate text transcripts, supporting 100 languages.
   
 👉 [See full changelog](https://docs.lm-kit.com/lm-kit-net/guides/changelog.html)
 
@@ -28,10 +31,9 @@ Get started with the **LM-Kit Community Edition** today and gain access to power
 **LM-Kit.NET** is a **cross-platform SDK** that brings together **LLMs (Large Language Models)** and **SLMs (Small Language Models)** for an extensive range of AI functionalities. It enables **Quick-Start AI Agents**, supports **multi-agent orchestration**, and offers a consistent API for C# and VB.NET. Whether you want to customize existing AI agents or build new ones, LM-Kit.NET provides a robust and streamlined approach to modern AI development.
 
 **AI Agent Runtime for .NET**  
-**Quick-Start AI Agents and Orchestration**  
 
 ### **Product Overview & API Reference**
-LM-Kit.NET delivers **Multimodal Generative AI** solutions for .NET, facilitating the creation and customization of AI Agents as well as comprehensive multi-agent coordination. Its capabilities—ranging from data processing, text analysis, and translation to text generation and model optimization—integrate smoothly into your .NET projects. By leveraging cutting-edge AI techniques, LM-Kit.NET empowers developers to build advanced solutions with minimal complexity.
+LM-Kit.NET delivers **Multimodal Generative AI** solutions for .NET, facilitating the creation and customization of AI Agents as well as comprehensive multi-agent coordination. Its capabilities, ranging from data processing, text analysis, and translation to text generation and model optimization—integrate smoothly into your .NET projects. By leveraging cutting-edge AI techniques, LM-Kit.NET empowers developers to build advanced solutions with minimal complexity.
 
 👉 Find additional documentation and detailed guides in the **LM-Kit Docs**:  [https://docs.lm-kit.com](https://docs.lm-kit.com)
 
@@ -58,6 +60,9 @@ LM-Kit.NET offers a wide array of advanced AI features that can be seamlessly in
 
 - **Seamless Language Translations**  
   Convert text between different languages without compromising context or accuracy.
+
+- **Speech-to-Text**  
+  Convert spoken audio into highly accurate text transcripts, supporting 100+ languages.
 
 - **Accurate Language Identification**  
   Determine the original language of any given text with high precision.
@@ -97,6 +102,12 @@ LM-Kit.NET offers a wide array of advanced AI features that can be seamlessly in
 
 - **Image Analysis (Vision Support)**  
   Extend AI capabilities to interpret and evaluate images.
+
+- **Multimodal Named Entity Recognition**  
+  Detect and classify entities (people, organizations, locations, etc.) across text and images.
+
+- **Multimodal PII Extraction**  
+  Identify and extract personally identifiable information from text and images for compliance.
 
 - **Model Quantization & Optimization**  
   Streamline both LLMs and SLMs for faster inference and lower computational overhead.
