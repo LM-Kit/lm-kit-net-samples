@@ -1,6 +1,7 @@
 ﻿using LMKit.Media.Audio;
 using LMKit.Model;
 using LMKit.Speech;
+using NAudio.Wave;
 using System.Diagnostics;
 using System.Text;
 
@@ -129,7 +130,7 @@ namespace audio_transcription
 
                 try
                 {
-                    using var audio = new WaveFile(path);
+                    using var audio = LoadAudio(path);
 
                     Console.WriteLine();
                     Console.ForegroundColor = ConsoleColor.Green;
@@ -146,7 +147,7 @@ namespace audio_transcription
                     // Highlight completion with a green banner
                     Console.ForegroundColor = ConsoleColor.Green;
                     Console.WriteLine("┌────────────────── Transcription Complete ──────────────────┐");
-                   Console.WriteLine($"│   ✅ Done in {sw.Elapsed:mm\\:ss\\.ff}        🔊 Audio length: {audio.Duration:mm\\:ss\\.ff}     │");
+                    Console.WriteLine($"│   ✅ Done in {sw.Elapsed:mm\\:ss\\.ff}        🔊 Audio length: {audio.Duration:mm\\:ss\\.ff}     │");
                     Console.WriteLine("└────────────────────────────────────────────────────────────┘");
                     Console.ResetColor();
 
@@ -163,6 +164,34 @@ namespace audio_transcription
 
             Console.WriteLine("The program ended. Press any key to exit the application.");
             _ = Console.ReadKey();
+        }
+
+
+        static WaveFile LoadAudio(string path)
+        {
+            path = path.Trim('"');
+            if (!WaveFile.IsValidWaveFile(path))
+            {//converting to WAV using NAudio lib
+                using (var reader = new AudioFileReader(path))
+                {
+                    string tempFileName = $"{Guid.NewGuid():N}.wav";
+                    string tempFilePath = Path.Combine(Path.GetTempPath(), tempFileName);
+
+                    WaveFileWriter.CreateWaveFile16(tempFilePath, reader);
+                    try
+                    {
+                        return new WaveFile(File.ReadAllBytes(tempFilePath));
+                    }
+                    finally
+                    {
+                        File.Delete(tempFilePath);
+                    }
+                }
+            }
+            else
+            {
+                return new WaveFile(path);
+            }
         }
     }
 }
