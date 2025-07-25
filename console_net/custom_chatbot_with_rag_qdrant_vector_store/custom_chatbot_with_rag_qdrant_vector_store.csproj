@@ -7,9 +7,9 @@
   </PropertyGroup>
 
   <ItemGroup>
-    <PackageReference Include="LM-Kit.NET" Version="2025.7.3" />
-    <PackageReference Include="LM-Kit.NET.Backend.Cuda12.Windows" Version="2025.7.3" />
-    <PackageReference Include="LM-Kit.NET.Data.Connectors.Qdrant" Version="2025.4.4" />
+    <PackageReference Include="LM-Kit.NET" Version="2025.7.5" />
+    <PackageReference Include="LM-Kit.NET.Backend.Cuda12.Windows" Version="2025.7.5" />
+    <PackageReference Include="LM-Kit.NET.Data.Connectors.Qdrant" Version="2025.7.1" />
   </ItemGroup>
 
 </Project>
