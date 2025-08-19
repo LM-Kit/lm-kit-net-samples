@@ -46,7 +46,7 @@ namespace custom_chatbot_with_rag
 
             if (File.Exists(DATA_SOURCE_PATH))
             {
-                _dataSource = DataSource.LoadFromFile(DATA_SOURCE_PATH, _embeddingModel, readOnly: false);
+                _dataSource = DataSource.LoadFromFile(DATA_SOURCE_PATH, readOnly: false);
             }
             else
             {
