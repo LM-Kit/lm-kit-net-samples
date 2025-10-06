@@ -16,7 +16,7 @@ namespace multi_turn_chat_with_tools
         static readonly string DEFAULT_QWEN3_8B_MODEL_PATH = @"https://huggingface.co/lm-kit/qwen-3-8b-instruct-gguf/resolve/main/Qwen3-8B-Q4_K_M.gguf?download=true";
         static readonly string DEFAULT_MISTRAL_NEMO_12_2B_MODEL_PATH = @"https://huggingface.co/lm-kit/mistral-nemo-2407-12.2b-instruct-gguf/resolve/main/Mistral-Nemo-2407-12.2B-Instruct-Q4_K_M.gguf?download=true";
         static readonly string DEFAULT_PHI4_14_7B_MODEL_PATH = @"https://huggingface.co/lm-kit/phi-4-14.7b-instruct-gguf/resolve/main/Phi-4-14.7B-Instruct-Q4_K_M.gguf?download=true";
-        static readonly string DEFAULT_GRANITE_3_3_8B_MODEL_PATH = @"https://huggingface.co/lm-kit/granite-3.3-8b-instruct-gguf/resolve/main/granite-3.3-8B-Instruct-Q4_K_M.gguf?download=true";
+        static readonly string DEFAULT_GRANITE_4_7B_MODEL_PATH = @"https://huggingface.co/lm-kit/granite-4.0-h-tiny-gguf/resolve/main/Granite-4.0-H-Tiny-64x994M-Q4_K_M.gguf?download=true";
         static readonly string DEFAULT_OPENAI_GPT_OSS_20B_MODEL_PATH = @"https://huggingface.co/lm-kit/gpt-oss-20b-gguf/resolve/main/gpt-oss-20b-mxfp4.gguf?download=true";
         static bool _isDownloading;
 
@@ -65,8 +65,8 @@ namespace multi_turn_chat_with_tools
             Console.WriteLine("3 - Microsoft Phi-4 Mini 3.82B Mini (requires approximately 3.3 GB of VRAM)");
             Console.WriteLine("4 - Alibaba Qwen-3 8B (requires approximately 5.6 GB of VRAM)");
             Console.WriteLine("5 - Microsoft Phi-4 14.7B Mini (requires approximately 11 GB of VRAM)");
-            Console.WriteLine("6 - IBM Granite 8B (requires approximately 6 GB of VRAM)");
-            //Console.WriteLine("7 - Open AI GPT OSS 20B (requires approximately 16 GB of VRAM)"); //not yet correctly supported
+            Console.WriteLine("6 - IBM Granite 4 7B (requires approximately 6 GB of VRAM)");
+            Console.WriteLine("7 - Open AI GPT OSS 20B (requires approximately 16 GB of VRAM)"); 
 
             Console.Write("Other entry: A custom model URI\n\n> ");
 
@@ -94,7 +94,7 @@ namespace multi_turn_chat_with_tools
                     modelLink = DEFAULT_PHI4_14_7B_MODEL_PATH;
                     break;
                 case "6":
-                    modelLink = DEFAULT_GRANITE_3_3_8B_MODEL_PATH;
+                    modelLink = DEFAULT_GRANITE_4_7B_MODEL_PATH;
                     break;
                 case "7":
                     modelLink = DEFAULT_OPENAI_GPT_OSS_20B_MODEL_PATH;

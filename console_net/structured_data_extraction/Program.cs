@@ -16,7 +16,7 @@ namespace structured_data_extraction
         static readonly string DEFAULT_MISTRAL_NEMO_12_2B_MODEL_PATH = @"https://huggingface.co/lm-kit/mistral-nemo-2407-12.2b-instruct-gguf/resolve/main/Mistral-Nemo-2407-12.2B-Instruct-Q4_K_M.gguf?download=true";
         static readonly string DEFAULT_PHI4_14_7B_MODEL_PATH = @"https://huggingface.co/lm-kit/phi-4-14.7b-instruct-gguf/resolve/main/Phi-4-14.7B-Instruct-Q4_K_M.gguf?download=true";
         static readonly string DEFAULT_LLAMA_3_2_1B_MODEL_PATH = @"https://huggingface.co/lm-kit/llama-3.2-1b-instruct.gguf/resolve/main/Llama-3.2-1B-Instruct-Q4_K_M.gguf?download=true";
-        static readonly string DEFAULT_GRANITE_3_3_8B_MODEL_PATH = @"https://huggingface.co/lm-kit/granite-3.3-8b-instruct-gguf/resolve/main/granite-3.3-8B-Instruct-Q4_K_M.gguf?download=true";
+        static readonly string DEFAULT_GRANITE_4_7B_MODEL_PATH = @"https://huggingface.co/lm-kit/granite-4.0-h-tiny-gguf/resolve/main/Granite-4.0-H-Tiny-64x994M-Q4_K_M.gguf?download=true";
         static readonly string DEFAULT_OPENAI_GPT_OSS_20B_MODEL_PATH = @"https://huggingface.co/lm-kit/gpt-oss-20b-gguf/resolve/main/gpt-oss-20b-mxfp4.gguf?download=true";
         static bool _isDownloading;
 
@@ -68,7 +68,7 @@ namespace structured_data_extraction
             Console.WriteLine("5 - Alibaba Qwen-3 0.6B (requires approximately 0.8 GB of VRAM)");
             Console.WriteLine("6 - Meta Llama 3.2 1B (requires approximately 1 GB of VRAM)");
             Console.WriteLine("7 - Microsoft Phi-4 14.7B Mini (requires approximately 11 GB of VRAM)");
-            Console.WriteLine("8 - IBM Granite 8B (requires approximately 6 GB of VRAM)");
+            Console.WriteLine("8 - IBM Granite 4 7B (requires approximately 6 GB of VRAM)");
             Console.WriteLine("9 - Open AI GPT OSS 20B (requires approximately 16 GB of VRAM)");
             Console.Write("Other entry: A custom model URI\n\n> ");
 
@@ -102,7 +102,7 @@ namespace structured_data_extraction
                     modelLink = DEFAULT_PHI4_14_7B_MODEL_PATH;
                     break;
                 case "8":
-                    modelLink = DEFAULT_GRANITE_3_3_8B_MODEL_PATH;
+                    modelLink = DEFAULT_GRANITE_4_7B_MODEL_PATH;
                     break;
                 case "9":
                     modelLink = DEFAULT_OPENAI_GPT_OSS_20B_MODEL_PATH;
