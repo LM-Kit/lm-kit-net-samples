@@ -142,7 +142,20 @@ namespace custom_chatbot_with_rag
 
         private static void AfterTextCompletion(object sender, LMKit.TextGeneration.Events.AfterTextCompletionEventArgs e)
         {
-            Console.Write(e.Text);
+            switch (e.SegmentType)
+			{
+				case LMKit.TextGeneration.Chat.TextSegmentType.InternalReasoning:
+					Console.ForegroundColor = ConsoleColor.Blue;
+					break;
+				case LMKit.TextGeneration.Chat.TextSegmentType.ToolInvocation:
+					Console.ForegroundColor = ConsoleColor.Red;
+					break;
+				case LMKit.TextGeneration.Chat.TextSegmentType.UserVisible:
+					Console.ForegroundColor = ConsoleColor.White;
+					break;
+			}
+
+			Console.Write(e.Text);
         }
 
         private static void LoadEbook(string fileName, string sectionIdentifier)

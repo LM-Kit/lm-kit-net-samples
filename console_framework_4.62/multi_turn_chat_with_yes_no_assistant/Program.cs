@@ -166,7 +166,20 @@ namespace multi_turn_chat_with_yes_no_assistant
         }
         private static void Chat_AfterTextCompletion(object sender, LMKit.TextGeneration.Events.AfterTextCompletionEventArgs e)
         {
-            Console.Write(e.Text);
+            switch (e.SegmentType)
+			{
+				case LMKit.TextGeneration.Chat.TextSegmentType.InternalReasoning:
+					Console.ForegroundColor = ConsoleColor.Blue;
+					break;
+				case LMKit.TextGeneration.Chat.TextSegmentType.ToolInvocation:
+					Console.ForegroundColor = ConsoleColor.Red;
+					break;
+				case LMKit.TextGeneration.Chat.TextSegmentType.UserVisible:
+					Console.ForegroundColor = ConsoleColor.White;
+					break;
+			}
+
+			Console.Write(e.Text);
         }
     }
 }

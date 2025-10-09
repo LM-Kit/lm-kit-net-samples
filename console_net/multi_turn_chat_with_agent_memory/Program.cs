@@ -124,6 +124,19 @@ namespace multi_turn_chat_with_memory
 
         private static void Chat_AfterTextCompletion(object sender, LMKit.TextGeneration.Events.AfterTextCompletionEventArgs e)
         {
+            switch (e.SegmentType)
+            {
+                case LMKit.TextGeneration.Chat.TextSegmentType.InternalReasoning:
+                    Console.ForegroundColor = ConsoleColor.Blue;
+                    break;
+                case LMKit.TextGeneration.Chat.TextSegmentType.ToolInvocation:
+                    Console.ForegroundColor = ConsoleColor.Red;
+                    break;
+                case LMKit.TextGeneration.Chat.TextSegmentType.UserVisible:
+                    Console.ForegroundColor = ConsoleColor.White;
+                    break;
+            }
+
             Console.Write(e.Text);
         }
     }
