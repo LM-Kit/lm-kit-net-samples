@@ -118,9 +118,7 @@ namespace multi_turn_chat_with_tools
                 SamplingMode = new RandomSampling()
                 {
                     Temperature = 0.8f
-                },
-
-                SystemPrompt = "You are a chatbot capable of using tools. Respond promptly and helpfully to user requests."
+                }
             };
 
             chat.Tools.Register(new CurrencyTool());
