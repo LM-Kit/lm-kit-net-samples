@@ -196,6 +196,6 @@ LM-Kit.NET is distributed as a single **NuGet** package, making it incredibly ea
 
 ---
 
-## **Hugging Face Integration**
+## **Model Catalog**
 
-Explore the [LM-Kit section on Hugging Face](https://huggingface.co/lm-kit) for **quantized models** tested with LM-Kit.NET. You can also seamlessly load models from Hugging Face repositories using the Hugging Face API, simplifying model discovery and deployment.
+Browse the [LM-Kit Model Catalog](https://docs.lm-kit.com/lm-kit-net/guides/getting-started/model-catalog.html) for a comprehensive list of **quantized models** tested and optimized for LM-Kit.NET. You can also seamlessly load models from Hugging Face repositories using the Hugging Face API, simplifying model discovery and deployment.
