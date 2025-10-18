@@ -6,19 +6,22 @@ Get started with the **LM-Kit Community Edition** today and gain access to power
 
 ---
 
-# 🚀 **What’s New**
+# 🚀 **What's New**
 
-- ✨ [Dynamic Sampling – Up to 75% Error Reduction and 2x Faster Processing for LLMs](https://lm-kit.com/blog/introducing-dynamic-sampling/)
-- 🧩 Function Calling Support - Dynamically invoke functions directly from model outputs.
-- 🎮 Vulkan Backend - Accelerated multi-GPU support for AMD, Intel, and NVIDIA.
-- 👁️ [LM-Kit Goes Multimodal: Introducing Vision Support](https://lm-kit.com/blog/lmkit-goes-multimodal/) - Image understanding now available.
-- 🧠 [Semantic Kernel Integration (Open Source)](https://github.com/LM-Kit/lm-kit-net-semantic-kernel) - Build intelligent workflows with Microsoft’s Semantic Kernel + LM-Kit.NET.
-- 🔗 [New Vector Database Connector (Open Source, Qdrant Support)](https://github.com/LM-Kit/lm-kit-net-data-connectors) - Easily integrate semantic search and hybrid RAG pipelines.
-- 🧬 [New Built-in Vector Database Engine](https://lm-kit.com/blog/lmkit-made-embedding-storage-effortless/) - Store and Retrieve Embeddings at Any Scale.
-- 🌐 Multimodal RAG with Reranking Support - Improve accuracy with multimodal retrieval-augmented generation and reranking.
-- 🏷️ [Multimodal Named Entity Recognition](https://lm-kit.com/solutions/content-analysis/#ner) - Detect and classify entities (people, organizations, locations, etc.) across text and images.
-- 🛡️ [Multimodal PII Extraction](https://lm-kit.com/solutions/content-analysis/#pii-extraction) - Identify and extract personally identifiable information from text and images for compliance.
+*Listed from most recent to oldest*
+
+- 🔧 [Tool Calling for Local Agents](https://lm-kit.com/blog/tool-calling-for-local-agents/) - Build AI agents with state-of-the-art tool calling. Supports all modes (simple, multiple, parallel) with structured JSON schemas, safety policies, and human-in-the-loop controls.
 - 🎙️ [Speech-to-Text Support](https://lm-kit.com/solutions/language-processing/speech-to-text/) - Convert spoken audio into highly accurate text transcripts, supporting 100 languages.
+- 🛡️ [Multimodal PII Extraction](https://lm-kit.com/solutions/content-analysis/#pii-extraction) - Identify and extract personally identifiable information from text and images for compliance.
+- 🏷️ [Multimodal Named Entity Recognition](https://lm-kit.com/solutions/content-analysis/#ner) - Detect and classify entities (people, organizations, locations, etc.) across text and images.
+- 🌐 Multimodal RAG with Reranking Support - Improve accuracy with multimodal retrieval-augmented generation and reranking.
+- 🧬 [New Built-in Vector Database Engine](https://lm-kit.com/blog/lmkit-made-embedding-storage-effortless/) - Store and Retrieve Embeddings at Any Scale.
+- 🔗 [New Vector Database Connector (Open Source, Qdrant Support)](https://github.com/LM-Kit/lm-kit-net-data-connectors) - Easily integrate semantic search and hybrid RAG pipelines.
+- 🧠 [Semantic Kernel Integration (Open Source)](https://github.com/LM-Kit/lm-kit-net-semantic-kernel) - Build intelligent workflows with Microsoft's Semantic Kernel + LM-Kit.NET.
+- 👁️ [LM-Kit Goes Multimodal: Introducing Vision Support](https://lm-kit.com/blog/lmkit-goes-multimodal/) - Image understanding now available.
+- 🎮 Vulkan Backend - Accelerated multi-GPU support for AMD, Intel, and NVIDIA.
+- 🧩 Function Calling Support - Dynamically invoke functions directly from model outputs.
+- ✨ [Dynamic Sampling – Up to 75% Error Reduction and 2x Faster Processing for LLMs](https://lm-kit.com/blog/introducing-dynamic-sampling/)
   
 👉 [See full changelog](https://docs.lm-kit.com/lm-kit-net/guides/changelog.html)
 
@@ -123,7 +126,7 @@ LM-Kit.NET offers a wide array of advanced AI features that can be seamlessly in
 ## **Run Local LLMs and SLMs on Any Device**
 
 LM-Kit.NET is powered by [llama.cpp](https://github.com/ggerganov/llama.cpp), ensuring best-in-class performance across a variety of hardware setups with minimal configuration and zero external dependencies.  
-All processing happens **on-device** (edge computing), giving you full control and tunability for inference. Additionally, LM-Kit.NET supports an expanding list of model architectures, including **Gemma-3**, **LLaMA-3**, **LLaMA-4**, **Mistral**, **Falcon**, **Phi 4**, **Qwen2.5-VL**, and more.
+All processing happens **on-device** (edge computing), giving you full control and tunability for inference. Additionally, LM-Kit.NET supports an expanding list of model architectures, including **GPT-OSS**, **Qwen**, **Gemma**, **DeepSeek**, **Granite**, **Llama**, **Phi**, and more.
 
 ---
 
