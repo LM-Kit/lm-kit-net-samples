@@ -78,11 +78,12 @@ namespace multilingual_invoice_data_extraction_from_image
             Console.Clear();
             Console.WriteLine("Select a vision-language model to use for extraction:\n");
             Console.WriteLine("0 - MiniCPM 2.6 o Vision 8.1B (~5.9 GB VRAM)");
-            Console.WriteLine("1 - Alibaba Qwen 2.5 Vision 3B (~3.3 GB VRAM)");
-            Console.WriteLine("2 - Alibaba Qwen 2.5 Vision 7B (~6.5 GB VRAM)");
-            Console.WriteLine("3 - Google Gemma 3 Vision 4B (~5.7 GB VRAM)");
-            Console.WriteLine("4 - Google Gemma 3 Vision 12B (~11 GB VRAM)");
-            Console.WriteLine("5 - Mistral Pixtral 12B (~12 GB VRAM)");
+            Console.WriteLine("1 - Alibaba Qwen 3 Vision 2B (~2.5 GB VRAM)");
+            Console.WriteLine("2 - Alibaba Qwen 3 Vision 4B (~4.5 GB VRAM)");
+            Console.WriteLine("3 - Alibaba Qwen 3 Vision 8B (~6.5 GB VRAM)");
+            Console.WriteLine("4 - Google Gemma 3 Vision 4B (~5.7 GB VRAM)");
+            Console.WriteLine("5 - Google Gemma 3 Vision 12B (~11 GB VRAM)");
+            Console.WriteLine("6 - Mistral Pixtral 12B (~12 GB VRAM)");
             Console.Write("Other entry: custom model URI\n\n> ");
 
             // Read user selection or custom URI
@@ -184,25 +185,30 @@ namespace multilingual_invoice_data_extraction_from_image
                         .ToString();
                 case "1":
                     return ModelCard
-                        .GetPredefinedModelCardByModelID("qwen2.5-vl:3b")
+                        .GetPredefinedModelCardByModelID("qwen3-vl:2b")
                         .ModelUri
                         .ToString();
                 case "2":
                     return ModelCard
-                        .GetPredefinedModelCardByModelID("qwen2.5-vl:7b")
+                        .GetPredefinedModelCardByModelID("qwen3-vl:4b")
                         .ModelUri
                         .ToString();
                 case "3":
                     return ModelCard
-                        .GetPredefinedModelCardByModelID("gemma3:4b")
+                        .GetPredefinedModelCardByModelID("qwen3-vl:8b")
                         .ModelUri
                         .ToString();
                 case "4":
                     return ModelCard
-                        .GetPredefinedModelCardByModelID("gemma3:12b")
+                        .GetPredefinedModelCardByModelID("gemma3:4b")
                         .ModelUri
                         .ToString();
                 case "5":
+                    return ModelCard
+                        .GetPredefinedModelCardByModelID("gemma3:12b")
+                        .ModelUri
+                        .ToString();
+                case "6":
                     return ModelCard
                         .GetPredefinedModelCardByModelID("pixtral")
                         .ModelUri

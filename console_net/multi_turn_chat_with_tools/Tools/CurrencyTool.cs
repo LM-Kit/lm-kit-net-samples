@@ -55,17 +55,22 @@ namespace multi_turn_chat_with_tools.Tools
                        ?? throw new ArgumentException("Invalid arguments JSON for convert_currency.");
 
             // Validate/normalize
-            if(args.Amount is null)
+            if (args.Amount is null)
             {
                 args.Amount = 1;
             }
             else if (!IsFinite(args.Amount.Value) || args.Amount < 0m)
+            {
                 throw new ArgumentException("'amount' must be a non-negative number.");
+            }
 
             var from = NormalizeCode(args.From);
             var to = NormalizeCode(args.To);
             if (from.Length != 3 || to.Length != 3)
+            {
                 throw new ArgumentException("'from' and 'to' must be 3-letter ISO 4217 codes.");
+            }
+
             if (from == to)
             {
                 // Short-circuit (rate=1)
@@ -91,7 +96,9 @@ namespace multi_turn_chat_with_tools.Tools
 
             var fxResp = await GetAsync<FxSingleResponse>(path, ct);
             if (fxResp?.Rates is null || !fxResp.Rates.TryGetValue(to, out var rate))
+            {
                 throw new HttpRequestException($"No rate available for {from}->{to} on '{fxResp?.Date ?? args.Date ?? "latest"}'.");
+            }
 
             var converted = MathRound(args.Amount.Value * rate, args.Round ?? 4);
 
@@ -113,7 +120,7 @@ namespace multi_turn_chat_with_tools.Tools
                         .Select(kv => new TrendPoint
                         {
                             Date = kv.Key,
-                            Rate = kv.Value.TryGetValue(to, out var r) ? r : (decimal?)null
+                            Rate = kv.Value.TryGetValue(to, out var r) ? r : null
                         })
                         .Where(tp => tp.Rate is not null)
                         .ToList()!;
@@ -140,7 +147,11 @@ namespace multi_turn_chat_with_tools.Tools
 
         private static string NormalizeCode(string? code)
         {
-            if (string.IsNullOrWhiteSpace(code)) return "";
+            if (string.IsNullOrWhiteSpace(code))
+            {
+                return "";
+            }
+
             return code.Trim().ToUpperInvariant();
         }
 

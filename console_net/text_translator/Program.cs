@@ -1,7 +1,7 @@
-﻿using System.Text;
-using LMKit.Model;
+﻿using LMKit.Model;
 using LMKit.TextGeneration;
 using LMKit.Translation;
+using System.Text;
 
 
 namespace translator

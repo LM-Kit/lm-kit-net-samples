@@ -1,7 +1,7 @@
-﻿using System.Text;
-using LMKit.Model;
+﻿using LMKit.Model;
 using LMKit.TextGeneration;
 using LMKit.TextGeneration.Sampling;
+using System.Text;
 
 namespace web_content_info_extractor_to_json
 {

@@ -1,6 +1,4 @@
-﻿using System.Diagnostics;
-using System.Text;
-using LMKit.Data;
+﻿using LMKit.Data;
 using LMKit.Data.Storage;
 using LMKit.Data.Storage.Qdrant;
 using LMKit.Global;
@@ -8,6 +6,8 @@ using LMKit.Model;
 using LMKit.Retrieval;
 using LMKit.TextGeneration;
 using LMKit.TextGeneration.Sampling;
+using System.Diagnostics;
+using System.Text;
 
 namespace custom_chatbot_with_rag_qdrant_vector_store
 {

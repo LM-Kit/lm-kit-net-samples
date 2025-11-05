@@ -1,9 +1,9 @@
-﻿using System.Diagnostics;
-using System.Text;
-using LMKit.Model;
+﻿using LMKit.Model;
 using LMKit.TextGeneration;
 using LMKit.TextGeneration.Sampling;
 using multi_turn_chat_with_agent_memory;
+using System.Diagnostics;
+using System.Text;
 
 namespace multi_turn_chat_with_memory
 {

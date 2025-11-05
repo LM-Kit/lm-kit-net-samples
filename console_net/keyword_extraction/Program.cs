@@ -1,7 +1,7 @@
-﻿using System.Diagnostics;
-using System.Text;
-using LMKit.Model;
+﻿using LMKit.Model;
 using LMKit.TextAnalysis;
+using System.Diagnostics;
+using System.Text;
 
 namespace structured_data_extraction
 {
@@ -125,7 +125,7 @@ namespace structured_data_extraction
             while (true)
             {
                 Console.Clear();
-                Console.WriteLine("Please enter the path to the text file containing your input:\n");
+                Console.WriteLine("Please enter the path to an image, document or text file:\n");
                 Console.Write("\n> ");
                 string inputFilePath = Console.ReadLine().Trim().Trim('"');
 
@@ -138,11 +138,11 @@ namespace structured_data_extraction
 
                 Console.Clear();
 
-                string content = File.ReadAllText(inputFilePath);
+                var attachment = new LMKit.Data.Attachment(inputFilePath);
 
                 Console.WriteLine($"\n\nTrying to extract {keywordExtraction.KeywordCount} keywords...\n");
                 Stopwatch sw = Stopwatch.StartNew();
-                var keywords = keywordExtraction.ExtractKeywords(content);
+                var keywords = keywordExtraction.ExtractKeywords(attachment);
                 sw.Stop();
 
                 WriteColor("\nExtracted keywords:\n", ConsoleColor.Green);
@@ -152,7 +152,7 @@ namespace structured_data_extraction
                     Console.WriteLine($"{item.Value}");
                 }
 
-                int wordCount = content.Split(new string[] { " ", "\r\n", "\n", "\t" }, StringSplitOptions.RemoveEmptyEntries).Length;
+                int wordCount = attachment.GetText().Split(new string[] { " ", "\r\n", "\n", "\t" }, StringSplitOptions.RemoveEmptyEntries).Length;
 
                 WriteColor("\nExtraction done in " + sw.Elapsed.TotalSeconds.ToString() + " seconds | Word count: " + wordCount.ToString() + " | Confidence: " + Math.Round(keywordExtraction.Confidence, 2).ToString() + " | Hit any key to continue", ConsoleColor.Green);
                 _ = Console.ReadKey();

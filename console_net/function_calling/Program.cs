@@ -1,6 +1,6 @@
-﻿using System.Text;
-using LMKit.FunctionCalling;
+﻿using LMKit.FunctionCalling;
 using LMKit.Model;
+using System.Text;
 
 namespace function_calling
 {

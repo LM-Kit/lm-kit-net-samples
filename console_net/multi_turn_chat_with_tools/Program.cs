@@ -1,8 +1,8 @@
 ﻿using LMKit.Model;
 using LMKit.TextGeneration;
 using LMKit.TextGeneration.Sampling;
-using System.Text;
 using multi_turn_chat_with_tools.Tools;
+using System.Text;
 
 namespace multi_turn_chat_with_tools
 {

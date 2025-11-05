@@ -1,7 +1,7 @@
-﻿using System.Diagnostics;
-using System.Text;
-using LMKit.Model;
+﻿using LMKit.Model;
 using LMKit.TextGeneration;
+using System.Diagnostics;
+using System.Text;
 
 namespace text_summarizer
 {
@@ -136,7 +136,7 @@ namespace text_summarizer
             while (true)
             {
                 Console.Clear();
-                Console.WriteLine("Please enter the path to the text file containing your input:");
+                Console.WriteLine("Please enter the path to an image, document or text file:");
                 Console.Write("\n> ");
                 string inputFilePath = Console.ReadLine().Trim().Trim('"');
 
@@ -150,13 +150,13 @@ namespace text_summarizer
                 Console.Clear();
 
                 // Read and process the file content
-                string content = File.ReadAllText(inputFilePath);
-                int inputWordCount = content.Split(new[] { " ", "\r\n", "\n", "\t" }, StringSplitOptions.RemoveEmptyEntries).Length;
+                var attachment = new LMKit.Data.Attachment(inputFilePath);
+                int inputWordCount = attachment.GetText().Split(new[] { " ", "\r\n", "\n", "\t" }, StringSplitOptions.RemoveEmptyEntries).Length;
 
                 WriteColor($"\nSummarizing content with {inputWordCount} words to {summarizer.MaxContentWords} max words...\n", ConsoleColor.Green);
 
                 Stopwatch sw = Stopwatch.StartNew();
-                var result = summarizer.Summarize(content);
+                var result = summarizer.Summarize(attachment);
                 sw.Stop();
 
                 // Display results

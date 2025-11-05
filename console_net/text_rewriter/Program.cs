@@ -1,6 +1,6 @@
-﻿using System.Text;
-using LMKit.Model;
+﻿using LMKit.Model;
 using LMKit.TextEnhancement;
+using System.Text;
 
 namespace text_rewriter
 {

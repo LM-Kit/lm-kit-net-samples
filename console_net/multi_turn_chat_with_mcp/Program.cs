@@ -96,15 +96,15 @@ namespace multi_turn_chat_with_mcp
                 default: modelLink = input.Trim().Trim('"'); break;
             }
 
-            Uri modelUri = new Uri(modelLink);
-            LM model = new LM(
+            Uri modelUri = new(modelLink);
+            LM model = new(
                 modelUri,
                 downloadingProgress: ModelDownloadingProgress,
                 loadingProgress: ModelLoadingProgress);
 
             Console.Clear();
 
-            MultiTurnConversation chat = new MultiTurnConversation(model);
+            MultiTurnConversation chat = new(model);
             chat.MaximumCompletionTokens = 1000;
             chat.SamplingMode = new RandomSampling { Temperature = 0.8f };
             chat.AfterTextCompletion += Chat_AfterTextCompletion;
@@ -125,7 +125,7 @@ namespace multi_turn_chat_with_mcp
                 Console.ResetColor();
 
                 TextGenerationResult result;
-                CancellationTokenSource cts = new CancellationTokenSource(TimeSpan.FromMinutes(2));
+                CancellationTokenSource cts = new(TimeSpan.FromMinutes(2));
 
                 if (mode == "regenerate")
                 {
@@ -186,10 +186,7 @@ namespace multi_turn_chat_with_mcp
             }
 
             // Clean up
-            if (mcpClient != null)
-            {
-                mcpClient.Dispose();
-            }
+            mcpClient?.Dispose();
 
             Console.WriteLine("The chat ended. Press any key to exit the application.");
             Console.ReadKey();
@@ -243,7 +240,7 @@ namespace multi_turn_chat_with_mcp
             Console.Clear();
             Console.WriteLine("Connecting to MCP server: {0}\n", serverUri);
 
-            McpClient mcpClient = new McpClient(serverUri);
+            McpClient mcpClient = new(serverUri);
 
             // Handle catalog changes (tools, resources, prompts updates)
             mcpClient.CatalogChanged += (sender, e) =>
@@ -307,7 +304,11 @@ namespace multi_turn_chat_with_mcp
 
         private static string TruncateMessage(string message)
         {
-            if (string.IsNullOrEmpty(message)) return string.Empty;
+            if (string.IsNullOrEmpty(message))
+            {
+                return string.Empty;
+            }
+
             const int maxLength = 150;
             return (message.Length <= maxLength) ? message : message.Substring(0, maxLength) + "...";
         }

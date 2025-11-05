@@ -1,7 +1,7 @@
-﻿using System.Text;
-using LMKit.Model;
+﻿using LMKit.Model;
 using LMKit.TextGeneration;
 using LMKit.TextGeneration.Chat;
+using System.Text;
 
 namespace multi_turn_chat_with_persistent_session
 {

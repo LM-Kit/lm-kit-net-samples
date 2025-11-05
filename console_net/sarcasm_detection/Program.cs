@@ -1,7 +1,7 @@
-﻿using System.Diagnostics;
-using System.Text;
-using LMKit.Model;
+﻿using LMKit.Model;
 using LMKit.TextAnalysis;
+using System.Diagnostics;
+using System.Text;
 
 namespace sarcasm_detection
 {

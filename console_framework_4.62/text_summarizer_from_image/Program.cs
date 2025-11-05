@@ -49,8 +49,9 @@ namespace text_summarizer_from_image
             Console.Clear();
             Console.WriteLine("Please select the model you want to use:\n");
             Console.WriteLine("0 - MiniCPM 2.6 o Vision 8.1B (requires approximately 5.9 GB of VRAM)");
-            Console.WriteLine("1 - Alibaba Qwen 2.5 Vision 3B (requires approximately 3.3 GB of VRAM)");
-            Console.WriteLine("2 - Alibaba Qwen 2.5 Vision 7B (requires approximately 6.5 GB of VRAM)");
+            Console.WriteLine("1 - Alibaba Qwen 3 Vision 2B (requires approximately 2.5 GB of VRAM)");
+            Console.WriteLine("1 - Alibaba Qwen 3 Vision 4B (requires approximately 4.5 GB of VRAM)");
+            Console.WriteLine("2 - Alibaba Qwen 3 Vision 8B (requires approximately 6.5 GB of VRAM)");
             Console.WriteLine("3 - Google Gemma 3 Vision 4B (requires approximately 5.7 GB of VRAM)");
             Console.WriteLine("4 - Google Gemma 3 Vision 12B (requires approximately 11 GB of VRAM)");
 
@@ -65,15 +66,18 @@ namespace text_summarizer_from_image
                     modelLink = ModelCard.GetPredefinedModelCardByModelID("minicpm-o").ModelUri.ToString();
                     break;
                 case "1":
-                    modelLink = ModelCard.GetPredefinedModelCardByModelID("qwen2.5-vl:3b").ModelUri.ToString();
+                    modelLink = ModelCard.GetPredefinedModelCardByModelID("qwen3-vl:2b").ModelUri.ToString();
                     break;
                 case "2":
-                    modelLink = ModelCard.GetPredefinedModelCardByModelID("qwen2.5-vl:7b").ModelUri.ToString();
+                    modelLink = ModelCard.GetPredefinedModelCardByModelID("qwen3-vl:4b").ModelUri.ToString();
                     break;
                 case "3":
-                    modelLink = ModelCard.GetPredefinedModelCardByModelID("gemma3:4b").ModelUri.ToString();
+                    modelLink = ModelCard.GetPredefinedModelCardByModelID("qwen3-vl:8b").ModelUri.ToString();
                     break;
                 case "4":
+                    modelLink = ModelCard.GetPredefinedModelCardByModelID("gemma3:4b").ModelUri.ToString();
+                    break;
+                case "5":
                     modelLink = ModelCard.GetPredefinedModelCardByModelID("gemma3:12b").ModelUri.ToString();
                     break;
                 default:

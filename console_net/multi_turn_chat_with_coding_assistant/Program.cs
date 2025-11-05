@@ -1,9 +1,9 @@
-﻿using System.Text;
-using LMKit.Exceptions;
+﻿using LMKit.Exceptions;
 using LMKit.Inference;
 using LMKit.Model;
 using LMKit.TextGeneration;
 using LMKit.TextGeneration.Sampling;
+using System.Text;
 
 namespace multi_turn_chat_with_coding_assistant
 {

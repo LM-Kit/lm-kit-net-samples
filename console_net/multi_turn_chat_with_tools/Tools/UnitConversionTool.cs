@@ -31,7 +31,7 @@ namespace multi_turn_chat_with_tools.Tools
         public string InputSchema { get { return SchemaJson; } }
 
         // ---- Runtime ----
-        private static readonly JsonSerializerOptions Json = new JsonSerializerOptions
+        private static readonly JsonSerializerOptions Json = new()
         {
             PropertyNamingPolicy = JsonNamingPolicy.CamelCase,
             DefaultIgnoreCondition = JsonIgnoreCondition.WhenWritingNull,
@@ -44,11 +44,16 @@ namespace multi_turn_chat_with_tools.Tools
         public System.Threading.Tasks.Task<string> InvokeAsync(string arguments, System.Threading.CancellationToken cancellationToken = default(System.Threading.CancellationToken))
         {
             var args = System.Text.Json.JsonSerializer.Deserialize<Args>(arguments, Json);
-            if (args == null) throw new ArgumentException("Invalid arguments JSON for convert_units.");
+            if (args == null)
+            {
+                throw new ArgumentException("Invalid arguments JSON for convert_units.");
+            }
 
             var mode = (args.Mode ?? "convert").Trim().ToLowerInvariant();
             if (mode != "convert" && mode != "list_units")
+            {
                 throw new ArgumentException("mode must be 'convert' or 'list_units'.");
+            }
 
             if (mode == "list_units")
             {
@@ -64,16 +69,23 @@ namespace multi_turn_chat_with_tools.Tools
 
             // mode == convert
             if (double.IsNaN(args.Amount) || double.IsInfinity(args.Amount))
+            {
                 throw new ArgumentException("'amount' must be a finite number.");
+            }
+
             if (string.IsNullOrWhiteSpace(args.From) || string.IsNullOrWhiteSpace(args.To))
+            {
                 throw new ArgumentException("'from' and 'to' are required for convert mode.");
+            }
 
             var from = Normalize(args.From);
             var to = Normalize(args.To);
             var category = string.IsNullOrEmpty(args.Category) ? UnitsCatalog.InferCategory(from, to) : Normalize(args.Category);
 
             if (category.Length == 0)
+            {
                 throw new ArgumentException("Could not infer category; provide a valid 'category' matching both units.");
+            }
 
             decimal converted;
             decimal factor = 0m; // only for linear categories; 0 means N/A (e.g., temperature)
@@ -102,7 +114,7 @@ namespace multi_turn_chat_with_tools.Tools
                 Amount = (decimal)args.Amount,
                 From = from,
                 To = to,
-                Factor = linear ? (decimal?)RoundMid(factor, Math.Min(12, round + 4)) : null,
+                Factor = linear ? RoundMid(factor, Math.Min(12, round + 4)) : null,
                 Converted = RoundMid(converted, round)
             };
 
@@ -120,38 +132,96 @@ namespace multi_turn_chat_with_tools.Tools
 
         private static int ClampInt(int value, int min, int max, int fallback)
         {
-            if (value < min || value > max) return fallback;
+            if (value < min || value > max)
+            {
+                return fallback;
+            }
+
             return value;
         }
 
         private static decimal RoundMid(decimal value, int digits)
         {
-            if (digits < 0) digits = 0;
-            if (digits > 12) digits = 12;
+            if (digits < 0)
+            {
+                digits = 0;
+            }
+
+            if (digits > 12)
+            {
+                digits = 12;
+            }
+
             return Math.Round(value, digits, MidpointRounding.AwayFromZero);
         }
 
         private static decimal ConvertTemperature(decimal amount, string from, string to)
         {
             // Normalize aliases
-            if (from == "c") from = "celsius";
-            if (from == "f") from = "fahrenheit";
-            if (from == "k") from = "kelvin";
-            if (to == "c") to = "celsius";
-            if (to == "f") to = "fahrenheit";
-            if (to == "k") to = "kelvin";
+            if (from == "c")
+            {
+                from = "celsius";
+            }
+
+            if (from == "f")
+            {
+                from = "fahrenheit";
+            }
+
+            if (from == "k")
+            {
+                from = "kelvin";
+            }
+
+            if (to == "c")
+            {
+                to = "celsius";
+            }
+
+            if (to == "f")
+            {
+                to = "fahrenheit";
+            }
+
+            if (to == "k")
+            {
+                to = "kelvin";
+            }
 
             // To Celsius
             decimal c;
-            if (from == "celsius") c = amount;
-            else if (from == "fahrenheit") c = (amount - 32m) * 5m / 9m;
-            else if (from == "kelvin") c = amount - 273.15m;
-            else throw new ArgumentException("Unsupported temperature unit: " + from);
+            if (from == "celsius")
+            {
+                c = amount;
+            }
+            else if (from == "fahrenheit")
+            {
+                c = (amount - 32m) * 5m / 9m;
+            }
+            else if (from == "kelvin")
+            {
+                c = amount - 273.15m;
+            }
+            else
+            {
+                throw new ArgumentException("Unsupported temperature unit: " + from);
+            }
 
             // From Celsius to target
-            if (to == "celsius") return c;
-            if (to == "fahrenheit") return c * 9m / 5m + 32m;
-            if (to == "kelvin") return c + 273.15m;
+            if (to == "celsius")
+            {
+                return c;
+            }
+
+            if (to == "fahrenheit")
+            {
+                return (c * 9m / 5m) + 32m;
+            }
+
+            if (to == "kelvin")
+            {
+                return c + 273.15m;
+            }
 
             throw new ArgumentException("Unsupported temperature unit: " + to);
         }
@@ -213,7 +283,7 @@ namespace multi_turn_chat_with_tools.Tools
             // length->meter (m), mass->kilogram (kg), temperature->(special), speed->meter/second (m/s),
             // volume->liter (L), area->square meter (m2), pressure->pascal (Pa), energy->joule (J)
 
-            private static readonly Dictionary<string, Dictionary<string, decimal>> Maps = new Dictionary<string, Dictionary<string, decimal>>(StringComparer.OrdinalIgnoreCase)
+            private static readonly Dictionary<string, Dictionary<string, decimal>> Maps = new(StringComparer.OrdinalIgnoreCase)
             {
                 { "length", new Dictionary<string, decimal>(StringComparer.OrdinalIgnoreCase)
                     {
@@ -289,7 +359,7 @@ namespace multi_turn_chat_with_tools.Tools
             };
 
             // aliases (whitespace/characters stripped+lowercased already by Normalize)
-            private static readonly Dictionary<string, string> Aliases = new Dictionary<string, string>(StringComparer.OrdinalIgnoreCase)
+            private static readonly Dictionary<string, string> Aliases = new(StringComparer.OrdinalIgnoreCase)
             {
                 { "meter", "m" }, { "metre", "m" },
                 { "kilometer", "km" }, { "kilometre", "km" },
@@ -322,7 +392,9 @@ namespace multi_turn_chat_with_tools.Tools
                 {
                     category = category.Trim().ToLowerInvariant();
                     if (!Maps.ContainsKey(category))
+                    {
                         throw new ArgumentException("Unknown category: " + category);
+                    }
 
                     var baseUnit = GetBaseUnit(category);
                     foreach (var kv in Maps[category])
@@ -371,11 +443,16 @@ namespace multi_turn_chat_with_tools.Tools
                 foreach (var cat in Maps.Keys)
                 {
                     if (Maps[cat].ContainsKey(from) && Maps[cat].ContainsKey(to))
+                    {
                         return cat;
+                    }
                 }
 
                 // temperature handled by names
-                if (IsTempName(from) && IsTempName(to)) return "temperature";
+                if (IsTempName(from) && IsTempName(to))
+                {
+                    return "temperature";
+                }
 
                 return "";
             }
@@ -385,16 +462,26 @@ namespace multi_turn_chat_with_tools.Tools
                 unit = CanonicalUnit(unit);
                 Dictionary<string, decimal> map;
                 if (!Maps.TryGetValue(category, out map))
+                {
                     throw new ArgumentException("Unknown category: " + category);
+                }
+
                 decimal factor;
                 if (!map.TryGetValue(unit, out factor))
+                {
                     throw new ArgumentException("Unsupported unit for " + category + ": " + unit);
+                }
+
                 return factor;
             }
 
             private static string CanonicalUnit(string unit)
             {
-                if (Aliases.ContainsKey(unit)) return Aliases[unit];
+                if (Aliases.ContainsKey(unit))
+                {
+                    return Aliases[unit];
+                }
+
                 return unit;
             }
 
@@ -405,14 +492,46 @@ namespace multi_turn_chat_with_tools.Tools
 
             private static string GetBaseUnit(string category)
             {
-                if (category == "length") return "m";
-                if (category == "mass") return "kg";
-                if (category == "speed") return "m/s";
-                if (category == "volume") return "l";
-                if (category == "area") return "m2";
-                if (category == "pressure") return "pa";
-                if (category == "energy") return "j";
-                if (category == "temperature") return "celsius";
+                if (category == "length")
+                {
+                    return "m";
+                }
+
+                if (category == "mass")
+                {
+                    return "kg";
+                }
+
+                if (category == "speed")
+                {
+                    return "m/s";
+                }
+
+                if (category == "volume")
+                {
+                    return "l";
+                }
+
+                if (category == "area")
+                {
+                    return "m2";
+                }
+
+                if (category == "pressure")
+                {
+                    return "pa";
+                }
+
+                if (category == "energy")
+                {
+                    return "j";
+                }
+
+                if (category == "temperature")
+                {
+                    return "celsius";
+                }
+
                 return "";
             }
 
@@ -425,7 +544,10 @@ namespace multi_turn_chat_with_tools.Tools
                     if (kv.Value.Equals(unit, StringComparison.OrdinalIgnoreCase))
                     {
                         list.Add(kv.Key);
-                        if (list.Count >= 3) break;
+                        if (list.Count >= 3)
+                        {
+                            break;
+                        }
                     }
                 }
                 return string.Join(", ", list.ToArray());

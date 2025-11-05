@@ -194,7 +194,9 @@ namespace multi_turn_chat_with_tools.Tools
             var doc = await JsonSerializer.DeserializeAsync<GeocodeResponse>(await resp.Content.ReadAsStreamAsync(ct), Json, ct)
                       ?? throw new InvalidOperationException("Unexpected geocoding payload.");
             if (doc.Results is null || doc.Results.Count == 0)
+            {
                 throw new InvalidOperationException($"Location not found: '{query}'. Try a more specific query, e.g., 'City, Country'.");
+            }
 
             var r = doc.Results[0];
             return (r.Latitude, r.Longitude, new WeatherPlace(r.Name, r.Country, r.Admin1, r.Timezone));
@@ -203,14 +205,26 @@ namespace multi_turn_chat_with_tools.Tools
         public async Task<WeatherRaw> GetWeatherAsync(double lat, double lon, UnitPreferences units, bool includeForecast, int forecastHours, CancellationToken ct)
         {
             // Normalize forecast window
-            if (forecastHours < 1) forecastHours = 1;
-            if (forecastHours > 48) forecastHours = 48;
+            if (forecastHours < 1)
+            {
+                forecastHours = 1;
+            }
+
+            if (forecastHours > 48)
+            {
+                forecastHours = 48;
+            }
 
             // Validate ranges (also catches accidental postal codes)
             if (double.IsNaN(lat) || lat < -90 || lat > 90)
+            {
                 throw new ArgumentOutOfRangeException(nameof(lat), $"Latitude must be between -90 and 90. Got: {lat}");
+            }
+
             if (double.IsNaN(lon) || lon < -180 || lon > 180)
+            {
                 throw new ArgumentOutOfRangeException(nameof(lon), $"Longitude must be between -180 and 180. Got: {lon}");
+            }
 
             var sb = new StringBuilder();
             sb.Append("https://api.open-meteo.com/v1/forecast?");
@@ -268,7 +282,10 @@ namespace multi_turn_chat_with_tools.Tools
 
             static DateTimeOffset? ParseTime(string? text, string? tz)
             {
-                if (string.IsNullOrWhiteSpace(text)) return null;
+                if (string.IsNullOrWhiteSpace(text))
+                {
+                    return null;
+                }
 
                 // Open-Meteo returns local times when timezone=auto; no explicit offset in string.
                 // Parse as DateTime then attach local machine offset.

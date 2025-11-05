@@ -1,7 +1,7 @@
-﻿using System.Text;
-using LMKit.Model;
+﻿using LMKit.Model;
 using LMKit.TextGeneration;
 using LMKit.TextGeneration.Sampling;
+using System.Text;
 
 namespace single_turn_chat
 {

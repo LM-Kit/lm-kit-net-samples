@@ -76,11 +76,12 @@ namespace multilingual_invoice_data_extraction_from_image
             Console.Clear();
             Console.WriteLine("Select a vision-language model to use for extraction:\n");
             Console.WriteLine("0 - MiniCPM 2.6 o Vision 8.1B (~5.9 GB VRAM)");
-            Console.WriteLine("1 - Alibaba Qwen 2.5 Vision 3B (~3.3 GB VRAM)");
-            Console.WriteLine("2 - Alibaba Qwen 2.5 Vision 7B (~6.5 GB VRAM)");
-            Console.WriteLine("3 - Google Gemma 3 Vision 4B (~5.7 GB VRAM)");
-            Console.WriteLine("4 - Google Gemma 3 Vision 12B (~11 GB VRAM)");
-            Console.WriteLine("5 - Mistral Pixtral 12B (~12 GB VRAM)");
+            Console.WriteLine("1 - Alibaba Qwen 3 Vision 2B (~2.5 GB VRAM)");
+            Console.WriteLine("2 - Alibaba Qwen 3 Vision 4B (~4.5 GB VRAM)");
+            Console.WriteLine("3 - Alibaba Qwen 3 Vision 8B (~6.5 GB VRAM)");
+            Console.WriteLine("4 - Google Gemma 3 Vision 4B (~5.7 GB VRAM)");
+            Console.WriteLine("5 - Google Gemma 3 Vision 12B (~11 GB VRAM)");
+            Console.WriteLine("6 - Mistral Pixtral 12B (~12 GB VRAM)");
             Console.Write("Other entry: custom model URI\n\n> ");
 
             // Read user selection or custom URI
@@ -176,11 +177,12 @@ namespace multilingual_invoice_data_extraction_from_image
             return input switch
             {
                 "0" => ModelCard.GetPredefinedModelCardByModelID("minicpm-o").ModelUri.ToString(),
-                "1" => ModelCard.GetPredefinedModelCardByModelID("qwen2.5-vl:3b").ModelUri.ToString(),
-                "2" => ModelCard.GetPredefinedModelCardByModelID("qwen2.5-vl:7b").ModelUri.ToString(),
-                "3" => ModelCard.GetPredefinedModelCardByModelID("gemma3:4b").ModelUri.ToString(),
-                "4" => ModelCard.GetPredefinedModelCardByModelID("gemma3:12b").ModelUri.ToString(),
-                "5" => ModelCard.GetPredefinedModelCardByModelID("pixtral").ModelUri.ToString(),
+                "1" => ModelCard.GetPredefinedModelCardByModelID("qwen3-vl:2b").ModelUri.ToString(),
+                "2" => ModelCard.GetPredefinedModelCardByModelID("qwen3-vl:4b").ModelUri.ToString(),
+                "3" => ModelCard.GetPredefinedModelCardByModelID("qwen3-vl:8b").ModelUri.ToString(),
+                "4" => ModelCard.GetPredefinedModelCardByModelID("gemma3:4b").ModelUri.ToString(),
+                "5" => ModelCard.GetPredefinedModelCardByModelID("gemma3:12b").ModelUri.ToString(),
+                "6" => ModelCard.GetPredefinedModelCardByModelID("pixtral").ModelUri.ToString(),
                 _ => input.Trim('"')
             };
         }
@@ -209,9 +211,14 @@ namespace multilingual_invoice_data_extraction_from_image
         {
             Console.ForegroundColor = color;
             if (addNL)
+            {
                 Console.WriteLine(text);
+            }
             else
+            {
                 Console.Write(text);
+            }
+
             Console.ResetColor();
         }
 
