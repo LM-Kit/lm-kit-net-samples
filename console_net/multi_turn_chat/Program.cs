@@ -112,7 +112,7 @@ namespace multi_turn_chat
             ShowSpecialPrompts();
             MultiTurnConversation chat = new(model)
             {
-                MaximumCompletionTokens = 1000,
+                MaximumCompletionTokens = 2048,
                 SamplingMode = new RandomSampling()
                 {
                     Temperature = 0.8f

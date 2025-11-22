@@ -105,7 +105,7 @@ namespace multi_turn_chat_with_mcp
             Console.Clear();
 
             MultiTurnConversation chat = new(model);
-            chat.MaximumCompletionTokens = 1000;
+            chat.MaximumCompletionTokens = 2048;
             chat.SamplingMode = new RandomSampling { Temperature = 0.8f };
             chat.AfterTextCompletion += Chat_AfterTextCompletion;
 

@@ -186,7 +186,7 @@ namespace multi_turn_chat_with_chat_history_guidance
 
             MultiTurnConversation chat = new(model, chatHistory)
             {
-                MaximumCompletionTokens = 1000,
+                MaximumCompletionTokens = 2048,
                 SamplingMode = new RandomSampling()
                 {
                     Temperature = 0.8f

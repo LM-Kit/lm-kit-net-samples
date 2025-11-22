@@ -110,7 +110,7 @@ namespace multi_turn_chat_with_custom_sampling
             MultiTurnConversation chat = new MultiTurnConversation(model)
             {
                 SystemPrompt = "You are an enthusiastic pet lover chatbot, dedicated to responding promptly and helpfully to every user request.",
-                MaximumCompletionTokens = 1000,
+                MaximumCompletionTokens = 2048,
                 SamplingMode = new RandomSampling()
                 {
                     LocallyTypical = 0.9f,

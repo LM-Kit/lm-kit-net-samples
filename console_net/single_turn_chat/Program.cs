@@ -109,7 +109,7 @@ namespace single_turn_chat
             Console.Clear();
             SingleTurnConversation chat = new(model)
             {
-                MaximumCompletionTokens = 1000,
+                MaximumCompletionTokens = 2048,
                 SamplingMode = new RandomSampling()
                 {
                     Temperature = 0.8f

@@ -99,7 +99,7 @@ namespace multi_turn_chat_with_vision
             ShowSpecialPrompts();
             MultiTurnConversation chat = new MultiTurnConversation(model)
             {
-                MaximumCompletionTokens = 1000,
+                MaximumCompletionTokens = 2048,
                 SamplingMode = new RandomSampling()
                 {
                     Temperature = 0.1f //note: lower temperature is better for vision models.
