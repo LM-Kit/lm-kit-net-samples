@@ -12,7 +12,7 @@ namespace sarcasm_detection
              Note: This model has been fine-tuned specifically for the English language. 
              For processing other languages, additional model fine-tuning may be required.
          */
-        static readonly string DEFAULT_MODEL_PATH = @"https://huggingface.co/lm-kit/LM-Kit.Sarcasm_Detection-TinyLlama-1.1B-1T-OpenOrca-en-q4/resolve/main/LM-Kit.Sarcasm_Detection-TinyLlama-1.1B-1T-OpenOrca-en-q4.gguf?download=true";
+        static readonly string DEFAULT_MODEL_PATH = @"https://huggingface.co/lm-kit/LM-Kit.Sarcasm_Detection-TinyLlama-1.1B-1T-OpenOrca-en-q4/resolve/main/LM-Kit.Sarcasm_Detection-TinyLlama-1.1B-1T-OpenOrca-en-q4.gguf";
         static bool _isDownloading;
 
         private static bool ModelDownloadingProgress(string path, long? contentLength, long bytesRead)

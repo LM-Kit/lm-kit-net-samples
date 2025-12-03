@@ -8,7 +8,7 @@ namespace sentiment_analysis
 {
     internal class Program
     {
-        static readonly string DEFAULT_MODEL_PATH = @"https://huggingface.co/lm-kit/lm-kit-sentiment-analysis-2.0-1b-gguf/resolve/main/lm-kit-sentiment-analysis-2.0-1b-q4.gguf?download=true";
+        static readonly string DEFAULT_MODEL_PATH = @"https://huggingface.co/lm-kit/lm-kit-sentiment-analysis-2.0-1b-gguf/resolve/main/lm-kit-sentiment-analysis-2.0-1b-q4.gguf";
         static bool _isDownloading;
 
         private static bool ModelDownloadingProgress(string path, long? contentLength, long bytesRead)

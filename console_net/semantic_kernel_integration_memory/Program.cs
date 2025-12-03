@@ -19,7 +19,7 @@ Console.WriteLine("Approach 1: Querying the model directly (without memory).\n")
 var builder = Kernel.CreateBuilder();
 
 // Configure the chat model for completions
-var chatModel = new LMKit.Model.LM("https://huggingface.co/lm-kit/phi-3.1-mini-4k-3.8b-instruct-gguf/resolve/main/Phi-3.1-mini-4k-Instruct-Q4_K_M.gguf?download=true");
+var chatModel = new LMKit.Model.LM("https://huggingface.co/lm-kit/phi-3.1-mini-4k-3.8b-instruct-gguf/resolve/main/Phi-3.1-mini-4k-Instruct-Q4_K_M.gguf");
 
 builder.AddLMKitChatCompletion(chatModel, new LMKitPromptExecutionSettings(chatModel)
 {
@@ -28,7 +28,7 @@ builder.AddLMKitChatCompletion(chatModel, new LMKitPromptExecutionSettings(chatM
 });
 
 // Configure the embedding model for semantic memory
-var embeddingModel = new LMKit.Model.LM("https://huggingface.co/lm-kit/bge-m3-gguf/resolve/main/bge-m3-Q5_K_M.gguf?download=true");
+var embeddingModel = new LMKit.Model.LM("https://huggingface.co/lm-kit/bge-m3-gguf/resolve/main/bge-m3-Q5_K_M.gguf");
 builder.AddLMKitTextEmbeddingGeneration(embeddingModel);
 
 // Build the kernel
