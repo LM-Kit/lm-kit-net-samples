@@ -106,7 +106,7 @@ namespace multilingual_invoice_data_extraction_from_image
             // Attach an optional OCR engine to improve VLM accuracy.
             // You can also use other pre‑integrated or custom OCR engines. See the available list at:
             // https://docs.lm-kit.com/lm-kit-net/api/LMKit.Extraction.Ocr.OcrEngine.html
-            var ocrEngine = new TesseractOcrEngine
+            var ocrEngine = new TesseractOcr
             {
                 EnableLanguageDetection = true,
                 EnableModelDownload = true,

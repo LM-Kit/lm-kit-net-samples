@@ -10,10 +10,10 @@ namespace multi_turn_chat_with_agent_memory
 
             if (File.Exists(fileName))
             {
-                return AgentMemory.Deserialize("memory.bin", LMKit.Model.LM.LoadFromModelID("nomic-embed-text"));
+                return AgentMemory.Deserialize("memory.bin", LMKit.Model.LM.LoadFromModelID("embeddinggemma-300m"));
             }
 
-            var memory = new AgentMemory(LMKit.Model.LM.LoadFromModelID("nomic-embed-text"));
+            var memory = new AgentMemory(LMKit.Model.LM.LoadFromModelID("embeddinggemma-300m"));
 
             var acmeeProfileCollection = "acmeeCustomerProfile";
 
