@@ -169,11 +169,11 @@ namespace multi_turn_chat_with_vision
                 {
                     if (attachment != null)
                     {
-                        result = chat.Submit(new Prompt(prompt, attachment), new CancellationTokenSource(TimeSpan.FromMinutes(2)).Token);
+                        result = chat.Submit(new ChatHistory.Message(prompt, attachment), new CancellationTokenSource(TimeSpan.FromMinutes(2)).Token);
                     }
                     else
                     {
-                        result = chat.Submit(new Prompt(prompt), new CancellationTokenSource(TimeSpan.FromMinutes(2)).Token);
+                        result = chat.Submit(new ChatHistory.Message(prompt), new CancellationTokenSource(TimeSpan.FromMinutes(2)).Token);
                     }
 
                     mode = "chat";

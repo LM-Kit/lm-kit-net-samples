@@ -4,7 +4,7 @@ using LMKit.TextAnalysis;
 using System.Diagnostics;
 using System.Text;
 
-namespace language_detection_from_image
+namespace language_detection_from_document
 {
     internal class Program
     {

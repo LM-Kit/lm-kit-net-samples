@@ -102,9 +102,10 @@ namespace multi_turn_chat_with_yes_no_assistant
 
             //Loading model
             Uri modelUri = new(modelLink);
-            LM model = new(modelUri,
-                                    downloadingProgress: ModelDownloadingProgress,
-                                    loadingProgress: ModelLoadingProgress);
+            LM model = new(
+                modelUri,
+                downloadingProgress: ModelDownloadingProgress,
+                loadingProgress: ModelLoadingProgress);
 
             Console.Clear();
             ShowSpecialPrompts();

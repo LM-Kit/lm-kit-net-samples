@@ -8,7 +8,7 @@ namespace custom_classification
 {
     internal class Program
     {
-        static readonly string[] CLASSIFICATION_CATEGORIES = {
+        static readonly string[] CLASSIFICATION_CATEGORIES = [
             "food and recipes",
             "technology",
             "health",
@@ -18,7 +18,7 @@ namespace custom_classification
             "environment",
             "movies and TV shows",
             "books and literature"
-        };
+        ];
         static readonly string DEFAULT_LLAMA3_1_8B_MODEL_PATH = @"https://huggingface.co/lm-kit/llama-3.1-8b-instruct-gguf/resolve/main/Llama-3.1-8B-Instruct-Q4_K_M.gguf";
         static readonly string DEFAULT_GEMMA3_4B_MODEL_PATH = @"https://huggingface.co/lm-kit/gemma-3-4b-instruct-lmk/resolve/main/gemma-3-4b-it-Q4_K_M.lmk";
         static readonly string DEFAULT_PHI4_MINI_3_8B_MODEL_PATH = @"https://huggingface.co/lm-kit/phi-4-mini-3.8b-instruct-gguf/resolve/main/Phi-4-mini-Instruct-Q4_K_M.gguf";

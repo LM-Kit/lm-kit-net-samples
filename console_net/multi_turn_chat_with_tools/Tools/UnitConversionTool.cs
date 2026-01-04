@@ -229,50 +229,50 @@ namespace multi_turn_chat_with_tools.Tools
         // ---- DTOs ----
         private sealed class Args
         {
-            [JsonPropertyName("mode")] public string Mode { get; set; }
+            [JsonPropertyName("mode")] public string? Mode { get; set; }
             [JsonPropertyName("amount")] public double Amount { get; set; }
-            [JsonPropertyName("from")] public string From { get; set; }
-            [JsonPropertyName("to")] public string To { get; set; }
-            [JsonPropertyName("category")] public string Category { get; set; }
+            [JsonPropertyName("from")] public string? From { get; set; }
+            [JsonPropertyName("to")] public string? To { get; set; }
+            [JsonPropertyName("category")] public string? Category { get; set; }
             [JsonPropertyName("round")] public int Round { get; set; }
         }
 
         private sealed class ConvertResult
         {
-            public SourceInfo Source { get; set; }
-            public string Category { get; set; }
+            public SourceInfo Source { get; set; } = new SourceInfo();
+            public string Category { get; set; } = string.Empty;
             public decimal Amount { get; set; }
-            public string From { get; set; }
-            public string To { get; set; }
+            public string From { get; set; } = string.Empty;
+            public string To { get; set; } = string.Empty;
             public decimal? Factor { get; set; } // null for temperature (non-linear)
             public decimal Converted { get; set; }
         }
 
         private sealed class ListUnitsResult
         {
-            public SourceInfo Source { get; set; }
-            public string Category { get; set; } // may be null in output if listing all
-            public List<UnitInfo> Units { get; set; }
+            public SourceInfo Source { get; set; } = new SourceInfo();
+            public string? Category { get; set; } // may be null in output if listing all
+            public List<UnitInfo> Units { get; set; } = new List<UnitInfo>();
         }
 
         public sealed class SourceInfo
         {
             public SourceInfo() { }
-            public SourceInfo(string name, string website, string notes)
+            public SourceInfo(string name, string? website, string? notes)
             {
                 Name = name; Website = website; Notes = notes;
             }
-            public string Name { get; set; }
-            public string Website { get; set; }
-            public string Notes { get; set; }
+            public string Name { get; set; } = string.Empty;
+            public string? Website { get; set; }
+            public string? Notes { get; set; }
         }
 
         public sealed class UnitInfo
         {
-            public string Category { get; set; }
-            public string Unit { get; set; }
-            public string BaseUnit { get; set; }
-            public string ExampleAliases { get; set; }
+            public string Category { get; set; } = string.Empty;
+            public string Unit { get; set; } = string.Empty;
+            public string BaseUnit { get; set; } = string.Empty;
+            public string ExampleAliases { get; set; } = string.Empty;
             public decimal FactorToBase { get; set; } // 1 for base unit; 0 when not linear (temperature will be omitted)
         }
 
@@ -384,7 +384,7 @@ namespace multi_turn_chat_with_tools.Tools
                 { "joule", "j" }
             };
 
-            public static List<UnitInfo> List(string category)
+            public static List<UnitInfo> List(string? category)
             {
                 var outList = new List<UnitInfo>();
 
@@ -460,14 +460,12 @@ namespace multi_turn_chat_with_tools.Tools
             public static decimal GetFactor(string category, string unit)
             {
                 unit = CanonicalUnit(unit);
-                Dictionary<string, decimal> map;
-                if (!Maps.TryGetValue(category, out map))
+                if (!Maps.TryGetValue(category, out Dictionary<string, decimal>? map))
                 {
                     throw new ArgumentException("Unknown category: " + category);
                 }
 
-                decimal factor;
-                if (!map.TryGetValue(unit, out factor))
+                if (!map.TryGetValue(unit, out decimal factor))
                 {
                     throw new ArgumentException("Unsupported unit for " + category + ": " + unit);
                 }
@@ -477,9 +475,9 @@ namespace multi_turn_chat_with_tools.Tools
 
             private static string CanonicalUnit(string unit)
             {
-                if (Aliases.ContainsKey(unit))
+                if (Aliases.TryGetValue(unit, out string? canonical))
                 {
-                    return Aliases[unit];
+                    return canonical;
                 }
 
                 return unit;

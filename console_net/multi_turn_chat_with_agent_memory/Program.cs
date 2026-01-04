@@ -55,10 +55,11 @@ namespace multi_turn_chat_with_memory
 
             Console.Clear();
             //Loading model
-            Console.WriteLine("Loading Alibaba Qwen 2.5 Instruct 0.5B model...");
-            LM model = LM.LoadFromModelID("qwen2.5:0.5b",
-                                          downloadingProgress: ModelDownloadingProgress,
-                                          loadingProgress: ModelLoadingProgress);
+            Console.WriteLine("Loading Alibaba Qwen 3 Instruct 0.6B model...");
+            LM model = LM.LoadFromModelID(
+                "qwen3:0.6b",
+                downloadingProgress: ModelDownloadingProgress,
+                loadingProgress: ModelLoadingProgress);
 
             Console.WriteLine("\n\nLoading memory...");
             var memory = await MemoryBuilder.Generate();

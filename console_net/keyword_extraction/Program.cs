@@ -113,9 +113,10 @@ namespace structured_data_extraction
 
             //Loading model
             Uri modelUri = new(modelLink);
-            LM model = new(modelUri,
-                                    downloadingProgress: ModelDownloadingProgress,
-                                    loadingProgress: ModelLoadingProgress);
+            LM model = new(
+                modelUri,
+                downloadingProgress: ModelDownloadingProgress,
+                loadingProgress: ModelLoadingProgress);
 
             KeywordExtraction keywordExtraction = new(model)
             {
@@ -152,7 +153,7 @@ namespace structured_data_extraction
                     Console.WriteLine($"{item.Value}");
                 }
 
-                int wordCount = attachment.GetText().Split(new string[] { " ", "\r\n", "\n", "\t" }, StringSplitOptions.RemoveEmptyEntries).Length;
+                int wordCount = attachment.GetText().Split([" ", "\r\n", "\n", "\t"], StringSplitOptions.RemoveEmptyEntries).Length;
 
                 WriteColor("\nExtraction done in " + sw.Elapsed.TotalSeconds.ToString() + " seconds | Word count: " + wordCount.ToString() + " | Confidence: " + Math.Round(keywordExtraction.Confidence, 2).ToString() + " | Hit any key to continue", ConsoleColor.Green);
                 _ = Console.ReadKey();

@@ -123,9 +123,10 @@ namespace translator
 
             //Loading model
             Uri modelUri = new(modelLink);
-            LM model = new(modelUri,
-                                    downloadingProgress: ModelDownloadingProgress,
-                                    loadingProgress: ModelLoadingProgress);
+            LM model = new(
+                modelUri,
+                downloadingProgress: ModelDownloadingProgress,
+                loadingProgress: ModelLoadingProgress);
 
             Console.Clear();
             TextTranslation translator = new(model);

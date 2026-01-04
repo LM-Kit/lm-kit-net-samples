@@ -68,10 +68,10 @@ namespace multi_turn_chat_with_tools
 
             Console.Write("Other entry: A custom model URI\n\n> ");
 
-            string input = Console.ReadLine();
+            string? input = Console.ReadLine();
             string modelLink;
 
-            switch (input.Trim())
+            switch (input?.Trim())
             {
                 case "0":
                     modelLink = DEFAULT_MINISTRAL_3_8_MODEL_PATH;
@@ -98,7 +98,9 @@ namespace multi_turn_chat_with_tools
                     modelLink = DEFAULT_OPENAI_GPT_OSS_20B_MODEL_PATH;
                     break;
                 default:
-                    modelLink = input.Trim().Trim('"');
+                    modelLink = !string.IsNullOrWhiteSpace(input)
+                        ? input.Trim().Trim('"')
+                        : DEFAULT_LLAMA3_1_8B_MODEL_PATH;
                     break;
             }
 
@@ -159,7 +161,7 @@ namespace multi_turn_chat_with_tools
                 Console.ForegroundColor = ConsoleColor.Green;
                 Console.Write($"\n\nUser: ");
                 Console.ResetColor();
-                prompt = Console.ReadLine();
+                prompt = Console.ReadLine() ?? string.Empty;
 
                 if (string.Compare(prompt, "/reset", ignoreCase: true) == 0)
                 {
@@ -187,8 +189,9 @@ namespace multi_turn_chat_with_tools
             Console.WriteLine("Use '/continue' to continue last assistant message.");
             Console.WriteLine("Use '/regenerate' to obtain a new completion from the last input.\n\n");
         }
+
         private static void Chat_AfterTextCompletion(
-            object sender,
+            object? sender,
             LMKit.TextGeneration.Events.AfterTextCompletionEventArgs e)
         {
             switch (e.SegmentType)

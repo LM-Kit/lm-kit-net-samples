@@ -175,7 +175,7 @@ namespace function_calling
                                                              .ToList();
                 if (authorArray.Count > 0)
                 {
-                    string? author = authorArray[0].GetString();
+                    string author = authorArray[0].GetString();
 
                     if (author != null)
                     {

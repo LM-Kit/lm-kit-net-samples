@@ -129,12 +129,12 @@ namespace multi_turn_chat_with_persistent_session
                     else if (message.AuthorRole == AuthorRole.Assistant)
                     {
                         WriteColor("\nAssistant: ", ConsoleColor.Green, addNL: false);
-                        Console.Write(message.Content);
+                        Console.Write(message.Text);
                     }
                     else if (message.AuthorRole == AuthorRole.User)
                     {
                         WriteColor("\n\nUser: ", ConsoleColor.Green, addNL: false);
-                        Console.Write(message.Content);
+                        Console.Write(message.Text);
                     }
                 }
             }

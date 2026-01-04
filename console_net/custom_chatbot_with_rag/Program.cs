@@ -1,11 +1,11 @@
-﻿using System.Diagnostics;
-using System.Text;
-using LMKit.Data;
+﻿using LMKit.Data;
 using LMKit.Global;
 using LMKit.Model;
 using LMKit.Retrieval;
 using LMKit.TextGeneration;
 using LMKit.TextGeneration.Sampling;
+using System.Diagnostics;
+using System.Text;
 
 namespace custom_chatbot_with_rag
 {
@@ -46,11 +46,16 @@ namespace custom_chatbot_with_rag
 
             if (File.Exists(DATA_SOURCE_PATH))
             {
-                _dataSource = DataSource.LoadFromFile(DATA_SOURCE_PATH, readOnly: false);
+                _dataSource = DataSource.LoadFromFile(
+                    DATA_SOURCE_PATH, 
+                    readOnly: false);
             }
             else
             {
-                _dataSource = DataSource.CreateFileDataSource(DATA_SOURCE_PATH, COLLECTION_NAME, _embeddingModel);
+                _dataSource = DataSource.CreateFileDataSource(
+                    DATA_SOURCE_PATH, 
+                    COLLECTION_NAME, 
+                    _embeddingModel);
             }
 
             _ragEngine = new RagEngine(_embeddingModel);
@@ -165,7 +170,11 @@ namespace custom_chatbot_with_rag
             //importing the ebook into a new section
             string eBookContent = File.ReadAllText(fileName);
             Stopwatch stopwatch = Stopwatch.StartNew();
-            _ragEngine.ImportText(eBookContent, new TextChunking() { MaxChunkSize = 500 }, COLLECTION_NAME, sectionIdentifier);
+            _ragEngine.ImportText(
+                eBookContent, 
+                new TextChunking() { MaxChunkSize = 500 }, 
+                COLLECTION_NAME, 
+                sectionIdentifier);
             stopwatch.Stop();
             Console.WriteLine($"   > {sectionIdentifier} loaded in {Math.Round(stopwatch.Elapsed.TotalSeconds, 1)} seconds");
         }
@@ -178,7 +187,7 @@ namespace custom_chatbot_with_rag
             if (modelUri.IsFile && !File.Exists(modelUri.LocalPath))
             {
                 Console.Write("Please enter full chat model's path: ");
-                modelUri = new Uri(Console.ReadLine().Trim(new[] { '"' }));
+                modelUri = new Uri(Console.ReadLine().Trim(['"']));
 
                 if (!File.Exists(modelUri.LocalPath))
                 {
@@ -186,9 +195,10 @@ namespace custom_chatbot_with_rag
                 }
             }
 
-            _chatModel = new LM(modelUri,
-                                downloadingProgress: ModelDownloadingProgress,
-                                loadingProgress: ModelLoadingProgress);
+            _chatModel = new LM(
+                modelUri,
+                downloadingProgress: ModelDownloadingProgress,
+                loadingProgress: ModelLoadingProgress);
         }
 
         private static void LoadEmbeddingModel()
@@ -198,7 +208,7 @@ namespace custom_chatbot_with_rag
             if (modelUri.IsFile && !File.Exists(modelUri.LocalPath))
             {
                 Console.Write("Please enter full embedding model's path: ");
-                modelUri = new Uri(Console.ReadLine().Trim(new[] { '"' }));
+                modelUri = new Uri(Console.ReadLine().Trim(['"']));
 
                 if (!File.Exists(modelUri.LocalPath))
                 {

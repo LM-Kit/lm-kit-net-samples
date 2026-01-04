@@ -103,9 +103,10 @@ namespace multi_turn_chat_with_custom_sampling
 
             //Loading model
             Uri modelUri = new(modelLink);
-            LM model = new(modelUri,
-                                     downloadingProgress: ModelDownloadingProgress,
-                                     loadingProgress: ModelLoadingProgress);
+            LM model = new(
+                modelUri,
+                downloadingProgress: ModelDownloadingProgress,
+                loadingProgress: ModelLoadingProgress);
 
             Console.Clear();
             ShowSpecialPrompts();
@@ -122,14 +123,14 @@ namespace multi_turn_chat_with_custom_sampling
                     TopK = 50,
                     Temperature = 0.9f,
                     DynamicTemperatureRange = 0.1f,
-                    SamplersSequence = new[] {
+                    SamplersSequence = [
                                 RandomSampling.RandomSamplers.TopK ,
                                 RandomSampling.RandomSamplers.TopP,
                                 RandomSampling.RandomSamplers.MinP,
                                 RandomSampling.RandomSamplers.TailFree,
                                 RandomSampling.RandomSamplers.LocallyTypical,
                                 RandomSampling.RandomSamplers.Temperature
-                    }
+                    ]
                 },
             };
 

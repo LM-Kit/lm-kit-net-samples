@@ -1,8 +1,0 @@
-{
-  "profiles": {
-    "multi_turn_chat": {
-      "commandName": "Project",
-      "nativeDebugging": true
-    }
-  }
-}

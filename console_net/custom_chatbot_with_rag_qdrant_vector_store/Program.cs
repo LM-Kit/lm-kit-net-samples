@@ -179,7 +179,7 @@ namespace custom_chatbot_with_rag_qdrant_vector_store
             if (modelUri.IsFile && !File.Exists(modelUri.LocalPath))
             {
                 Console.Write("Please enter full chat model's path: ");
-                modelUri = new Uri(Console.ReadLine().Trim(new[] { '"' }));
+                modelUri = new Uri(Console.ReadLine().Trim(['"']));
 
                 if (!File.Exists(modelUri.LocalPath))
                 {
@@ -199,7 +199,7 @@ namespace custom_chatbot_with_rag_qdrant_vector_store
             if (modelUri.IsFile && !File.Exists(modelUri.LocalPath))
             {
                 Console.Write("Please enter full embedding model's path: ");
-                modelUri = new Uri(Console.ReadLine().Trim(new[] { '"' }));
+                modelUri = new Uri(Console.ReadLine().Trim(['"']));
 
                 if (!File.Exists(modelUri.LocalPath))
                 {

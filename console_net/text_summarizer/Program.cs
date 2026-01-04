@@ -136,7 +136,7 @@ namespace text_summarizer
             while (true)
             {
                 Console.Clear();
-                Console.WriteLine("Please enter the path to an image, document or text file:");
+                Console.WriteLine("Please enter the path to a text file:");
                 Console.Write("\n> ");
                 string inputFilePath = Console.ReadLine().Trim().Trim('"');
 
@@ -150,13 +150,13 @@ namespace text_summarizer
                 Console.Clear();
 
                 // Read and process the file content
-                var attachment = new LMKit.Data.Attachment(inputFilePath);
-                int inputWordCount = attachment.GetText().Split(new[] { " ", "\r\n", "\n", "\t" }, StringSplitOptions.RemoveEmptyEntries).Length;
+                string content = File.ReadAllText(inputFilePath);
+                int inputWordCount = content.Split([" ", "\r\n", "\n", "\t"], StringSplitOptions.RemoveEmptyEntries).Length;
 
                 WriteColor($"\nSummarizing content with {inputWordCount} words to {summarizer.MaxContentWords} max words...\n", ConsoleColor.Green);
 
                 Stopwatch sw = Stopwatch.StartNew();
-                var result = summarizer.Summarize(attachment);
+                var result = summarizer.Summarize(content);
                 sw.Stop();
 
                 // Display results
@@ -165,7 +165,7 @@ namespace text_summarizer
                 WriteColor("Summary:", ConsoleColor.Blue);
                 Console.WriteLine(result.Summary);
 
-                int summaryWordCount = result.Summary.Split(new[] { " ", "\r\n", "\n", "\t" }, StringSplitOptions.RemoveEmptyEntries).Length;
+                int summaryWordCount = result.Summary.Split([" ", "\r\n", "\n", "\t"], StringSplitOptions.RemoveEmptyEntries).Length;
 
                 WriteColor(
                     $"\nSummarization completed in {sw.Elapsed.TotalSeconds:F2} seconds | " +

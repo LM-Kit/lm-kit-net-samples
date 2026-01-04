@@ -1,12 +1,10 @@
 ﻿using LMKit.Model;
-using LMKit.Quantization;
 using System.Text;
 
-namespace text_rewriter
+namespace quantizer
 {
-    internal class quantizer
+    internal class Quantizer
     {
-
         static void Main(string[] args)
         {
             // Set an optional license key here if available. 
@@ -147,7 +145,7 @@ namespace text_rewriter
             }
 
             Console.WriteLine($"Generating {dstModelPath} with precision {quantizationFormat}...");
-            Quantizer quantizer = new(modelPath);
+            LMKit.Quantization.Quantizer quantizer = new(modelPath);
 
             quantizer.Quantize(dstModelPath, quantizationFormat);
         }
