@@ -1,201 +1,274 @@
 # 🎉 Claim Your Free Community License!
 
-Get started with the **LM-Kit Community Edition** today and gain access to powerful AI tools for free. Whether you're a hobbyist, startup, or open-source developer, the Community Edition is here to help you innovate and experiment without limitations.
+Get started with the **LM-Kit Community Edition** today. Whether you're a hobbyist, startup, or open-source developer, the Community Edition provides full access to build and experiment.
 
 👉 [Claim Your Free License Now!](https://lm-kit.com/products/community-edition/)
 
 ---
 
-# 🚀 **What's New**
+# On-Device AI Agent Platform for .NET Developers
+
+> **Your AI. Your Data. On Your Device.**
+
+**LM-Kit.NET** is the only full-stack AI framework for .NET that unifies everything you need to build and deploy AI agents with zero cloud dependency. It combines the fastest .NET inference engine, production-ready trained models, agent orchestration, RAG pipelines, and MCP-compatible tool calling in a single in-process SDK for C# and VB.NET.
+
+🔒 **100% Local** · ⚡ **No Signup** · 🌐 **Cross-Platform** · 📦 **Zero Dependencies**
+
+---
+
+## Built for Performance, Engineered for Innovation
+
+LM-Kit.NET is a highly technical SDK that brings cutting-edge AI research directly into the .NET ecosystem. Our engineering team continuously ships the latest advances in generative AI, symbolic AI, and NLP - with weekly releases that add new model architectures, optimize inference pipelines, and expand capabilities across the entire stack.
+
+Check our [changelog](https://docs.lm-kit.com/lm-kit-net/guides/changelog.html) to see the pace of innovation.
+
+---
+
+## 🚀 What's New
 
 *Listed from most recent to oldest*
 
-- 🔧 [Tool Calling for Local Agents](https://lm-kit.com/blog/tool-calling-for-local-agents/) - Build AI agents with state-of-the-art tool calling. Supports all modes (simple, multiple, parallel) with structured JSON schemas, safety policies, and human-in-the-loop controls.
-- 🎙️ [Speech-to-Text Support](https://lm-kit.com/solutions/language-processing/speech-to-text/) - Convert spoken audio into highly accurate text transcripts, supporting 100 languages.
-- 🛡️ [Multimodal PII Extraction](https://lm-kit.com/solutions/content-analysis/#pii-extraction) - Identify and extract personally identifiable information from text and images for compliance.
-- 🏷️ [Multimodal Named Entity Recognition](https://lm-kit.com/solutions/content-analysis/#ner) - Detect and classify entities (people, organizations, locations, etc.) across text and images.
-- 🌐 Multimodal RAG with Reranking Support - Improve accuracy with multimodal retrieval-augmented generation and reranking.
-- 🧬 [New Built-in Vector Database Engine](https://lm-kit.com/blog/lmkit-made-embedding-storage-effortless/) - Store and Retrieve Embeddings at Any Scale.
-- 🔗 [New Vector Database Connector (Open Source, Qdrant Support)](https://github.com/LM-Kit/lm-kit-net-data-connectors) - Easily integrate semantic search and hybrid RAG pipelines.
-- 🧠 [Semantic Kernel Integration (Open Source)](https://github.com/LM-Kit/lm-kit-net-semantic-kernel) - Build intelligent workflows with Microsoft's Semantic Kernel + LM-Kit.NET.
-- 👁️ [LM-Kit Goes Multimodal: Introducing Vision Support](https://lm-kit.com/blog/lmkit-goes-multimodal/) - Image understanding now available.
-- 🎮 Vulkan Backend - Accelerated multi-GPU support for AMD, Intel, and NVIDIA.
-- 🧩 Function Calling Support - Dynamically invoke functions directly from model outputs.
-- ✨ [Dynamic Sampling – Up to 75% Error Reduction and 2x Faster Processing for LLMs](https://lm-kit.com/blog/introducing-dynamic-sampling/)
-  
+- 📄 **[PDF Chat + Document RAG](https://docs.lm-kit.com/lm-kit-net/api/LMKit.Retrieval.PdfChat.html)** - Import PDFs, index them locally, and chat with them using the new `DocumentRag` and `PdfChat` APIs (with built-in PDF attachments, chunking, and a local vector store)
+- 🔧 **[Tool Calling for Local Agents](https://lm-kit.com/blog/tool-calling-for-local-agents/)** - Build AI agents with state-of-the-art tool calling. Supports all modes (simple, multiple, parallel) with structured JSON schemas, safety policies, and human-in-the-loop controls
+- 🔗 **[MCP Client Support](https://docs.lm-kit.com/lm-kit-net/api/LMKit.Agents.McpClient.html)** - Connect agents to Model Context Protocol servers for extended capabilities including resources, prompts, and tool discovery
+- 🎙️ **[Speech-to-Text](https://lm-kit.com/solutions/language-processing/speech-to-text/)** - Convert spoken audio into highly accurate text transcripts with voice activity detection, supporting 100+ languages
+- 👁️ **[VLM-Based OCR](https://docs.lm-kit.com/lm-kit-net/api/LMKit.TextGeneration.VlmOcr.html)** - High-accuracy text extraction from images and scanned documents using vision language models
+- 🛡️ **[Multimodal PII Extraction](https://lm-kit.com/solutions/content-analysis/#pii-extraction)** - Identify and extract personally identifiable information from text and images for compliance
+- 🏷️ **[Multimodal Named Entity Recognition](https://lm-kit.com/solutions/content-analysis/#ner)** - Detect and classify entities (people, organizations, locations, etc.) across text and images
+- 🌐 **Multimodal RAG with Reranking** - Improve accuracy with multimodal retrieval-augmented generation and semantic reranking
+- 🧬 **[Built-in Vector Database Engine](https://lm-kit.com/blog/lmkit-made-embedding-storage-effortless/)** - Store and retrieve embeddings at any scale without external dependencies
+- 🔗 **[Vector Database Connectors (Open Source)](https://github.com/LM-Kit/lm-kit-net-data-connectors)** - Integrate with Qdrant for semantic search and hybrid RAG pipelines
+- 🧠 **[Semantic Kernel Integration (Open Source)](https://github.com/LM-Kit/lm-kit-net-semantic-kernel)** - Build intelligent workflows with Microsoft's Semantic Kernel + LM-Kit.NET
+- 👁️ **[Vision Support](https://lm-kit.com/blog/lmkit-goes-multimodal/)** - Image understanding with vision language models
+- 🎮 **Vulkan Backend** - Accelerated multi-GPU support for AMD, Intel, and NVIDIA
+- ✨ **[Dynamic Sampling](https://lm-kit.com/blog/introducing-dynamic-sampling/)** - Up to 75% error reduction and 2x faster processing
+
 👉 [See full changelog](https://docs.lm-kit.com/lm-kit-net/guides/changelog.html)
 
 ---
 
-# Enterprise-Grade .NET SDK for Integrating Generative AI Capabilities | Demo Repository
+## Why LM-Kit.NET
 
-> **With LM-Kit.NET, integrating or building AI is no longer complex.**
+**A complete AI stack with no moving parts.** LM-Kit.NET integrates inference, models, orchestration, and RAG into your .NET application as a single NuGet package. No Python runtimes, no containers, no external services. Everything runs in-process.
 
-**LM-Kit.NET** is a **cross-platform SDK** that brings together **LLMs (Large Language Models)** and **SLMs (Small Language Models)** for an extensive range of AI functionalities. It enables **Quick-Start AI Agents**, supports **multi-agent orchestration**, and offers a consistent API for C# and VB.NET. Whether you want to customize existing AI agents or build new ones, LM-Kit.NET provides a robust and streamlined approach to modern AI development.
+**Not every problem requires a massive LLM.** Dedicated task agents deliver faster execution, lower costs, and higher accuracy for specific workflows - with complete data control and minimal resource usage.
 
-**AI Agent Runtime for .NET**  
-
-### **Product Overview & API Reference**
-LM-Kit.NET delivers **Multimodal Generative AI** solutions for .NET, facilitating the creation and customization of AI Agents as well as comprehensive multi-agent coordination. Its capabilities, ranging from data processing, text analysis, and translation to text generation and model optimization—integrate smoothly into your .NET projects. By leveraging cutting-edge AI techniques, LM-Kit.NET empowers developers to build advanced solutions with minimal complexity.
-
-👉 Find additional documentation and detailed guides in the **LM-Kit Docs**:  [https://docs.lm-kit.com](https://docs.lm-kit.com)
-
----
-
-## **Extensive Feature Set**
-
-LM-Kit.NET offers a wide array of advanced AI features that can be seamlessly integrated into your .NET applications:
-
-- **Interactive Question & Answering**  
-  Deliver concise responses to user queries, handling both single-turn and multi-turn interactions.
-
-- **Automated Text Generation**  
-  Dynamically create context-appropriate content tailored to your needs.
-
-- **Structured Text Creation**  
-  Enforce output formats using JSON schemas, grammar constraints, templates, or other structural rules.
-
-- **Grammar & Spelling Correction**  
-  Automatically enhance content quality by fixing errors in spelling and syntax.
-
-- **Style-Specific Rewriting**  
-  Adjust the tone or style of text to align with specific communication goals.
-
-- **Seamless Language Translations**  
-  Convert text between different languages without compromising context or accuracy.
-
-- **Speech-to-Text**  
-  Convert spoken audio into highly accurate text transcripts, supporting 100+ languages.
-
-- **Accurate Language Identification**  
-  Determine the original language of any given text with high precision.
-
-- **Concise Text Summaries**  
-  Produce clear, focused summaries from extensive documents for faster comprehension.
-
-- **Quality Assessment**  
-  Evaluate text quality using various metrics, ensuring relevance and clarity.
-
-- **RAG-Enhanced Generation**  
-  Elevate text output by retrieving pertinent information from external repositories.
-
-- **Dynamic Function Invocation**  
-  Invoke specialized functions in your application on-demand to handle diverse tasks.
-
-- **Semantic Embeddings**  
-  Transform textual or image data into meaningful numeric representations for improved retrieval and analysis.
-
-- **Customizable Data Extraction**  
-  Extract and organize information from diverse sources using flexible schemas.
-
-- **Tailored Classification**  
-  Assign text to predefined categories, streamlining workflows and content management.
-
-- **Sentiment & Emotion Analysis**  
-  Detect the emotional stance of text and pinpoint specific feelings.
-
-- **Sarcasm Detection**  
-  Recognize ironic or sarcastic nuances in written material.
-
-- **Keyword Mining**  
-  Isolate critical terms and phrases from large datasets with ease.
-
-- **Code Processing**  
-  Analyze and transform programming code for enhanced development efficiency.
-
-- **Image Analysis (Vision Support)**  
-  Extend AI capabilities to interpret and evaluate images.
-
-- **Multimodal Named Entity Recognition**  
-  Detect and classify entities (people, organizations, locations, etc.) across text and images.
-
-- **Multimodal PII Extraction**  
-  Identify and extract personally identifiable information from text and images for compliance.
-
-- **Model Quantization & Optimization**  
-  Streamline both LLMs and SLMs for faster inference and lower computational overhead.
-
-- **Fine-Tuning & LoRA Integration**  
-  Adapt base models to meet domain-specific needs, incorporating Low-Rank Adaptation (LoRA) for efficient training.
-
-- **And More…**  
-  Explore additional features to supercharge your AI-driven solutions.
+| Benefit | Description |
+|---------|-------------|
+| **Complete Data Sovereignty** | Sensitive information stays within your infrastructure |
+| **Zero Network Latency** | Responses as fast as your hardware allows |
+| **No Per-Token Costs** | Unlimited inference once deployed |
+| **Offline Operation** | Works without internet connectivity |
+| **Regulatory Compliance** | Meets GDPR, HIPAA, and data residency requirements by design |
 
 ---
 
-## **Run Local LLMs and SLMs on Any Device**
+## What You Can Build
 
-LM-Kit.NET is powered by [llama.cpp](https://github.com/ggerganov/llama.cpp), ensuring best-in-class performance across a variety of hardware setups with minimal configuration and zero external dependencies.  
-All processing happens **on-device** (edge computing), giving you full control and tunability for inference. Additionally, LM-Kit.NET supports an expanding list of model architectures, including **GPT-OSS**, **Qwen**, **Gemma**, **DeepSeek**, **Granite**, **Llama**, **Phi**, and more.
-
----
-
-## **Maximized Performance**
-
-### 1. 🚀 Optimized for a Variety of GPUs and CPUs
-Leverage **CUDA** on NVIDIA GPUs, **Metal** on Apple devices, and **Vulkan** for multi-GPU setups (AMD, Intel, NVIDIA), ensuring top-tier performance regardless of your hardware.
-
-### 2. ⚙️ Advanced Architectural Foundations
-Enjoy a core system optimized for diverse scenarios, with advanced caching and resource recycling that enables consistent high performance in single or multi-instance environments.
-
-### 3. 🌟 Unmatched Performance
-Experience up to **5x faster** inference speeds, backed by continuous refinements and rigorous benchmarking to keep you ahead of the competition.
+- **Autonomous AI agents** that reason, plan, and execute multi-step tasks using your application's tools and APIs
+- **RAG-powered knowledge assistants** over local documents, databases, and enterprise data sources
+- **PDF chat and document Q&A** with retrieval, reranking, and grounded generation
+- **Multi-agent workflows** that orchestrate specialized task agents for complex business processes
+- **Voice-driven assistants** with speech-to-text, reasoning, and function calling
+- **OCR and extraction pipelines** for invoices, forms, IDs, emails, and scanned documents
+- **Compliance-focused text intelligence** - PII extraction, NER, classification, sentiment analysis
 
 ---
 
-## **Retain Complete Control Over Your Data**
+## Core Capabilities
 
-All inference is performed locally, meaning **no data ever leaves your device**. This ensures:
+### 🤖 AI Agents and Orchestration
 
-1. **Enhanced Privacy**  
-   Eliminates the need to send sensitive data to external servers.
+Build autonomous AI agents that reason, plan, and execute complex workflows within your applications.
 
-2. **Increased Security**  
-   Minimizes risks of interception or unauthorized access.
+- **Task Agents** - Reusable specialists designed for specific tasks with high speed and accuracy
+- **Agent Orchestration** - Compose multi-agent workflows with RAG, tools, and APIs under strict control
+- **Function Calling** - Let models dynamically invoke your application's methods with structured parameters
+- **Tool Registry** - Define and manage collections of tools agents can use
+- **MCP Client Support** - Connect to Model Context Protocol servers for extended capabilities
+- **Agent Memory** - Persistent memory that survives across conversation sessions
+- **Reasoning Control** - Adjust reasoning depth for models that support extended thinking
 
-3. **Faster Response Times**  
-   Reduces latency by avoiding remote server round trips.
+### 🔍 Multimodal Intelligence
 
-4. **Lower Bandwidth Usage**  
-   Cuts down on internet data transfer, ideal for limited connectivity.
+Process and understand content across text, images, documents, and audio.
 
-5. **Regulatory Compliance**  
-   Helps satisfy GDPR, HIPAA, and other data protection requirements by keeping data on-premises.
+- **Vision Language Models (VLM)** - Analyze images, extract information, answer questions about visual content
+- **VLM-Based OCR** - High-accuracy text extraction from images and scanned content
+- **Speech-to-Text** - Transcribe audio with voice activity detection and multi-language support
+- **Document Processing** - Native support for PDF, DOCX, XLSX, PPTX, HTML, and image formats
+- **Image Embeddings** - Generate semantic representations of images for similarity search
+- **Image Segmentation** - Isolate subjects from backgrounds and segment image regions
+
+### 📚 Retrieval-Augmented Generation (RAG)
+
+Ground AI responses in your organization's knowledge with a flexible, extensible RAG framework.
+
+- **Modular RAG Architecture** - Use built-in pipelines or implement custom retrieval strategies
+- **Built-in Vector Database** - Store and search embeddings without external dependencies
+- **PDF Chat and Document RAG** - Chat and retrieve over documents with dedicated workflows
+- **Multimodal RAG** - Retrieve relevant content from both text and images
+- **Advanced Chunking** - Markdown-aware, semantic, and layout-based chunking strategies
+- **Reranking** - Improve retrieval precision with semantic reranking
+- **External Vector Store Integration** - Connect to Qdrant and other vector databases
+
+### 📊 Structured Data Extraction
+
+Transform unstructured content into structured, actionable data.
+
+- **Schema-Based Extraction** - Define extraction targets using JSON schemas or custom elements
+- **Named Entity Recognition (NER)** - Extract people, organizations, locations, and custom entity types
+- **PII Detection** - Identify and classify personal identifiers for privacy compliance
+- **Multimodal Extraction** - Extract structured data from images and documents
+- **Layout-Aware Processing** - Detect paragraphs and lines, support region-based workflows
+- **Schema Discovery** - Automatically generate extraction schemas from sample documents
+
+### 💡 Content Intelligence
+
+Analyze and understand text and visual content.
+
+- **Sentiment and Emotion Analysis** - Detect emotional tone from text and images
+- **Custom Classification** - Categorize text and images into your defined classes
+- **Keyword Extraction** - Identify key terms and phrases
+- **Language Detection** - Identify languages from text, images, or audio
+- **Summarization** - Condense long content with configurable strategies
+- **Sarcasm Detection** - Recognize ironic or sarcastic nuances
+
+### ✍️ Text Generation and Transformation
+
+Generate and refine content with precise control.
+
+- **Conversational AI** - Build context-aware chatbots with multi-turn memory
+- **Constrained Generation** - Guide model outputs using JSON schemas, templates, or custom grammar rules
+- **Translation** - Convert text between languages with confidence scoring
+- **Text Enhancement** - Improve clarity, fix grammar, adapt tone
+
+### 🛠️ Model Customization
+
+Tailor models to your specific domain.
+
+- **Fine-Tuning** - Train models on your data with LoRA support
+- **Dynamic LoRA Loading** - Switch adapters at runtime without reloading base models
+- **Quantization** - Optimize models for your deployment constraints
+- **Training Dataset Tools** - Prepare and export datasets in standard formats (ShareGPT, etc.)
 
 ---
 
-## **Easy Integration and Simple Deployment**
+## Supported Models
 
-LM-Kit.NET is distributed as a single **NuGet** package, making it incredibly easy to include in your .NET applications:
+LM-Kit.NET ships with domain-tuned models optimized for real-world tasks and maintains broad compatibility with models from leading providers. **New model architectures are added continuously** as they become available in the open-source community.
 
-1. **Streamlined Integration**  
-   No need for containers or complex setup—just a few clicks in Visual Studio or your preferred .NET IDE.
+| Category | Models |
+|----------|--------|
+| **Text Models** | LLaMA, Mistral, Mixtral, Qwen, Phi, Gemma, Granite, DeepSeek, Falcon, GPT-OSS, SmolLM, and more |
+| **Vision Models** | Qwen-VL, MiniCPM-V, Pixtral, Gemma Vision, LightOnOCR |
+| **Embedding Models** | BGE, Nomic, Qwen Embedding, Gemma Embedding |
+| **Speech Models** | Whisper (all sizes), with voice activity detection |
 
-2. **Direct In-Process Execution**  
-   Avoid the overhead of additional services or containers, reducing latency and simplifying deployments.
-
-3. **Efficient Resource Management**  
-   Operates within your existing .NET process, making it suitable for resource-constrained environments.
-
-4. **Enhanced Reliability**  
-   By steering clear of external dependencies, LM-Kit.NET offers stable and predictable performance.
+Browse production-ready models in the [Model Catalog](https://docs.lm-kit.com/lm-kit-net/guides/getting-started/model-catalog.html), or load models directly from any Hugging Face repository.
 
 ---
 
-## **Supported Operating Systems**
+## Performance and Hardware
 
-- **Windows**: From Windows 7 to the latest release  
-- **macOS**: macOS 11 and above  
-- **Linux**: Distributions with glibc 2.27 or newer  
+### The Fastest .NET Inference Engine
+
+LM-Kit.NET automatically leverages the best available acceleration on any hardware. **Inference performance is continuously optimized** with each release through kernel improvements, memory management enhancements, and backend updates.
+
+- **NVIDIA GPUs** - CUDA backends with optimized kernels (CUDA 12 and 13)
+- **AMD/Intel GPUs** - Vulkan backend for cross-vendor GPU support
+- **Apple Silicon** - Metal acceleration for M-series chips
+- **Multi-GPU** - Distribute models across multiple GPUs
+- **Hybrid Inference** - CPU+GPU inference for models exceeding VRAM capacity
+- **CPU Fallback** - Optimized CPU inference with AVX/AVX2 support
+
+### Dual Backend Architecture
+
+Choose the optimal inference engine for your use case:
+- **llama.cpp Backend** - Broad model compatibility, memory efficiency
+- **ONNX Runtime** - Optimized inference for supported model formats
+
+### Observability
+
+- **OpenTelemetry Integration** - GenAI semantic conventions for distributed tracing and metrics
+- **Inference Metrics** - Token counts, processing rates, generation speeds, context utilization, perplexity scores
+- **Event Callbacks** - Fine-grained hooks for token sampling, tool invocations, and generation lifecycle
 
 ---
 
-## **Supported .NET Frameworks**
+## Platform Support
 
-- **.NET 4.6.2** through **.NET 9**
+### Operating Systems
+
+| Platform | Requirements |
+|----------|--------------|
+| **Windows** | Windows 7 through Windows 11 |
+| **macOS** | macOS 11+ (Intel and Apple Silicon) |
+| **Linux** | glibc 2.27+ (x64 and ARM64) |
+
+### .NET Frameworks
+
+Compatible from **.NET Framework 4.6.2** through **.NET 10**, with optimized binaries for each version.
 
 ---
 
-## **Model Catalog**
+## Integration
 
-Browse the [LM-Kit Model Catalog](https://docs.lm-kit.com/lm-kit-net/guides/getting-started/model-catalog.html) for a comprehensive list of **quantized models** tested and optimized for LM-Kit.NET. You can also seamlessly load models from Hugging Face repositories using the Hugging Face API, simplifying model discovery and deployment.
+### Zero Dependencies
+
+LM-Kit.NET ships as a single NuGet package with absolutely no external dependencies:
+
+```bash
+dotnet add package LM-Kit.NET
+```
+
+No Python runtime. No containers. No external services. No native libraries to manage separately. The entire AI stack runs in-process within your .NET application.
+
+### Ecosystem Connections
+
+- **[Semantic Kernel](https://github.com/LM-Kit/lm-kit-net-semantic-kernel)** - Use LM-Kit.NET as a backend for Microsoft Semantic Kernel
+- **[Vector Databases](https://github.com/LM-Kit/lm-kit-net-data-connectors)** - Integrate with Qdrant via open-source connectors
+- **MCP Servers** - Connect to Model Context Protocol servers for extended tool access
+
+---
+
+## Getting Started
+
+```csharp
+using LMKit;
+using LMKit.Model;
+
+// Load a model
+var model = new LM("path/to/model.gguf");
+
+// Create a conversation
+var conversation = new MultiTurnConversation(model);
+
+// Chat
+var response = await conversation.SubmitAsync("Explain quantum computing briefly.");
+Console.WriteLine(response);
+```
+
+### Explore More
+
+- 📖 [Documentation](https://docs.lm-kit.com)
+- 💻 [GitHub Demo Repository](https://github.com/LM-Kit/lm-kit-net)
+- 📦 [Model Catalog](https://docs.lm-kit.com/lm-kit-net/guides/getting-started/model-catalog.html)
+- 📝 [Blog](https://lm-kit.com/blog/)
+
+---
+
+## Data Privacy and Security
+
+Running inference locally provides inherent security advantages:
+
+- **No data transmission** - Content never leaves your network
+- **No third-party access** - No external services process your data
+- **Audit-friendly** - Complete visibility into AI operations
+- **Air-gapped deployment** - Works in disconnected environments
+
+This architecture simplifies compliance with GDPR, HIPAA, SOC 2, and other regulatory frameworks.
+
+---
+
+© LM-Kit - All rights reserved.
