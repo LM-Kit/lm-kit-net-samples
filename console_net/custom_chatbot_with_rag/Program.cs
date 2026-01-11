@@ -47,14 +47,14 @@ namespace custom_chatbot_with_rag
             if (File.Exists(DATA_SOURCE_PATH))
             {
                 _dataSource = DataSource.LoadFromFile(
-                    DATA_SOURCE_PATH, 
+                    DATA_SOURCE_PATH,
                     readOnly: false);
             }
             else
             {
                 _dataSource = DataSource.CreateFileDataSource(
-                    DATA_SOURCE_PATH, 
-                    COLLECTION_NAME, 
+                    DATA_SOURCE_PATH,
+                    COLLECTION_NAME,
                     _embeddingModel);
             }
 
@@ -171,9 +171,9 @@ namespace custom_chatbot_with_rag
             string eBookContent = File.ReadAllText(fileName);
             Stopwatch stopwatch = Stopwatch.StartNew();
             _ragEngine.ImportText(
-                eBookContent, 
-                new TextChunking() { MaxChunkSize = 500 }, 
-                COLLECTION_NAME, 
+                eBookContent,
+                new TextChunking() { MaxChunkSize = 500 },
+                COLLECTION_NAME,
                 sectionIdentifier);
             stopwatch.Stop();
             Console.WriteLine($"   > {sectionIdentifier} loaded in {Math.Round(stopwatch.Elapsed.TotalSeconds, 1)} seconds");

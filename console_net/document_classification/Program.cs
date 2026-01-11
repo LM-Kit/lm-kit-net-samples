@@ -234,7 +234,11 @@ namespace document_classification
 
         private static string TruncateFileName(string fileName, int maxLength)
         {
-            if (fileName.Length <= maxLength) return fileName;
+            if (fileName.Length <= maxLength)
+            {
+                return fileName;
+            }
+
             string ext = Path.GetExtension(fileName);
             int nameLength = maxLength - ext.Length - 3;
             return fileName.Substring(0, nameLength) + "..." + ext;
