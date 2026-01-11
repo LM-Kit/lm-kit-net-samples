@@ -1,18 +1,18 @@
-# 🎉 Claim Your Free Community License!
-
-Get started with the **LM-Kit Community Edition** today. Whether you're a hobbyist, startup, or open-source developer, the Community Edition provides full access to build and experiment.
-
-👉 [Claim Your Free License Now!](https://lm-kit.com/products/community-edition/)
-
----
-
-# On-Device AI Agent Platform for .NET Developers
+# Local AI Agent Platform for .NET Developers
 
 > **Your AI. Your Data. On Your Device.**
 
 **LM-Kit.NET** is the only full-stack AI framework for .NET that unifies everything you need to build and deploy AI agents with zero cloud dependency. It combines the fastest .NET inference engine, production-ready trained models, agent orchestration, RAG pipelines, and MCP-compatible tool calling in a single in-process SDK for C# and VB.NET.
 
 🔒 **100% Local** · ⚡ **No Signup** · 🌐 **Cross-Platform** · 📦 **Zero Dependencies**
+
+---
+
+### 🎉 Claim Your Free Community License!
+
+Get started with the **LM-Kit Community Edition** today. Whether you're a hobbyist, startup, or open-source developer, the Community Edition provides full access to build and experiment.
+
+👉 [Claim Your Free License Now!](https://lm-kit.com/products/community-edition/)
 
 ---
 
