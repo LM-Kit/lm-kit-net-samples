@@ -1,0 +1,15 @@
+<Project Sdk="Microsoft.NET.Sdk">
+
+	<PropertyGroup>
+		<OutputType>Exe</OutputType>
+		<TargetFrameworks>net10.0</TargetFrameworks>
+		<LangVersion>latest</LangVersion>
+		<SignAssembly>True</SignAssembly>
+	</PropertyGroup>
+
+	<ItemGroup>
+		<PackageReference Include="LM-Kit.NET" Version="2026.1.2" />
+		<PackageReference Include="LM-Kit.NET.Backend.Cuda13.Windows" Version="2026.1.2" />
+	</ItemGroup>
+
+</Project>

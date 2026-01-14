@@ -1,15 +1,10 @@
-﻿#pragma warning disable SKEXP0001
-#pragma warning disable SKEXP0050
-
-using LMKit.SemanticKernel;
+﻿using LMKit.Integrations.SemanticKernel;
 using LMKit.TextGeneration.Sampling;
+using Microsoft.Extensions.AI;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.SemanticKernel;
-using Microsoft.SemanticKernel.Embeddings;
-using Microsoft.SemanticKernel.Memory;
-using Microsoft.SemanticKernel.Plugins.Memory;
 
-// Define the question using a different character and topic
+// Main program
 var question = "Who is Elodie's favourite detective?";
 Console.WriteLine("=== Detective Query Demo ===");
 Console.WriteLine($"Question: {question}");
@@ -19,7 +14,7 @@ Console.WriteLine("Approach 1: Querying the model directly (without memory).\n")
 var builder = Kernel.CreateBuilder();
 
 // Configure the chat model for completions
-var chatModel = new LMKit.Model.LM("https://huggingface.co/lm-kit/phi-3.1-mini-4k-3.8b-instruct-gguf/resolve/main/Phi-3.1-mini-4k-Instruct-Q4_K_M.gguf");
+var chatModel = LMKit.Model.LM.LoadFromModelID("gemma3:4b");
 
 builder.AddLMKitChatCompletion(chatModel, new LMKitPromptExecutionSettings(chatModel)
 {
@@ -28,7 +23,7 @@ builder.AddLMKitChatCompletion(chatModel, new LMKitPromptExecutionSettings(chatM
 });
 
 // Configure the embedding model for semantic memory
-var embeddingModel = new LMKit.Model.LM("https://huggingface.co/lm-kit/bge-m3-gguf/resolve/main/bge-m3-Q5_K_M.gguf");
+var embeddingModel = LMKit.Model.LM.LoadFromModelID("embeddinggemma-300m");
 builder.AddLMKitTextEmbeddingGeneration(embeddingModel);
 
 // Build the kernel
@@ -47,44 +42,101 @@ Console.ReadLine();
 Console.WriteLine("==================");
 Console.WriteLine("Approach 2: Memory-enhanced answer using stored detective facts.\n");
 
-// Create a semantic memory store using the embedding service
-var embeddingService = kernel.Services.GetRequiredService<ITextEmbeddingGenerationService>();
-var memory = new SemanticTextMemory(new VolatileMemoryStore(), embeddingService);
+// Get the embedding service using the NEW interface from Microsoft.Extensions.AI
+var embeddingGenerator = kernel.Services.GetRequiredService<IEmbeddingGenerator<string, Embedding<float>>>();
 
-// Define a memory collection containing facts about detectives
-const string detectiveMemoryCollection = "detectiveFacts";
+// Create our simple vector store
+var vectorStore = new SimpleVectorStore();
 
-// Save several facts to the semantic memory
-await memory.SaveInformationAsync(detectiveMemoryCollection, id: "fact1", text: "Elodie has always admired Minouch the cat for his brilliant deductive reasoning.");
-await memory.SaveInformationAsync(detectiveMemoryCollection, id: "fact2", text: "Miss Marple is renowned as one of the greatest detectives in literature.");
-await memory.SaveInformationAsync(detectiveMemoryCollection, id: "fact3", text: "Elodie mentioned that her favourite detective series features Sherlock Holmes solving intricate cases.");
-await memory.SaveInformationAsync(detectiveMemoryCollection, id: "fact4", text: "Other detectives like Hercule Poirot are popular among her friends, but not her top choice.");
-await memory.SaveInformationAsync(detectiveMemoryCollection, id: "fact5", text: "Detective stories inspired Elodie during her childhood, especially those of Hercule Poirot and Miss Marple.");
-
-// Import the memory plugin so the kernel can access the saved facts
-var memoryPlugin = new TextMemoryPlugin(memory);
-kernel.ImportPluginFromObject(memoryPlugin);
-
-// Define a prompt template that leverages memory recall
-var promptTemplate = @"
-Question: {{$input}}
-Using the following memory facts: {{Recall}},
-provide a comprehensive answer to the question.
-";
-
-
-// Define arguments including the question and the memory collection name
-var promptArgs = new KernelArguments()
+// Define the facts to store
+var facts = new List<(string id, string text)>
 {
-    { "input", question },
-    { "collection", detectiveMemoryCollection }
+    ("fact1", "Elodie has always admired Minouch the cat for his brilliant deductive reasoning."),
+    ("fact2", "Miss Marple is renowned as one of the greatest detectives in literature."),
+    ("fact3", "Elodie mentioned that her favourite detective series features Sherlock Holmes solving intricate cases."),
+    ("fact4", "Other detectives like Hercule Poirot are popular among her friends, but not her top choice."),
+    ("fact5", "Detective stories inspired Elodie during her childhood, especially those of Hercule Poirot and Miss Marple.")
 };
 
-// Invoke the prompt that uses memory recall to enhance the answer
-var enhancedResponse = kernel.InvokePromptStreamingAsync(promptTemplate, promptArgs);
+// Generate embeddings and add facts to the vector store
+Console.WriteLine("Ingesting facts into vector store...");
+foreach (var (id, text) in facts)
+{
+    var embeddings = await embeddingGenerator.GenerateAsync([text]);
+    var embedding = embeddings[0].Vector;
+
+    vectorStore.Add(new FactRecord
+    {
+        Id = id,
+        Text = text,
+        Embedding = embedding.ToArray()
+    });
+}
+Console.WriteLine("Facts ingested successfully.\n");
+
+// Generate embedding for the question and search
+Console.WriteLine("Searching for relevant facts...\n");
+var questionEmbeddings = await embeddingGenerator.GenerateAsync([question]);
+var questionEmbedding = questionEmbeddings[0].Vector.ToArray();
+var searchResults = vectorStore.Search(questionEmbedding, topK: 3);
+
+var relevantFacts = new List<string>();
+foreach (var (record, score) in searchResults)
+{
+    relevantFacts.Add(record.Text);
+    Console.WriteLine($"Found (score: {score:F4}): {record.Text}");
+}
+
+Console.WriteLine("\n--- Generating enhanced answer ---\n");
+
+// Build a prompt with the retrieved context
+var contextText = string.Join("\n- ", relevantFacts);
+var promptTemplate = $@"
+Question: {question}
+
+Using the following relevant facts:
+- {contextText}
+
+Based on these facts, provide a comprehensive answer to the question.
+";
+
+// Invoke the prompt with the retrieved context
+var enhancedResponse = kernel.InvokePromptStreamingAsync(promptTemplate);
 await foreach (var output in enhancedResponse)
 {
     Console.Write(output);
 }
 
 Console.WriteLine();
+
+// ============================================================================
+// Class definitions MUST come AFTER top-level statements in C#
+// ============================================================================
+
+public class FactRecord
+{
+    public string Id { get; set; } = string.Empty;
+    public string Text { get; set; } = string.Empty;
+    public float[] Embedding { get; set; } = Array.Empty<float>();
+}
+
+public class SimpleVectorStore
+{
+    private readonly List<FactRecord> _records = new();
+
+    public void Add(FactRecord record) => _records.Add(record);
+
+    public List<(FactRecord Record, double Score)> Search(float[] queryEmbedding, int topK = 3)
+    {
+        return _records
+            .Select(r => (Record: r, Score: CosineSimilarity(queryEmbedding, r.Embedding)))
+            .OrderByDescending(x => x.Score)
+            .Take(topK)
+            .ToList();
+    }
+
+    private static double CosineSimilarity(float[] a, float[] b)
+    {
+        return LMKit.Embeddings.Embedder.GetCosineSimilarity(a, b);
+    }
+}
