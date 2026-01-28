@@ -55,8 +55,9 @@ namespace audio_transcription
             Console.WriteLine("1 - OpenAI Whisper Base (requires approximately 0.08 GB of VRAM)");
             Console.WriteLine("2 - OpenAI Whisper Small (requires approximately 0.26 GB of VRAM)");
             Console.WriteLine("3 - OpenAI Whisper Medium (requires approximately 0.82 GB of VRAM)");
-            Console.WriteLine("4 - OpenAI Whisper Large V3 (requires approximately 1.66 GB of VRAM)");
-            Console.WriteLine("5 - OpenAI Whisper Large Turbo V3 (requires approximately 0.87 GB of VRAM)");
+            Console.WriteLine("4 - OpenAI Whisper Large V2 (requires approximately 1.66 GB of VRAM)");
+            Console.WriteLine("5 - OpenAI Whisper Large V3 (requires approximately 1.66 GB of VRAM)");
+            Console.WriteLine("6 - OpenAI Whisper Large Turbo V3 (requires approximately 0.87 GB of VRAM)");
 
             Console.Write("Other entry: A custom model URI\n\n> ");
 
@@ -91,11 +92,17 @@ namespace audio_transcription
                     break;
                 case "4":
                     modelLink = ModelCard
-                        .GetPredefinedModelCardByModelID("whisper-large3")
+                        .GetPredefinedModelCardByModelID("whisper-large2")
                         .ModelUri
                         .ToString();
                     break;
                 case "5":
+                    modelLink = ModelCard
+                        .GetPredefinedModelCardByModelID("whisper-large3")
+                        .ModelUri
+                        .ToString();
+                    break;
+                case "6":
                     modelLink = ModelCard
                         .GetPredefinedModelCardByModelID("whisper-large-turbo3")
                         .ModelUri

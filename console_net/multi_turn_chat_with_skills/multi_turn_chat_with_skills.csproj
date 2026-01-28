@@ -1,0 +1,24 @@
+<Project Sdk="Microsoft.NET.Sdk">
+
+  <PropertyGroup>
+    <OutputType>Exe</OutputType>
+    <TargetFramework>net8.0</TargetFramework>
+    <ImplicitUsings>enable</ImplicitUsings>
+    <Nullable>enable</Nullable>
+    <RootNamespace>multi_turn_chat_with_skills</RootNamespace>
+  </PropertyGroup>
+
+  <ItemGroup>
+		<PackageReference Include="LM-Kit.NET" Version="2026.1.4" />
+		<PackageReference Include="LM-Kit.NET.Backend.Cuda13.Windows" Version="2026.1.4" />
+  </ItemGroup>
+
+  <!-- Copy skills folder to output directory -->
+  <ItemGroup>
+    <None Include="skills\**\*">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+      <Link>skills\%(RecursiveDir)%(Filename)%(Extension)</Link>
+    </None>
+  </ItemGroup>
+
+</Project>

@@ -7,13 +7,21 @@ using System.Text;
 
 namespace multi_turn_chat_with_vision
 {
+    /// <summary>
+    /// Demonstrates multi-turn chat with vision capabilities using LM-Kit SDK.
+    /// Supports various vision-language models for image analysis and conversation.
+    /// </summary>
     internal class Program
     {
-        static bool _isDownloading;
+        private static bool _isDownloading;
 
+        /// <summary>
+        /// Callback for model download progress reporting.
+        /// </summary>
         private static bool ModelDownloadingProgress(string path, long? contentLength, long bytesRead)
         {
             _isDownloading = true;
+
             if (contentLength.HasValue)
             {
                 double progressPercentage = Math.Round((double)bytesRead / contentLength.Value * 100, 2);
@@ -27,6 +35,9 @@ namespace multi_turn_chat_with_vision
             return true;
         }
 
+        /// <summary>
+        /// Callback for model loading progress reporting.
+        /// </summary>
         private static bool ModelLoadingProgress(float progress)
         {
             if (_isDownloading)
@@ -45,192 +56,232 @@ namespace multi_turn_chat_with_vision
             // Set an optional license key here if available. 
             // A free community license can be obtained from: https://lm-kit.com/products/community-edition/
             LMKit.Licensing.LicenseManager.SetLicenseKey("");
+
             Console.InputEncoding = Encoding.UTF8;
             Console.OutputEncoding = Encoding.UTF8;
 
+            // Display model selection menu
             Console.Clear();
-            Console.WriteLine("Please select the model you want to use:\n");
-            Console.WriteLine("0 - MiniCPM 2.6 o 8.1B (requires approximately 5.9 GB of VRAM)");
-            Console.WriteLine("1 - Alibaba Qwen 3 2B (requires approximately 2.5 GB of VRAM)");
-            Console.WriteLine("2 - Alibaba Qwen 3 4B (requires approximately 4 GB of VRAM)");
-            Console.WriteLine("3 - Alibaba Qwen 3 8B (requires approximately 6.5 GB of VRAM)");
-            Console.WriteLine("4 - Google Gemma 3 4B (requires approximately 5.7 GB of VRAM)");
-            Console.WriteLine("5 - Google Gemma 3 12B (requires approximately 11 GB of VRAM)");
-            Console.WriteLine("6 - Mistral Ministral 3 3B (requires approximately 3.5 GB of VRAM)");
-            Console.WriteLine("7 - Mistral Ministral 3 8B (requires approximately 6.5 GB of VRAM)");
-            Console.WriteLine("8 - Mistral Ministral 3 14B (requires approximately 12 GB of VRAM)");
+            PrintHeader("Multi-Turn Chat with Vision Demo");
+            Console.WriteLine("Select a vision-language model:\n");
+            Console.WriteLine("  0 - MiniCPM 2.6 o 8.1B         (~5.9 GB VRAM)");
+            Console.WriteLine("  1 - Alibaba Qwen 3 VL 2B       (~2.5 GB VRAM)");
+            Console.WriteLine("  2 - Alibaba Qwen 3 VL 4B       (~4 GB VRAM)");
+            Console.WriteLine("  3 - Alibaba Qwen 3 VL 8B       (~6.5 GB VRAM)");
+            Console.WriteLine("  4 - Google Gemma 3 4B          (~5.7 GB VRAM)");
+            Console.WriteLine("  5 - Google Gemma 3 12B         (~11 GB VRAM)");
+            Console.WriteLine("  6 - Mistral Ministral 3 3B     (~3.5 GB VRAM)");
+            Console.WriteLine("  7 - Mistral Ministral 3 8B     (~6.5 GB VRAM)");
+            Console.WriteLine("  8 - Mistral Ministral 3 14B    (~12 GB VRAM)");
+            Console.WriteLine("  9 - Mistral Devstral Small 2   (~16 GB VRAM)");
+            Console.WriteLine("\n  Or enter a custom model URI\n");
+            Console.Write("> ");
 
-            Console.Write("Other entry: A custom model URI\n\n> ");
+            string input = Console.ReadLine() ?? string.Empty;
+            string modelLink = GetModelLink(input.Trim());
 
-            string input = Console.ReadLine();
-            string modelLink;
-
-            switch (input.Trim())
-            {
-                case "0":
-                    modelLink = ModelCard.GetPredefinedModelCardByModelID("minicpm-o").ModelUri.ToString();
-                    break;
-                case "1":
-                    modelLink = ModelCard.GetPredefinedModelCardByModelID("qwen3-vl:2b").ModelUri.ToString();
-                    break;
-                case "2":
-                    modelLink = ModelCard.GetPredefinedModelCardByModelID("qwen3-vl:4b").ModelUri.ToString();
-                    break;
-                case "3":
-                    modelLink = ModelCard.GetPredefinedModelCardByModelID("qwen3-vl:8b").ModelUri.ToString();
-                    break;
-                case "4":
-                    modelLink = ModelCard.GetPredefinedModelCardByModelID("gemma3:4b").ModelUri.ToString();
-                    break;
-                case "5":
-                    modelLink = ModelCard.GetPredefinedModelCardByModelID("gemma3:12b").ModelUri.ToString();
-                    break;
-                case "6":
-                    modelLink = ModelCard.GetPredefinedModelCardByModelID("ministral3:3b").ModelUri.ToString();
-                    break;
-                case "7":
-                    modelLink = ModelCard.GetPredefinedModelCardByModelID("ministral3:8b").ModelUri.ToString();
-                    break;
-                case "8":
-                    modelLink = ModelCard.GetPredefinedModelCardByModelID("ministral3:14b").ModelUri.ToString();
-                    break;
-                default:
-                    modelLink = input.Trim().Trim('"').Trim('"');
-                    break;
-            }
-
-            //Loading model
+            // Load the selected model
+            Console.WriteLine();
             Uri modelUri = new(modelLink);
             LM model = new(
                 modelUri,
                 downloadingProgress: ModelDownloadingProgress,
                 loadingProgress: ModelLoadingProgress);
 
+            // Initialize chat session
             Console.Clear();
-            ShowSpecialPrompts();
+            PrintHeader("Chat Session");
+            PrintCommands();
+
             MultiTurnConversation chat = new(model)
             {
                 MaximumCompletionTokens = 2048,
                 SamplingMode = new RandomSampling()
                 {
-                    Temperature = 0.1f //note: lower temperature is better for models.
+                    Temperature = 0.1f
                 },
                 SystemPrompt = "You are a chatbot that always responds promptly and helpfully to user requests."
             };
 
+            chat.AfterTextCompletion += OnAfterTextCompletion;
 
-            chat.AfterTextCompletion += Chat_AfterTextCompletion;
-
+            // Main chat loop
             string mode = "start_new_chat";
-            string prompt = "";
+            string prompt = string.Empty;
 
             while (true)
             {
-                Attachment attachment = null;
+                Attachment? attachment = null;
 
+                // Handle new chat initialization with image attachment
                 if (mode == "start_new_chat")
                 {
-                    while (true)
+                    attachment = PromptForImageAttachment();
+
+                    if (attachment == null)
                     {
-                        Console.Write("Enter the path to an image attachment:\n\n> ");
-                        string path = Console.ReadLine();
-                        try
-                        {
-                            attachment = new Attachment(path);
-                            Console.WriteLine("");
-                            break;
-                        }
-                        catch (Exception e)
-                        {
-                            Console.ForegroundColor = ConsoleColor.Green;
-                            Console.WriteLine($"Error: Unable to open the file at '{path}'. Details: {e.Message} Please check the file path and permissions.");
-                            Console.ResetColor();
-                        }
+                        break;
                     }
+
                     prompt = "describe the image";
                 }
 
+                // Generate response
                 Console.ForegroundColor = ConsoleColor.Green;
                 Console.Write("Assistant: ");
                 Console.ResetColor();
-                TextGenerationResult result;
 
-                if (mode == "regenerate")
+                TextGenerationResult result = mode switch
                 {
-                    result = chat.RegenerateResponse(new CancellationTokenSource(TimeSpan.FromMinutes(2)).Token);
-                    mode = "chat";
-                }
-                else if (mode == "continue")
-                {
-                    result = chat.ContinueLastAssistantResponse(new CancellationTokenSource(TimeSpan.FromMinutes(2)).Token);
-                    mode = "chat";
-                }
-                else
-                {
-                    if (attachment != null)
-                    {
-                        result = chat.Submit(new ChatHistory.Message(prompt, attachment), new CancellationTokenSource(TimeSpan.FromMinutes(2)).Token);
-                    }
-                    else
-                    {
-                        result = chat.Submit(new ChatHistory.Message(prompt), new CancellationTokenSource(TimeSpan.FromMinutes(2)).Token);
-                    }
+                    "regenerate" => chat.RegenerateResponse(new CancellationTokenSource(TimeSpan.FromMinutes(2)).Token),
+                    "continue" => chat.ContinueLastAssistantResponse(new CancellationTokenSource(TimeSpan.FromMinutes(2)).Token),
+                    _ => chat.Submit(
+                        attachment != null ? new ChatHistory.Message(prompt, attachment) : new ChatHistory.Message(prompt),
+                        new CancellationTokenSource(TimeSpan.FromMinutes(2)).Token)
+                };
 
-                    mode = "chat";
-                }
+                mode = "chat";
 
-                Console.Write($"\n(gen. tokens: {result.GeneratedTokens.Count} - stop reason: {result.TerminationReason} - quality score: {Math.Round(result.QualityScore, 2)} - speed: {Math.Round(result.TokenGenerationRate, 2)} tok/s - ctx usage: {result.ContextTokens.Count}/{result.ContextSize})");
-                Console.ForegroundColor = ConsoleColor.Green;
-                Console.Write($"\n\nUser: ");
+                // Display generation statistics
+                Console.WriteLine();
+                Console.ForegroundColor = ConsoleColor.DarkGray;
+                Console.WriteLine($"[tokens: {result.GeneratedTokens.Count} | stop: {result.TerminationReason} | " +
+                                  $"quality: {Math.Round(result.QualityScore, 2)} | speed: {Math.Round(result.TokenGenerationRate, 2)} tok/s | " +
+                                  $"ctx: {result.ContextTokens.Count}/{result.ContextSize}]");
                 Console.ResetColor();
-                prompt = Console.ReadLine();
+
+                // Get user input
+                Console.ForegroundColor = ConsoleColor.Green;
+                Console.Write("\nUser: ");
+                Console.ResetColor();
+
+                prompt = Console.ReadLine() ?? string.Empty;
 
                 if (string.IsNullOrWhiteSpace(prompt))
                 {
                     break;
                 }
-                else if (string.Compare(prompt, "/reset", ignoreCase: true) == 0)
+
+                // Handle special commands
+                switch (prompt.ToLowerInvariant())
                 {
-                    chat.ClearHistory();
-                    mode = "start_new_chat";
-                }
-                else if (string.Compare(prompt, "/regenerate", ignoreCase: true) == 0)
-                {
-                    mode = "regenerate";
-                }
-                else if (string.Compare(prompt, "/continue", ignoreCase: true) == 0)
-                {
-                    mode = "continue";
+                    case "/reset":
+                        chat.ClearHistory();
+                        mode = "start_new_chat";
+                        Console.Clear();
+                        PrintHeader("Chat Session");
+                        PrintCommands();
+                        break;
+                    case "/regenerate":
+                        mode = "regenerate";
+                        break;
+                    case "/continue":
+                        mode = "continue";
+                        break;
                 }
             }
 
-            Console.WriteLine("The chat ended. Press any key to exit the application.");
-            _ = Console.ReadKey();
+            Console.WriteLine("\nChat session ended. Press any key to exit.");
+            Console.ReadKey();
         }
 
-        private static void ShowSpecialPrompts()
+        /// <summary>
+        /// Returns the model URI based on user selection.
+        /// </summary>
+        private static string GetModelLink(string input)
         {
-            Console.WriteLine("-- Special Prompts --");
-            Console.WriteLine("Use '/reset' to start a fresh session.");
-            Console.WriteLine("Use '/continue' to continue last assistant message.");
-            Console.WriteLine("Use '/regenerate' to obtain a new completion from the last input.\n\n");
-        }
-        private static void Chat_AfterTextCompletion(object sender, LMKit.TextGeneration.Events.AfterTextCompletionEventArgs e)
-        {
-            switch (e.SegmentType)
+            string? modelId = input switch
             {
-                case LMKit.TextGeneration.Chat.TextSegmentType.InternalReasoning:
-                    Console.ForegroundColor = ConsoleColor.Blue;
-                    break;
-                case LMKit.TextGeneration.Chat.TextSegmentType.ToolInvocation:
-                    Console.ForegroundColor = ConsoleColor.Red;
-                    break;
-                case LMKit.TextGeneration.Chat.TextSegmentType.UserVisible:
-                    Console.ForegroundColor = ConsoleColor.White;
-                    break;
+                "0" => "minicpm-o",
+                "1" => "qwen3-vl:2b",
+                "2" => "qwen3-vl:4b",
+                "3" => "qwen3-vl:8b",
+                "4" => "gemma3:4b",
+                "5" => "gemma3:12b",
+                "6" => "ministral3:3b",
+                "7" => "ministral3:8b",
+                "8" => "ministral3:14b",
+                "9" => "devstral-small2",
+                _ => null
+            };
+
+            if (modelId != null)
+            {
+                ModelCard? card = ModelCard.GetPredefinedModelCardByModelID(modelId);
+
+                if (card != null)
+                {
+                    return card.ModelUri.ToString();
+                }
             }
+
+            return input.Trim('"');
+        }
+
+        /// <summary>
+        /// Prompts the user to enter an image file path and creates an attachment.
+        /// </summary>
+        private static Attachment? PromptForImageAttachment()
+        {
+            while (true)
+            {
+                Console.Write("Enter the path to an image (or press Enter to exit):\n> ");
+                string? path = Console.ReadLine();
+
+                if (string.IsNullOrWhiteSpace(path))
+                {
+                    return null;
+                }
+
+                try
+                {
+                    Attachment attachment = new(path.Trim('"'));
+                    Console.WriteLine();
+                    return attachment;
+                }
+                catch (Exception ex)
+                {
+                    Console.ForegroundColor = ConsoleColor.Red;
+                    Console.WriteLine($"Error: {ex.Message}\n");
+                    Console.ResetColor();
+                }
+            }
+        }
+
+        /// <summary>
+        /// Prints a formatted header.
+        /// </summary>
+        private static void PrintHeader(string title)
+        {
+            Console.ForegroundColor = ConsoleColor.Cyan;
+            Console.WriteLine($"=== {title} ===\n");
+            Console.ResetColor();
+        }
+
+        /// <summary>
+        /// Prints available chat commands.
+        /// </summary>
+        private static void PrintCommands()
+        {
+            Console.ForegroundColor = ConsoleColor.DarkGray;
+            Console.WriteLine("Commands: /reset (new session) | /continue | /regenerate\n");
+            Console.ResetColor();
+        }
+
+        /// <summary>
+        /// Handles text completion events to display generated text with appropriate coloring.
+        /// </summary>
+        private static void OnAfterTextCompletion(object? sender, LMKit.TextGeneration.Events.AfterTextCompletionEventArgs e)
+        {
+            Console.ForegroundColor = e.SegmentType switch
+            {
+                TextSegmentType.InternalReasoning => ConsoleColor.Blue,
+                TextSegmentType.ToolInvocation => ConsoleColor.Red,
+                _ => ConsoleColor.White
+            };
 
             Console.Write(e.Text);
+            Console.ResetColor();
         }
     }
 }
