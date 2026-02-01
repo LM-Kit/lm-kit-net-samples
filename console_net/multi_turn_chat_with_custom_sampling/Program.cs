@@ -67,10 +67,10 @@ namespace multi_turn_chat_with_custom_sampling
 
             Console.Write("Other entry: A custom model URI\n\n> ");
 
-            string input = Console.ReadLine();
+            string? input = Console.ReadLine();
             string modelLink;
 
-            switch (input.Trim())
+            switch (input?.Trim())
             {
                 case "0":
                     modelLink = DEFAULT_MINISTRAL_3_8_MODEL_PATH;
@@ -97,7 +97,7 @@ namespace multi_turn_chat_with_custom_sampling
                     modelLink = DEFAULT_OPENAI_GPT_OSS_20B_MODEL_PATH;
                     break;
                 default:
-                    modelLink = input.Trim().Trim('"');
+                    modelLink = input?.Trim().Trim('"') ?? DEFAULT_MINISTRAL_3_8_MODEL_PATH;
                     break;
             }
 
@@ -134,7 +134,7 @@ namespace multi_turn_chat_with_custom_sampling
                 },
             };
 
-            chat.BeforeTokenSampling += Chat_BeforeTokenSampling;
+            chat.BeforeTokenSampling += Chat_BeforeTokenSampling!;
 
             chat.RepetitionPenalty.FrequencyPenalty = 1;
             chat.RepetitionPenalty.PresencePenalty = 1;
@@ -151,7 +151,7 @@ namespace multi_turn_chat_with_custom_sampling
             chat.LogitBias.AddTextChunkBias("dog", -5);
             chat.LogitBias.AddTextChunkBias("canine", -5);
 
-            chat.AfterTextCompletion += Chat_AfterTextCompletion;
+            chat.AfterTextCompletion += Chat_AfterTextCompletion!;
 
             bool regenerateMode = false;
             string prompt = "Hello!";
@@ -177,7 +177,7 @@ namespace multi_turn_chat_with_custom_sampling
                 Console.ForegroundColor = ConsoleColor.Green;
                 Console.Write($"\n\nUser: ");
                 Console.ResetColor();
-                prompt = Console.ReadLine();
+                prompt = Console.ReadLine() ?? "";
 
                 if (string.Compare(prompt, "/reset", ignoreCase: true) == 0)
                 {
@@ -194,7 +194,7 @@ namespace multi_turn_chat_with_custom_sampling
             _ = Console.ReadKey();
         }
 
-        private static void Chat_BeforeTokenSampling(object sender, LMKit.TextGeneration.Events.BeforeTokenSamplingEventArgs e)
+        private static void Chat_BeforeTokenSampling(object? sender, LMKit.TextGeneration.Events.BeforeTokenSamplingEventArgs e)
         {
             //Use e.NextTokenLogitBias to adjust the logit bias for the next token
         }
@@ -205,7 +205,7 @@ namespace multi_turn_chat_with_custom_sampling
             Console.WriteLine("Use '/reset' to start a fresh session.");
             Console.WriteLine("Use '/regenerate' to obtain a new completion from the last input.\n\n");
         }
-        private static void Chat_AfterTextCompletion(object sender, LMKit.TextGeneration.Events.AfterTextCompletionEventArgs e)
+        private static void Chat_AfterTextCompletion(object? sender, LMKit.TextGeneration.Events.AfterTextCompletionEventArgs e)
         {
             switch (e.SegmentType)
             {

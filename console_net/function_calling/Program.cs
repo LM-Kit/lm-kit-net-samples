@@ -65,7 +65,7 @@ namespace function_calling
             Console.WriteLine("7 - Open AI GPT OSS 20B (requires approximately 16 GB of VRAM)");
             Console.Write("Other entry: A custom model URI\n\n> ");
 
-            string input = Console.ReadLine();
+            string input = Console.ReadLine() ?? string.Empty;
             string modelLink;
 
             switch (input.Trim())
@@ -124,7 +124,7 @@ namespace function_calling
                 Console.Write("\n\nType your query: ");
                 Console.ResetColor();
 
-                string prompt = Console.ReadLine();
+                string? prompt = Console.ReadLine();
 
                 if (string.IsNullOrEmpty(prompt))
                 {
@@ -140,7 +140,7 @@ namespace function_calling
                 }
                 else
                 {
-                    string result = callResult.Result.ToString();
+                    string result = callResult.Result?.ToString() ?? string.Empty;
 
                     WriteColor("\nResult: ", ConsoleColor.Green, result.Contains("\n"));
                     Console.WriteLine(result);
@@ -151,7 +151,7 @@ namespace function_calling
             _ = Console.ReadKey();
         }
 
-        private static void FunctionCalling_BeforeMethodInvoke(object sender, LMKit.FunctionCalling.Events.BeforeMethodInvokeEventArgs e)
+        private static void FunctionCalling_BeforeMethodInvoke(object? sender, LMKit.FunctionCalling.Events.BeforeMethodInvokeEventArgs e)
         {
             Console.WriteLine(">> Invoking method " + e.MethodInfo.Name + "...");
         }
@@ -168,7 +168,7 @@ namespace function_calling
             Console.WriteLine("\nYou can also ask questions like 'Who wrote The Lord of the Rings?' or 'Give me details about The Lord of the Rings.'\n");
         }
 
-        private static void Chat_AfterTextCompletion(object sender, LMKit.TextGeneration.Events.AfterTextCompletionEventArgs e)
+        private static void Chat_AfterTextCompletion(object? sender, LMKit.TextGeneration.Events.AfterTextCompletionEventArgs e)
         {
             switch (e.SegmentType)
             {

@@ -45,7 +45,7 @@ namespace text_rewriter
             return true;
         }
 
-        private static void Rewrite_AfterTextCompletion(object sender, LMKit.TextGeneration.Events.AfterTextCompletionEventArgs e)
+        private static void Rewrite_AfterTextCompletion(object? sender, LMKit.TextGeneration.Events.AfterTextCompletionEventArgs e)
         {
             switch (e.SegmentType)
             {
@@ -84,7 +84,7 @@ namespace text_rewriter
             Console.WriteLine("7 - Open AI GPT OSS 20B (requires approximately 16 GB of VRAM)");
             Console.Write("Other entry: A custom model URI\n\n> ");
 
-            string input = Console.ReadLine();
+            string input = Console.ReadLine() ?? string.Empty;
             string modelLink;
 
             switch (input.Trim())
@@ -139,7 +139,7 @@ namespace text_rewriter
 
                 WriteLineColor($"Enter text to be rewritten, or type 'exit' to quit the app:\n", ConsoleColor.Green);
 
-                string text = Console.ReadLine();
+                string? text = Console.ReadLine();
 
                 while (string.IsNullOrWhiteSpace(text))
                 {
@@ -160,9 +160,9 @@ namespace text_rewriter
 
                     foreach (var style in Enum.GetValues(typeof(TextRewriter.CommunicationStyle)))
                     {
-                        WriteLineColor($"\n\n>> Rewriting the text with {style.ToString().ToLowerInvariant()} style...\n", ConsoleColor.Blue);
+                        WriteLineColor($"\n\n>> Rewriting the text with {style.ToString()!.ToLowerInvariant()} style...\n", ConsoleColor.Blue);
 
-                        _ = rewriter.Rewrite(text, (TextRewriter.CommunicationStyle)style, language, new CancellationTokenSource(TimeSpan.FromMinutes(2)).Token);
+                        _ = rewriter.Rewrite(text!, (TextRewriter.CommunicationStyle)style, language, new CancellationTokenSource(TimeSpan.FromMinutes(2)).Token);
                     }
                 }
                 else
@@ -185,7 +185,7 @@ namespace text_rewriter
 
                     WriteLineColor($"\n>> Rewriting the text with {style.ToString().ToLowerInvariant()} style...\n", ConsoleColor.Blue);
 
-                    _ = rewriter.Rewrite(text, style, language, new CancellationTokenSource(TimeSpan.FromMinutes(2)).Token);
+                    _ = rewriter.Rewrite(text!, style, language, new CancellationTokenSource(TimeSpan.FromMinutes(2)).Token);
                 }
 
                 correctionCount++;

@@ -48,7 +48,7 @@ namespace translator
             return true;
         }
 
-        private static void Translation_AfterTextCompletion(object sender, LMKit.TextGeneration.Events.AfterTextCompletionEventArgs e)
+        private static void Translation_AfterTextCompletion(object? sender, LMKit.TextGeneration.Events.AfterTextCompletionEventArgs e)
         {
             switch (e.SegmentType)
             {
@@ -87,7 +87,7 @@ namespace translator
             Console.WriteLine("7 - Open AI GPT OSS 20B (requires approximately 16 GB of VRAM)");
             Console.Write("Other entry: A custom model URI\n\n> ");
 
-            string input = Console.ReadLine();
+            string input = Console.ReadLine() ?? string.Empty;
             string modelLink;
 
             switch (input.Trim())
@@ -146,7 +146,7 @@ namespace translator
                 Console.Write($"Enter a text to translate in {destLanguage}:\n\n");
                 Console.ResetColor();
 
-                string text = Console.ReadLine();
+                string? text = Console.ReadLine();
 
                 if (string.IsNullOrWhiteSpace(text))
                 {

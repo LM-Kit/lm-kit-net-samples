@@ -56,7 +56,7 @@ namespace batch_document_classification
         private static readonly object ConsoleLock = new();
         private static int _processed;
         private static int _total;
-        private static Stopwatch _globalSw;
+        private static Stopwatch _globalSw = null!;
 
         static void Main(string[] args)
         {
@@ -147,7 +147,9 @@ namespace batch_document_classification
                 Console.WriteLine($"Avg time/doc: {_globalSw.ElapsedMilliseconds / results.Count}ms");
             }
             if (errors.Count > 0)
+            {
                 Console.WriteLine($"Errors: {errors.Count}");
+            }
 
             Console.WriteLine($"\nOutput: {outputFolder}");
         }
@@ -175,13 +177,19 @@ namespace batch_document_classification
         static string GetUniquePath(string folder, string fileName)
         {
             string path = Path.Combine(folder, fileName);
-            if (!File.Exists(path)) return path;
+            if (!File.Exists(path))
+            {
+                return path;
+            }
 
             string name = Path.GetFileNameWithoutExtension(fileName);
             string ext = Path.GetExtension(fileName);
             int i = 1;
             while (File.Exists(path))
+            {
                 path = Path.Combine(folder, $"{name}_{i++}{ext}");
+            }
+
             return path;
         }
     }

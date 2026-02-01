@@ -16,10 +16,10 @@ namespace custom_chatbot_with_rag_qdrant_vector_store
         static readonly string DEFAULT_EMBEDDINGS_MODEL_PATH = @"https://huggingface.co/lm-kit/embeddinggemma-300m-gguf/resolve/main/embeddinggemma-300M-Q4_K_M.gguf";
         static readonly string DEFAULT_CHAT_MODEL_PATH = @"https://huggingface.co/lm-kit/gemma-3-4b-instruct-lmk/resolve/main/gemma-3-4b-it-Q4_K_M.lmk";
         static bool _isDownloading;
-        static LM _chatModel;
-        static LM _embeddingModel;
+        static LM _chatModel = null!;
+        static LM _embeddingModel = null!;
         static readonly List<DataSource> _dataSources = new();
-        static IVectorStore _store;
+        static IVectorStore _store = null!;
 
         static void Main(string[] args)
         {
@@ -67,13 +67,13 @@ namespace custom_chatbot_with_rag_qdrant_vector_store
 
             ragEngine.AddDataSources(_dataSources);
 
-            chat.AfterTextCompletion += AfterTextCompletion;
+            chat.AfterTextCompletion += AfterTextCompletion!;
 
             while (true)
             {
                 WriteLineColor($"\n\nEnter your query:\n", ConsoleColor.Green);
 
-                string query = Console.ReadLine();
+                string? query = Console.ReadLine();
 
                 if (string.IsNullOrWhiteSpace(query))
                 {
@@ -129,7 +129,7 @@ namespace custom_chatbot_with_rag_qdrant_vector_store
             return true;
         }
 
-        private static void AfterTextCompletion(object sender, LMKit.TextGeneration.Events.AfterTextCompletionEventArgs e)
+        private static void AfterTextCompletion(object? sender, LMKit.TextGeneration.Events.AfterTextCompletionEventArgs e)
         {
             switch (e.SegmentType)
             {
@@ -179,7 +179,7 @@ namespace custom_chatbot_with_rag_qdrant_vector_store
             if (modelUri.IsFile && !File.Exists(modelUri.LocalPath))
             {
                 Console.Write("Please enter full chat model's path: ");
-                modelUri = new Uri(Console.ReadLine().Trim(['"']));
+                modelUri = new Uri(Console.ReadLine()!.Trim(['"']));
 
                 if (!File.Exists(modelUri.LocalPath))
                 {
@@ -199,7 +199,7 @@ namespace custom_chatbot_with_rag_qdrant_vector_store
             if (modelUri.IsFile && !File.Exists(modelUri.LocalPath))
             {
                 Console.Write("Please enter full embedding model's path: ");
-                modelUri = new Uri(Console.ReadLine().Trim(['"']));
+                modelUri = new Uri(Console.ReadLine()!.Trim(['"']));
 
                 if (!File.Exists(modelUri.LocalPath))
                 {

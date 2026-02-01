@@ -75,10 +75,10 @@ namespace text_summarizer
             Console.WriteLine("9 - Open AI GPT OSS 20B (requires approximately 16 GB of VRAM)");
             Console.Write("Or enter a custom model URI:\n\n> ");
 
-            string input = Console.ReadLine();
+            string? input = Console.ReadLine();
             string modelLink;
 
-            switch (input.Trim())
+            switch (input?.Trim())
             {
                 case "0":
                     modelLink = DEFAULT_MINISTRAL_3_8_MODEL_PATH;
@@ -112,7 +112,7 @@ namespace text_summarizer
                     break;
                 default:
                     // If the user enters a custom URI
-                    modelLink = input.Trim().Trim('"');
+                    modelLink = input!.Trim().Trim('"');
                     break;
             }
 
@@ -138,7 +138,7 @@ namespace text_summarizer
                 Console.Clear();
                 Console.WriteLine("Please enter the path to a text file:");
                 Console.Write("\n> ");
-                string inputFilePath = Console.ReadLine().Trim().Trim('"');
+                string inputFilePath = Console.ReadLine()?.Trim().Trim('"') ?? string.Empty;
 
                 if (!File.Exists(inputFilePath))
                 {

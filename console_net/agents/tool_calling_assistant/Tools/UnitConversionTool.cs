@@ -6,7 +6,7 @@ using LMKit.Agents.Tools;
 using System.Text.Json;
 using System.Text.Json.Serialization;
 
-namespace multi_turn_chat_with_tools.Tools
+namespace tool_calling_assistant.Tools
 {
     public sealed class UnitConversionTool : ITool
     {

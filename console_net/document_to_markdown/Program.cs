@@ -121,7 +121,7 @@ namespace document_to_markdown
 
             while (true)
             {
-                Attachment attachment = null;
+                Attachment? attachment = null;
 
                 // Ask for image path (with 'q' to quit and nice error messages)
                 while (true)

@@ -71,10 +71,10 @@ namespace structured_data_extraction
             Console.WriteLine("9 - Open AI GPT OSS 20B (requires approximately 16 GB of VRAM)");
             Console.Write("Other entry: A custom model URI\n\n> ");
 
-            string input = Console.ReadLine();
+            string? input = Console.ReadLine();
             string modelLink;
 
-            switch (input.Trim())
+            switch (input?.Trim())
             {
                 case "0":
                     modelLink = DEFAULT_MINISTRAL_3_8_MODEL_PATH;
@@ -107,7 +107,7 @@ namespace structured_data_extraction
                     modelLink = DEFAULT_OPENAI_GPT_OSS_20B_MODEL_PATH;
                     break;
                 default:
-                    modelLink = input.Trim().Trim('"');
+                    modelLink = input?.Trim().Trim('"') ?? DEFAULT_MINISTRAL_3_8_MODEL_PATH;
                     break;
             }
 
@@ -128,7 +128,7 @@ namespace structured_data_extraction
                 Console.Clear();
                 Console.WriteLine("Please enter the path to an image, document or text file:\n");
                 Console.Write("\n> ");
-                string inputFilePath = Console.ReadLine().Trim().Trim('"');
+                string inputFilePath = Console.ReadLine()?.Trim().Trim('"') ?? "";
 
                 if (!File.Exists(inputFilePath))
                 {

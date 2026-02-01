@@ -21,7 +21,7 @@ namespace quantizer
             while (string.IsNullOrWhiteSpace(modelPath))
             {
                 Console.Write("Please enter the path to the model for quantization (recommended format: fp16):\n\n>");
-                string input = Console.ReadLine().Trim().Trim('"');
+                string input = Console.ReadLine()?.Trim().Trim('"') ?? "";
 
                 if (!string.IsNullOrWhiteSpace(input))
                 {
@@ -61,7 +61,7 @@ namespace quantizer
 ");
 
             Console.Write("\n\n>");
-            string format = Console.ReadLine().Trim().Trim('"').Trim('\'').ToUpperInvariant();
+            string format = Console.ReadLine()?.Trim().Trim('"').Trim('\'').ToUpperInvariant() ?? "";
 
             while (!IsValidQuantizationFormat(format))
             {
@@ -104,7 +104,7 @@ namespace quantizer
                 dstFileName = dstFileName.Substring(0, dstFileName.Length - 4);
             }
 
-            string dstModelPath = Path.Combine(Path.GetDirectoryName(modelPath), dstFileName + "-" + format + ".gguf");
+            string dstModelPath = Path.Combine(Path.GetDirectoryName(modelPath)!, dstFileName + "-" + format + ".gguf");
 
             LM.Precision quantizationFormat;
 

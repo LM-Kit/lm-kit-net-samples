@@ -56,10 +56,10 @@ namespace multi_turn_chat_with_coding_assistant
             Console.WriteLine("2 - DeepSeek V2 Medium (requires approximately 12 GB of VRAM)");
             Console.Write("Other entry: A custom model URI\n\n> ");
 
-            string input = Console.ReadLine();
+            string? input = Console.ReadLine();
             string modelLink;
 
-            switch (input.Trim())
+            switch (input?.Trim())
             {
                 case "1":
                     modelLink = DEFAULT_SMALL_MODEL_PATH;
@@ -68,7 +68,7 @@ namespace multi_turn_chat_with_coding_assistant
                     modelLink = DEFAULT_MEDIUM_MODEL_PATH;
                     break;
                 default:
-                    modelLink = input.Trim().Trim('"');
+                    modelLink = input!.Trim().Trim('"');
                     break;
             }
 
@@ -130,7 +130,7 @@ namespace multi_turn_chat_with_coding_assistant
                 Console.ForegroundColor = ConsoleColor.Green;
                 Console.Write($"\n\nUser: ");
                 Console.ResetColor();
-                prompt = Console.ReadLine();
+                prompt = Console.ReadLine() ?? string.Empty;
 
                 if (string.Compare(prompt, "/reset", ignoreCase: true) == 0)
                 {
@@ -141,7 +141,7 @@ namespace multi_turn_chat_with_coding_assistant
                 {
                     regenerateMode = true;
                 }
-                else if (prompt.Trim().StartsWith("/analyse", StringComparison.OrdinalIgnoreCase))
+                else if (prompt?.Trim().StartsWith("/analyse", StringComparison.OrdinalIgnoreCase) == true)
                 {
                     chat.ClearHistory();
                     string filePath = prompt.Trim().Substring(8).Trim().Trim('"');
@@ -157,7 +157,7 @@ namespace multi_turn_chat_with_coding_assistant
                         throw new FileNotFoundException(filePath);
                     }
                 }
-                else if (prompt.Trim().StartsWith("/reviewcomments", StringComparison.OrdinalIgnoreCase))
+                else if (prompt!.Trim().StartsWith("/reviewcomments", StringComparison.OrdinalIgnoreCase))
                 {
                     chat.ClearHistory();
                     string filePath = prompt.Trim().Substring(15).Trim().Trim('"');
@@ -188,7 +188,7 @@ namespace multi_turn_chat_with_coding_assistant
             Console.WriteLine("Use '/reviewcomments [PATH]' to review and improve code comments from the specified path.\n\n");
         }
 
-        private static void Chat_AfterTextCompletion(object sender, LMKit.TextGeneration.Events.AfterTextCompletionEventArgs e)
+        private static void Chat_AfterTextCompletion(object? sender, LMKit.TextGeneration.Events.AfterTextCompletionEventArgs e)
         {
             switch (e.SegmentType)
             {

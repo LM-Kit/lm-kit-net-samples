@@ -47,7 +47,7 @@ namespace text_corrector
             return true;
         }
 
-        private static void Correction_AfterTextCompletion(object sender, LMKit.TextGeneration.Events.AfterTextCompletionEventArgs e)
+        private static void Correction_AfterTextCompletion(object? sender, LMKit.TextGeneration.Events.AfterTextCompletionEventArgs e)
         {
             switch (e.SegmentType)
             {
@@ -85,10 +85,10 @@ namespace text_corrector
             Console.WriteLine("7 - Open AI GPT OSS 20B (requires approximately 16 GB of VRAM)");
             Console.Write("Other entry: A custom model URI\n\n> ");
 
-            string input = Console.ReadLine();
+            string? input = Console.ReadLine();
             string modelLink;
 
-            switch (input.Trim())
+            switch (input?.Trim())
             {
                 case "0":
                     modelLink = DEFAULT_MINISTRAL_3_8_MODEL_PATH;
@@ -115,7 +115,7 @@ namespace text_corrector
                     modelLink = DEFAULT_OPENAI_GPT_OSS_20B_MODEL_PATH;
                     break;
                 default:
-                    modelLink = input.Trim().Trim('"');
+                    modelLink = input?.Trim().Trim('"') ?? DEFAULT_MINISTRAL_3_8_MODEL_PATH;
                     break;
             }
 
@@ -143,7 +143,7 @@ namespace text_corrector
                 Console.Write($"Enter a text to be corrected:\n\n");
                 Console.ResetColor();
 
-                string text = Console.ReadLine();
+                string? text = Console.ReadLine();
 
                 if (string.IsNullOrWhiteSpace(text))
                 {

@@ -61,10 +61,10 @@ namespace audio_transcription
 
             Console.Write("Other entry: A custom model URI\n\n> ");
 
-            string input = Console.ReadLine();
+            string? input = Console.ReadLine();
             string modelLink;
 
-            switch (input.Trim())
+            switch (input?.Trim())
             {
                 case "0":
                     modelLink = ModelCard
@@ -109,7 +109,7 @@ namespace audio_transcription
                         .ToString();
                     break;
                 default:
-                    modelLink = input.Trim().Trim('"');
+                    modelLink = input?.Trim().Trim('"') ?? "";
                     break;
             }
 
@@ -128,7 +128,7 @@ namespace audio_transcription
             while (true)
             {
                 Console.Write("Please enter the path to the audio file you want to transcribe (WAV format):\n\n> ");
-                string path = Console.ReadLine();
+                string? path = Console.ReadLine();
 
                 if (string.IsNullOrEmpty(path))
                 {

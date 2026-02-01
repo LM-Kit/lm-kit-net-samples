@@ -69,10 +69,10 @@ namespace multi_turn_chat_with_chat_history_guidance
 
             Console.Write("Other entry: A custom model URI\n\n> ");
 
-            string input = Console.ReadLine();
+            string? input = Console.ReadLine();
             string modelLink;
 
-            switch (input.Trim())
+            switch (input?.Trim())
             {
                 case "0":
                     modelLink = DEFAULT_MINISTRAL_3_8_MODEL_PATH;
@@ -99,7 +99,7 @@ namespace multi_turn_chat_with_chat_history_guidance
                     modelLink = DEFAULT_OPENAI_GPT_OSS_20B_MODEL_PATH;
                     break;
                 default:
-                    modelLink = input.Trim().Trim('"');
+                    modelLink = input!.Trim().Trim('"');
                     break;
             }
 
@@ -139,7 +139,7 @@ namespace multi_turn_chat_with_chat_history_guidance
                 Console.Write($"\n\nUser: ");
                 Console.ResetColor();
 
-                prompt = Console.ReadLine();
+                prompt = Console.ReadLine() ?? "";
 
                 if (string.Compare(prompt, "/reset", ignoreCase: true) == 0)
                 {
@@ -193,7 +193,7 @@ namespace multi_turn_chat_with_chat_history_guidance
                 },
             };
 
-            chat.AfterTextCompletion += Chat_AfterTextCompletion;
+            chat.AfterTextCompletion += Chat_AfterTextCompletion!;
 
             return chat;
         }
@@ -205,7 +205,7 @@ namespace multi_turn_chat_with_chat_history_guidance
             Console.WriteLine("Use '/regenerate' to obtain a new completion from the last input.\n\n");
         }
 
-        private static void Chat_AfterTextCompletion(object sender, LMKit.TextGeneration.Events.AfterTextCompletionEventArgs e)
+        private static void Chat_AfterTextCompletion(object? sender, LMKit.TextGeneration.Events.AfterTextCompletionEventArgs e)
         {
             switch (e.SegmentType)
             {

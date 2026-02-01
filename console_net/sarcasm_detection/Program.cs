@@ -71,7 +71,7 @@ namespace sarcasm_detection
                 Console.Write($"\n\nContent: ");
                 Console.ResetColor();
 
-                string text = Console.ReadLine();
+                string? text = Console.ReadLine();
 
                 if (string.IsNullOrWhiteSpace(text))
                 {

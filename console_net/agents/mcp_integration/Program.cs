@@ -5,7 +5,7 @@ using LMKit.TextGeneration.Sampling;
 using System.Text;
 using System.Text.Json;
 
-namespace multi_turn_chat_with_mcp
+namespace mcp_integration
 {
     internal class Program
     {
@@ -80,10 +80,10 @@ namespace multi_turn_chat_with_mcp
             Console.WriteLine("7 - Open AI GPT OSS 20B (requires approximately 16 GB of VRAM)");
             Console.Write("Other entry: A custom model URI\n\n> ");
 
-            string input = Console.ReadLine();
+            string? input = Console.ReadLine();
             string modelLink;
 
-            switch (input.Trim())
+            switch (input?.Trim())
             {
                 case "0": modelLink = DEFAULT_MINISTRAL_3_8_MODEL_PATH; break;
                 case "1": modelLink = DEFAULT_LLAMA3_1_8B_MODEL_PATH; break;
@@ -93,7 +93,7 @@ namespace multi_turn_chat_with_mcp
                 case "5": modelLink = DEFAULT_PHI4_14_7B_MODEL_PATH; break;
                 case "6": modelLink = DEFAULT_GRANITE_4_7B_MODEL_PATH; break;
                 case "7": modelLink = DEFAULT_OPENAI_GPT_OSS_20B_MODEL_PATH; break;
-                default: modelLink = input.Trim().Trim('"'); break;
+                default: modelLink = input!.Trim().Trim('"'); break;
             }
 
             Uri modelUri = new(modelLink);
@@ -153,7 +153,7 @@ namespace multi_turn_chat_with_mcp
                 Console.ForegroundColor = ConsoleColor.Green;
                 Console.Write("\n\nUser: ");
                 Console.ResetColor();
-                prompt = Console.ReadLine();
+                prompt = Console.ReadLine() ?? string.Empty;
 
                 if (string.Compare(prompt, "/reset", true) == 0)
                 {
@@ -213,11 +213,11 @@ namespace multi_turn_chat_with_mcp
             Console.WriteLine();
             Console.Write("Other entry: A custom MCP server URI\n\n> ");
 
-            string serverInput = Console.ReadLine();
+            string? serverInput = Console.ReadLine();
             string serverUri;
             bool requiresAuth = false;
 
-            switch (serverInput.Trim())
+            switch (serverInput?.Trim())
             {
                 case "0": serverUri = ECHO_MCP_URI; break;
                 case "1": serverUri = TIME_MCP_URI; break;
@@ -230,9 +230,9 @@ namespace multi_turn_chat_with_mcp
                 case "8": serverUri = FIND_A_DOMAIN_MCP_URI; break;
                 case "9": serverUri = HUGGINGFACE_MCP_URI; requiresAuth = true; break;
                 default:
-                    serverUri = serverInput.Trim().Trim('"');
+                    serverUri = serverInput!.Trim().Trim('"');
                     Console.Write("Does this server require authentication? (y/n): ");
-                    string authResponse = Console.ReadLine();
+                    string? authResponse = Console.ReadLine();
                     requiresAuth = authResponse != null && authResponse.Trim().ToLower() == "y";
                     break;
             }
@@ -289,7 +289,7 @@ namespace multi_turn_chat_with_mcp
             if (requiresAuth)
             {
                 Console.Write("Enter your authentication token (or press Enter to skip): ");
-                string token = Console.ReadLine();
+                string? token = Console.ReadLine();
                 if (!string.IsNullOrWhiteSpace(token))
                 {
                     mcpClient.SetBearerToken(token.Trim());
@@ -323,7 +323,7 @@ namespace multi_turn_chat_with_mcp
         }
 
         private static void Chat_AfterTextCompletion(
-            object sender,
+            object? sender,
             LMKit.TextGeneration.Events.AfterTextCompletionEventArgs e)
         {
             switch (e.SegmentType)

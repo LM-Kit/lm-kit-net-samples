@@ -66,10 +66,10 @@ namespace multi_turn_chat_with_yes_no_assistant
             Console.WriteLine("7 - Open AI GPT OSS 20B (requires approximately 16 GB of VRAM)");
             Console.Write("Other entry: A custom model URI\n\n> ");
 
-            string input = Console.ReadLine();
+            string? input = Console.ReadLine();
             string modelLink;
 
-            switch (input.Trim())
+            switch (input?.Trim())
             {
                 case "0":
                     modelLink = DEFAULT_MINISTRAL_3_8_MODEL_PATH;
@@ -96,7 +96,7 @@ namespace multi_turn_chat_with_yes_no_assistant
                     modelLink = DEFAULT_OPENAI_GPT_OSS_20B_MODEL_PATH;
                     break;
                 default:
-                    modelLink = input.Trim().Trim('"');
+                    modelLink = input!.Trim().Trim('"');
                     break;
             }
 
@@ -118,7 +118,7 @@ namespace multi_turn_chat_with_yes_no_assistant
                 Grammar = new Grammar(Grammar.PredefinedGrammar.Boolean)
             };
 
-            chat.AfterTextCompletion += Chat_AfterTextCompletion;
+            chat.AfterTextCompletion += Chat_AfterTextCompletion!;
 
             string prompt = "Hello chatbot, are you functioning properly?";
 
@@ -130,7 +130,7 @@ namespace multi_turn_chat_with_yes_no_assistant
 
                 if (prompt == "")
                 {
-                    prompt = Console.ReadLine();
+                    prompt = Console.ReadLine() ?? "";
 
                     if (string.IsNullOrWhiteSpace(prompt))
                     {
@@ -168,7 +168,7 @@ namespace multi_turn_chat_with_yes_no_assistant
             Console.WriteLine("-- Special Prompts --");
             Console.WriteLine("Use '/reset' to start a fresh session.");
         }
-        private static void Chat_AfterTextCompletion(object sender, LMKit.TextGeneration.Events.AfterTextCompletionEventArgs e)
+        private static void Chat_AfterTextCompletion(object? sender, LMKit.TextGeneration.Events.AfterTextCompletionEventArgs e)
         {
             switch (e.SegmentType)
             {

@@ -62,10 +62,10 @@ namespace language_detection_from_document
 
             Console.Write("Other entry: A custom model URI\n\n> ");
 
-            string input = Console.ReadLine();
+            string? input = Console.ReadLine();
             string modelLink;
 
-            switch (input.Trim())
+            switch (input?.Trim())
             {
                 case "0":
                     modelLink = ModelCard.GetPredefinedModelCardByModelID("minicpm-o").ModelUri.ToString();
@@ -95,7 +95,7 @@ namespace language_detection_from_document
                     modelLink = ModelCard.GetPredefinedModelCardByModelID("ministral3:14b").ModelUri.ToString();
                     break;
                 default:
-                    modelLink = input.Trim().Trim('"').Trim('"');
+                    modelLink = input!.Trim().Trim('"').Trim('"');
                     break;
             }
 
@@ -111,7 +111,7 @@ namespace language_detection_from_document
             while (true)
             {
                 Console.Write("Enter the path to an image or PDF:\n\n> ");
-                string path = Console.ReadLine();
+                string? path = Console.ReadLine();
 
                 if (string.IsNullOrEmpty(path))
                 {

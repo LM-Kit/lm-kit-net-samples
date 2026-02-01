@@ -66,10 +66,10 @@ namespace single_turn_chat
             Console.WriteLine("7 - Open AI GPT OSS 20B (requires approximately 16 GB of VRAM)");
             Console.Write("Other entry: A custom model URI\n\n> ");
 
-            string input = Console.ReadLine();
+            string? input = Console.ReadLine();
             string modelLink;
 
-            switch (input.Trim())
+            switch (input?.Trim())
             {
                 case "0":
                     modelLink = DEFAULT_MINISTRAL_3_8_MODEL_PATH;
@@ -96,7 +96,7 @@ namespace single_turn_chat
                     modelLink = DEFAULT_OPENAI_GPT_OSS_20B_MODEL_PATH;
                     break;
                 default:
-                    modelLink = input.Trim().Trim('"');
+                    modelLink = input?.Trim().Trim('"') ?? "";
                     break;
             }
 
@@ -117,7 +117,7 @@ namespace single_turn_chat
                 SystemPrompt = "You are a chatbot that always responds promptly and helpfully to user requests."
             };
 
-            chat.AfterTextCompletion += Chat_AfterTextCompletion;
+            chat.AfterTextCompletion += Chat_AfterTextCompletion!;
 
             string prompt = "Hello!";
 
@@ -131,14 +131,14 @@ namespace single_turn_chat
                 Console.ForegroundColor = ConsoleColor.Green;
                 Console.Write($"\n\nUser: ");
                 Console.ResetColor();
-                prompt = Console.ReadLine();
+                prompt = Console.ReadLine() ?? "";
             }
 
             Console.WriteLine("The chat ended. Press any key to exit the application.");
             _ = Console.ReadKey();
         }
 
-        private static void Chat_AfterTextCompletion(object sender, LMKit.TextGeneration.Events.AfterTextCompletionEventArgs e)
+        private static void Chat_AfterTextCompletion(object? sender, LMKit.TextGeneration.Events.AfterTextCompletionEventArgs e)
         {
             switch (e.SegmentType)
             {

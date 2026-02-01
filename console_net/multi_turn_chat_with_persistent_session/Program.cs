@@ -67,10 +67,10 @@ namespace multi_turn_chat_with_persistent_session
             Console.WriteLine("7 - Open AI GPT OSS 20B (requires approximately 16 GB of VRAM)");
             Console.Write("Other entry: A custom model URI\n\n> ");
 
-            string input = Console.ReadLine();
+            string? input = Console.ReadLine();
             string modelLink;
 
-            switch (input.Trim())
+            switch (input?.Trim())
             {
                 case "0":
                     modelLink = DEFAULT_MINISTRAL_3_8_MODEL_PATH;
@@ -97,7 +97,7 @@ namespace multi_turn_chat_with_persistent_session
                     modelLink = DEFAULT_OPENAI_GPT_OSS_20B_MODEL_PATH;
                     break;
                 default:
-                    modelLink = input.Trim().Trim('"');
+                    modelLink = input!.Trim().Trim('"');
                     break;
             }
 
@@ -152,7 +152,7 @@ namespace multi_turn_chat_with_persistent_session
                 WriteColor($"\n\nUser: ", ConsoleColor.Green, addNL: false);
 
                 bool regenerateMode = false;
-                string prompt = Console.ReadLine();
+                string? prompt = Console.ReadLine();
 
                 if (string.Compare(prompt, "/reset", ignoreCase: true) == 0)
                 {
@@ -201,7 +201,7 @@ namespace multi_turn_chat_with_persistent_session
             Console.WriteLine("Use an empty prompt to save the chat session and exit.\n\n");
         }
 
-        private static void Chat_AfterTextCompletion(object sender, LMKit.TextGeneration.Events.AfterTextCompletionEventArgs e)
+        private static void Chat_AfterTextCompletion(object? sender, LMKit.TextGeneration.Events.AfterTextCompletionEventArgs e)
         {
             switch (e.SegmentType)
             {

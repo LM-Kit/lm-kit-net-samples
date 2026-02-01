@@ -1,10 +1,10 @@
 ﻿using LMKit.Model;
 using LMKit.TextGeneration;
 using LMKit.TextGeneration.Sampling;
-using multi_turn_chat_with_tools.Tools;
 using System.Text;
+using tool_calling_assistant.Tools;
 
-namespace multi_turn_chat_with_tools
+namespace tool_calling_assistant
 {
     internal class Program
     {

@@ -79,10 +79,10 @@ namespace custom_classification
 
             Console.Write("Other entry: A custom model URI\n\n> ");
 
-            string input = Console.ReadLine();
+            string? input = Console.ReadLine();
             string modelLink;
 
-            switch (input.Trim())
+            switch (input?.Trim())
             {
                 case "0":
                     modelLink = DEFAULT_MINISTRAL_3_8_MODEL_PATH;
@@ -109,7 +109,7 @@ namespace custom_classification
                     modelLink = DEFAULT_OPENAI_GPT_OSS_20B_MODEL_PATH;
                     break;
                 default:
-                    modelLink = input.Trim().Trim('"');
+                    modelLink = input!.Trim().Trim('"');
                     break;
             }
 
@@ -133,7 +133,7 @@ namespace custom_classification
                 Console.Write($"\n\nContent: ");
                 Console.ResetColor();
 
-                string text = Console.ReadLine();
+                string? text = Console.ReadLine();
 
                 if (string.IsNullOrWhiteSpace(text))
                 {

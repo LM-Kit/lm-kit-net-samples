@@ -115,7 +115,7 @@ namespace multi_turn_chat_with_memory
                 Console.ForegroundColor = ConsoleColor.Green;
                 Console.Write($"\n\nUser: ");
                 Console.ResetColor();
-                prompt = Console.ReadLine();
+                prompt = Console.ReadLine() ?? string.Empty;
 
             }
 
@@ -123,7 +123,7 @@ namespace multi_turn_chat_with_memory
             _ = Console.ReadKey();
         }
 
-        private static void Chat_AfterTextCompletion(object sender, LMKit.TextGeneration.Events.AfterTextCompletionEventArgs e)
+        private static void Chat_AfterTextCompletion(object? sender, LMKit.TextGeneration.Events.AfterTextCompletionEventArgs e)
         {
             switch (e.SegmentType)
             {

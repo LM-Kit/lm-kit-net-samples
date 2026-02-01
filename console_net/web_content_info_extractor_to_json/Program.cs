@@ -80,10 +80,10 @@ namespace web_content_info_extractor_to_json
             Console.WriteLine("9 - Open AI GPT OSS 20B (requires approximately 16 GB of VRAM)");
             Console.Write("Other entry: A custom model URI\n\n> ");
 
-            string input = Console.ReadLine();
+            string? input = Console.ReadLine();
             string modelLink;
 
-            switch (input.Trim())
+            switch (input?.Trim())
             {
                 case "0":
                     modelLink = DEFAULT_MINISTRAL_3_8_MODEL_PATH;
@@ -116,7 +116,7 @@ namespace web_content_info_extractor_to_json
                     modelLink = DEFAULT_OPENAI_GPT_OSS_20B_MODEL_PATH;
                     break;
                 default:
-                    modelLink = input.Trim().Trim('"');
+                    modelLink = input!.Trim().Trim('"');
                     break;
             }
 
@@ -143,13 +143,13 @@ namespace web_content_info_extractor_to_json
                 Grammar = Grammar.CreateJsonGrammarFromTextFields(new string[] { "Primary Topic", "Domain or Field", "Language", "Audience" })
             };
 
-            chat.AfterTextCompletion += Chat_AfterTextCompletion;
+            chat.AfterTextCompletion += Chat_AfterTextCompletion!;
 
             while (true)
             {
                 WriteColor($"\nEnter webpage page URI to be analyzed: ", ConsoleColor.Green, addNL: false);
 
-                string uri = Console.ReadLine();
+                string? uri = Console.ReadLine();
 
                 if (string.IsNullOrWhiteSpace(uri))
                 {
@@ -186,7 +186,7 @@ namespace web_content_info_extractor_to_json
             _ = Console.ReadKey();
         }
 
-        private static void Chat_AfterTextCompletion(object sender, LMKit.TextGeneration.Events.AfterTextCompletionEventArgs e)
+        private static void Chat_AfterTextCompletion(object? sender, LMKit.TextGeneration.Events.AfterTextCompletionEventArgs e)
         {
             switch (e.SegmentType)
             {

@@ -72,7 +72,7 @@ namespace structured_data_extraction
             Console.WriteLine("9 - Open AI GPT OSS 20B (requires approximately 16 GB of VRAM)");
             Console.Write("Other entry: A custom model URI\n\n> ");
 
-            string input = Console.ReadLine();
+            string input = Console.ReadLine() ?? string.Empty;
             string modelLink;
 
             switch (input.Trim())
@@ -130,7 +130,7 @@ namespace structured_data_extraction
                 Console.WriteLine("2 - job_offer.txt");
                 Console.WriteLine("3 - medical_record.txt");
                 Console.Write("\n> ");
-                input = Console.ReadLine();
+                input = Console.ReadLine() ?? string.Empty;
                 string inputFileName = "";
 
                 switch (input.Trim())

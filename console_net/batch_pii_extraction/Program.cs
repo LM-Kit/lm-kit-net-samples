@@ -92,7 +92,7 @@ namespace batch_pii_extraction
             Action<int> curIdx = y =>
             {
                 string file = files[y];
-                Attachment attachment = null;
+                Attachment? attachment = null;
 
                 try
                 {
@@ -113,8 +113,8 @@ namespace batch_pii_extraction
                         jsonOptions);
 
                     string fileOutput = BuildOutputPath(
-                        file, 
-                        InputDirectory, 
+                        file,
+                        InputDirectory,
                         OutputDirectory);
 
                     File.WriteAllText(fileOutput, jsonOutput);
@@ -220,8 +220,16 @@ namespace batch_pii_extraction
 
         private static string TruncateCenter(string text, int maxWidth)
         {
-            if (string.IsNullOrEmpty(text) || text.Length <= maxWidth) return text ?? string.Empty;
-            if (maxWidth <= 3) return text.Substring(0, maxWidth);
+            if (string.IsNullOrEmpty(text) || text.Length <= maxWidth)
+            {
+                return text ?? string.Empty;
+            }
+
+            if (maxWidth <= 3)
+            {
+                return text.Substring(0, maxWidth);
+            }
+
             int keep = maxWidth - 3;
             int front = keep / 2;
             int back = keep - front;
@@ -236,8 +244,8 @@ namespace batch_pii_extraction
         }
 
         private static string BuildOutputPath(
-            string inputFile, 
-            string inputRoot, 
+            string inputFile,
+            string inputRoot,
             string outputRoot)
         {
             var absInputRoot = Path.GetFullPath(inputRoot);
@@ -249,7 +257,9 @@ namespace batch_pii_extraction
 
             var dir = Path.GetDirectoryName(outputPath);
             if (!string.IsNullOrEmpty(dir))
+            {
                 Directory.CreateDirectory(dir);
+            }
 
             return outputPath;
         }

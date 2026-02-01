@@ -5,7 +5,7 @@ using LMKit.TextGeneration.Chat;
 using LMKit.TextGeneration.Sampling;
 using System.Text;
 
-namespace multi_turn_chat_with_skills
+namespace skill_based_assistant
 {
     /// <summary>
     /// Demonstrates the Agent Skills feature of LM-Kit.NET.
@@ -35,11 +35,11 @@ namespace multi_turn_chat_with_skills
         static readonly string DEFAULT_PHI4_14_7B_MODEL_PATH = @"https://huggingface.co/lm-kit/phi-4-14.7b-instruct-gguf/resolve/main/Phi-4-14.7B-Instruct-Q4_K_M.gguf";
 
         static bool _isDownloading;
-        static SkillRegistry _skillRegistry;
-        static SkillActivator _skillActivator;
-        static AgentSkill _activeSkill;
-        static SkillTool _skillTool;
-        static SkillResourceTool _skillResourceTool;
+        static SkillRegistry _skillRegistry = null!;
+        static SkillActivator _skillActivator = null!;
+        static AgentSkill? _activeSkill;
+        static SkillTool _skillTool = null!;
+        static SkillResourceTool _skillResourceTool = null!;
         static bool _autoSkillMode = false;
         static bool _resourceToolEnabled = false;
 
@@ -93,7 +93,7 @@ namespace multi_turn_chat_with_skills
             MultiTurnConversation chat = new(model);
             chat.MaximumCompletionTokens = 4096;
             chat.SamplingMode = new RandomSampling { Temperature = 0.7f };
-            chat.AfterTextCompletion += Chat_AfterTextCompletion;
+            chat.AfterTextCompletion += Chat_AfterTextCompletion!;
 
             // Setup SkillTool for automatic skill selection
             SetupSkillTool(chat);
@@ -108,7 +108,7 @@ namespace multi_turn_chat_with_skills
             Console.ForegroundColor = ConsoleColor.Green;
             Console.Write("\nUser: ");
             Console.ResetColor();
-            prompt = Console.ReadLine();
+            prompt = Console.ReadLine() ?? "";
 
             while (!string.IsNullOrWhiteSpace(prompt))
             {
@@ -120,7 +120,7 @@ namespace multi_turn_chat_with_skills
                         Console.ForegroundColor = ConsoleColor.Green;
                         Console.Write("\nUser: ");
                         Console.ResetColor();
-                        prompt = Console.ReadLine();
+                        prompt = Console.ReadLine() ?? "";
                         continue;
                     }
                 }
@@ -179,7 +179,7 @@ namespace multi_turn_chat_with_skills
                 Console.ForegroundColor = ConsoleColor.Green;
                 Console.Write("\nUser: ");
                 Console.ResetColor();
-                prompt = Console.ReadLine();
+                prompt = Console.ReadLine() ?? "";
             }
 
             Console.WriteLine("\nChat ended. Press any key to exit.");
@@ -334,7 +334,7 @@ Always ask: 'Would you like me to go deeper on any part?'")
             _skillResourceTool.ResourceLoaded += (sender, e) =>
             {
                 Console.ForegroundColor = ConsoleColor.DarkYellow;
-                Console.WriteLine("\n[Resource] Loaded: {0}/{1} ({2} chars)", 
+                Console.WriteLine("\n[Resource] Loaded: {0}/{1} ({2} chars)",
                     e.Skill.Name, e.Resource.RelativePath, e.Content.Length);
                 Console.ResetColor();
             };
@@ -485,7 +485,7 @@ Always ask: 'Would you like me to go deeper on any part?'")
                 }
                 if (resources.Count > 3)
                 {
-                    Console.WriteLine("  ... and {0} more (use /resources {1} to see all)", 
+                    Console.WriteLine("  ... and {0} more (use /resources {1} to see all)",
                         resources.Count - 3, skill.Name);
                 }
             }
@@ -510,8 +510,8 @@ Always ask: 'Would you like me to go deeper on any part?'")
                 Console.ForegroundColor = ConsoleColor.Yellow;
                 Console.WriteLine("Skill deactivated: {0}", _activeSkill.Name);
                 Console.ResetColor();
-                _activeSkill = null;
-                _skillResourceTool.ActiveSkill = null;
+                _activeSkill = null!;
+                _skillResourceTool.ActiveSkill = null!;
             }
             else
             {
@@ -650,7 +650,7 @@ Always ask: 'Would you like me to go deeper on any part?'")
         private static void SearchSkills()
         {
             Console.Write("Enter search query: ");
-            string query = Console.ReadLine();
+            string? query = Console.ReadLine();
 
             if (string.IsNullOrWhiteSpace(query))
             {
@@ -747,17 +747,30 @@ Always ask: 'Would you like me to go deeper on any part?'")
                     string typeLabel;
                     string path = resource.RelativePath.ToLowerInvariant();
                     if (path.StartsWith("templates/") || path.StartsWith("templates\\"))
+                    {
                         typeLabel = "[template]";
+                    }
                     else if (path.StartsWith("checklists/") || path.StartsWith("checklists\\"))
+                    {
                         typeLabel = "[checklist]";
+                    }
                     else if (path.StartsWith("examples/") || path.StartsWith("examples\\"))
+                    {
                         typeLabel = "[example]";
+                    }
                     else if (path.StartsWith("references/") || path.StartsWith("references\\"))
+                    {
                         typeLabel = "[reference]";
+                    }
                     else if (path.StartsWith("scripts/") || path.StartsWith("scripts\\"))
+                    {
                         typeLabel = "[script]";
+                    }
                     else
+                    {
                         typeLabel = "[asset]";
+                    }
+
                     Console.WriteLine("  {0,-12} {1}", typeLabel, resource.RelativePath);
                 }
             }
@@ -836,7 +849,7 @@ Always ask: 'Would you like me to go deeper on any part?'")
             Console.ResetColor();
 
             Console.Write("Skill name (lowercase, hyphens allowed): ");
-            string name = Console.ReadLine()?.Trim();
+            string? name = Console.ReadLine()?.Trim();
 
             if (string.IsNullOrWhiteSpace(name) || !SkillMetadata.IsValidSkillName(name))
             {
@@ -855,7 +868,7 @@ Always ask: 'Would you like me to go deeper on any part?'")
             }
 
             Console.Write("Description: ");
-            string description = Console.ReadLine()?.Trim();
+            string? description = Console.ReadLine()?.Trim();
 
             if (string.IsNullOrWhiteSpace(description))
             {
@@ -867,7 +880,7 @@ Always ask: 'Would you like me to go deeper on any part?'")
 
             Console.WriteLine("Enter instructions (end with a line containing only '---'):");
             var instructionsBuilder = new StringBuilder();
-            string line;
+            string? line;
             while ((line = Console.ReadLine()) != "---")
             {
                 instructionsBuilder.AppendLine(line);
@@ -903,7 +916,7 @@ Always ask: 'Would you like me to go deeper on any part?'")
         private static void LoadSkillFromPath()
         {
             Console.Write("Enter skill directory path: ");
-            string path = Console.ReadLine()?.Trim().Trim('"');
+            string? path = Console.ReadLine()?.Trim().Trim('"');
 
             if (string.IsNullOrWhiteSpace(path))
             {
@@ -931,7 +944,7 @@ Always ask: 'Would you like me to go deeper on any part?'")
         private static void LoadSkillFromUrl()
         {
             Console.Write("Enter skill URL (SKILL.md or .zip): ");
-            string url = Console.ReadLine()?.Trim();
+            string? url = Console.ReadLine()?.Trim();
 
             if (string.IsNullOrWhiteSpace(url))
             {
@@ -1055,7 +1068,7 @@ Always ask: 'Would you like me to go deeper on any part?'")
             Console.WriteLine("5 - Microsoft Phi-4 14.7B (requires approximately 11 GB of VRAM)");
             Console.Write("Other entry: A custom model URI\n\n> ");
 
-            string input = Console.ReadLine();
+            string? input = Console.ReadLine();
             string modelLink;
 
             switch (input?.Trim())

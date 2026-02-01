@@ -62,10 +62,10 @@ namespace text_summarizer_from_document
 
             Console.Write("Other entry: A custom model URI\n\n> ");
 
-            string input = Console.ReadLine();
+            string? input = Console.ReadLine();
             string modelLink;
 
-            switch (input.Trim())
+            switch (input?.Trim())
             {
                 case "0":
                     modelLink = ModelCard.GetPredefinedModelCardByModelID("minicpm-o").ModelUri.ToString();
@@ -118,7 +118,7 @@ namespace text_summarizer_from_document
             while (true)
             {
                 Console.Write("Enter the path to a document:\n\n> ");
-                string path = Console.ReadLine();
+                string? path = Console.ReadLine();
 
                 if (string.IsNullOrEmpty(path))
                 {

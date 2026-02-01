@@ -68,7 +68,7 @@ namespace function_calling
 
                 if (docsArray[0].TryGetProperty("ebook_access", out JsonElement ebookAccessElement))
                 {
-                    ebookAccess = ebookAccessElement.GetString();
+                    ebookAccess = ebookAccessElement.GetString() ?? "unknown";
                 }
 
                 if (docsArray[0].TryGetProperty("isbn", out JsonElement isbnElement))
@@ -83,7 +83,7 @@ namespace function_calling
 
                 if (docsArray[0].TryGetProperty("publisher", out JsonElement publisherProperty))
                 {
-                    publisher = publisherProperty[0].GetString();
+                    publisher = publisherProperty[0].GetString() ?? "unknown";
                 }
 
                 if (docsArray[0].TryGetProperty("author_name", out JsonElement authorsElement))
@@ -93,7 +93,7 @@ namespace function_calling
 
                 if (docsArray[0].TryGetProperty("title", out JsonElement titleElement))
                 {
-                    title = titleElement.GetString();
+                    title = titleElement.GetString() ?? title;
                 }
             }
 
@@ -132,7 +132,7 @@ namespace function_calling
             {
                 JsonElement titleElement = docsArray[0].GetProperty("title");
 
-                title = titleElement.GetString();
+                title = titleElement.GetString() ?? "unknown";
 
                 List<JsonElement> publishYear = docsArray[0].GetProperty("publish_year").EnumerateArray()
                                                                                  .Cast<JsonElement>()
@@ -175,7 +175,7 @@ namespace function_calling
                                                              .ToList();
                 if (authorArray.Count > 0)
                 {
-                    string author = authorArray[0].GetString();
+                    string? author = authorArray[0].GetString();
 
                     if (author != null)
                     {
