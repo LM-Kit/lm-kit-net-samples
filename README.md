@@ -28,9 +28,15 @@ Check our [changelog](https://docs.lm-kit.com/lm-kit-net/guides/changelog.html) 
 
 *Listed from most recent to oldest*
 
+- 🛰️ **[Agentic Framework](https://lm-kit.com/blog/lm-kit-net-goes-agentic/)** - Build autonomous AI agents with MCP support, 56 built-in tools, 18 agent templates, multi-agent orchestration, planning strategies, Agent Skills Protocol, and resilience policies - all running locally
+- 🔧 **[Complete MCP Client](https://docs.lm-kit.com/lm-kit-net/api/LMKit.Agents.McpClient.html)** - Full Model Context Protocol implementation with HTTP/SSE and Stdio transports, supporting tools, resources, prompts, sampling, roots, elicitation, progress tracking, cancellation, logging, and subscriptions
+- 🤖 **[Agent Orchestration](https://lm-kit.com/solutions/ai-agents/)** - Compose multi-agent workflows with Pipeline, Parallel, Router, and Supervisor orchestrators
+- 🧠 **[Planning Strategies](https://lm-kit.com/solutions/ai-agents/#planning-strategies)** - ReAct, Chain of Thought, Tree of Thought, Plan and Execute, and Reflection handlers for sophisticated reasoning
+- 🎯 **[56 Built-in Tools](https://docs.lm-kit.com/lm-kit-net/api/LMKit.Agents.Tools.BuiltIn.html)** - Production-ready tools for data, text, numeric, security, utility, I/O, and network operations
+- 📋 **[18 Agent Templates](https://docs.lm-kit.com/lm-kit-net/api/LMKit.Agents.Templates.html)** - Pre-configured specialists including Chat, Assistant, Tool, ReAct, Code, Writer, Analyst, Planner, Research, Reviewer, Summarizer, Extractor, Tutor, Translator, Classifier, Debugger, Editor, and QA agents
+- 🎓 **[Agent Skills Protocol](https://lm-kit.com/solutions/ai-agents/#agent-skills)** - Reusable task specialists with SKILL.md specification, progressive loading, and semantic matching
 - 📄 **[PDF Chat + Document RAG](https://docs.lm-kit.com/lm-kit-net/api/LMKit.Retrieval.PdfChat.html)** - Import PDFs, index them locally, and chat with them using the new `DocumentRag` and `PdfChat` APIs (with built-in PDF attachments, chunking, and a local vector store)
 - 🔧 **[Tool Calling for Local Agents](https://lm-kit.com/blog/tool-calling-for-local-agents/)** - Build AI agents with state-of-the-art tool calling. Supports all modes (simple, multiple, parallel) with structured JSON schemas, safety policies, and human-in-the-loop controls
-- 🔗 **[MCP Client Support](https://docs.lm-kit.com/lm-kit-net/api/LMKit.Agents.McpClient.html)** - Connect agents to Model Context Protocol servers for extended capabilities including resources, prompts, and tool discovery
 - 🎙️ **[Speech-to-Text](https://lm-kit.com/solutions/language-processing/speech-to-text/)** - Convert spoken audio into highly accurate text transcripts with voice activity detection, supporting 100+ languages
 - 👁️ **[VLM-Based OCR](https://docs.lm-kit.com/lm-kit-net/api/LMKit.TextGeneration.VlmOcr.html)** - High-accuracy text extraction from images and scanned documents using vision language models
 - 🛡️ **[Multimodal PII Extraction](https://lm-kit.com/solutions/content-analysis/#pii-extraction)** - Identify and extract personally identifiable information from text and images for compliance
@@ -66,9 +72,10 @@ Check our [changelog](https://docs.lm-kit.com/lm-kit-net/guides/changelog.html) 
 ## What You Can Build
 
 - **Autonomous AI agents** that reason, plan, and execute multi-step tasks using your application's tools and APIs
+- **Multi-agent workflows** with Pipeline, Parallel, Router, and Supervisor orchestration patterns
+- **MCP-connected agents** that access thousands of community MCP servers while keeping inference local
 - **RAG-powered knowledge assistants** over local documents, databases, and enterprise data sources
 - **PDF chat and document Q&A** with retrieval, reranking, and grounded generation
-- **Multi-agent workflows** that orchestrate specialized task agents for complex business processes
 - **Voice-driven assistants** with speech-to-text, reasoning, and function calling
 - **OCR and extraction pipelines** for invoices, forms, IDs, emails, and scanned documents
 - **Compliance-focused text intelligence** - PII extraction, NER, classification, sentiment analysis
@@ -81,13 +88,19 @@ Check our [changelog](https://docs.lm-kit.com/lm-kit-net/guides/changelog.html) 
 
 Build autonomous AI agents that reason, plan, and execute complex workflows within your applications.
 
-- **Task Agents** - Reusable specialists designed for specific tasks with high speed and accuracy
-- **Agent Orchestration** - Compose multi-agent workflows with RAG, tools, and APIs under strict control
+- **Agent Framework** - Core classes (`Agent`, `AgentBuilder`, `AgentExecutor`, `AgentRegistry`) with identity, capabilities, and execution options
+- **Multi-Agent Orchestration** - Pipeline, Parallel, Router, and Supervisor orchestrators for composing agent workflows
+- **Planning Strategies** - ReAct, Chain of Thought, Tree of Thought, Plan and Execute, and Reflection handlers
+- **56 Built-in Tools** - Production-ready tools for data, text, numeric, security, utility, I/O, and network operations
+- **18 Agent Templates** - Pre-configured specialists for common agent patterns
+- **Agent Skills Protocol** - Reusable task specialists with SKILL.md specification and semantic matching
 - **Function Calling** - Let models dynamically invoke your application's methods with structured parameters
 - **Tool Registry** - Define and manage collections of tools agents can use
-- **MCP Client Support** - Connect to Model Context Protocol servers for extended capabilities
+- **MCP Client Support** - Full Model Context Protocol implementation with HTTP/SSE and Stdio transports
 - **Agent Memory** - Persistent memory that survives across conversation sessions
 - **Reasoning Control** - Adjust reasoning depth for models that support extended thinking
+- **Resilience Policies** - Retry, CircuitBreaker, Timeout, RateLimit, Bulkhead, Fallback, and Composite policies
+- **Agent Delegation** - Agent-to-agent delegation with `DelegationManager` and routing
 
 ### 🔍 Multimodal Intelligence
 
@@ -192,6 +205,7 @@ Choose the optimal inference engine for your use case:
 
 - **OpenTelemetry Integration** - GenAI semantic conventions for distributed tracing and metrics
 - **Inference Metrics** - Token counts, processing rates, generation speeds, context utilization, perplexity scores
+- **Agent Telemetry** - Agent name, ID, description, tool invocation events with tool name and call ID
 - **Event Callbacks** - Fine-grained hooks for token sampling, tool invocations, and generation lifecycle
 
 ---
@@ -228,11 +242,13 @@ No Python runtime. No containers. No external services. No native libraries to m
 
 - **[Semantic Kernel](https://github.com/LM-Kit/lm-kit-net-semantic-kernel)** - Use LM-Kit.NET as a backend for Microsoft Semantic Kernel
 - **[Vector Databases](https://github.com/LM-Kit/lm-kit-net-data-connectors)** - Integrate with Qdrant via open-source connectors
-- **MCP Servers** - Connect to Model Context Protocol servers for extended tool access
+- **MCP Servers** - Connect to Model Context Protocol servers for extended tool access (HTTP/SSE and Stdio transports)
 
 ---
 
 ## Getting Started
+
+### Simple Conversation
 
 ```csharp
 using LMKit;
@@ -247,6 +263,35 @@ var conversation = new MultiTurnConversation(model);
 // Chat
 var response = await conversation.SubmitAsync("Explain quantum computing briefly.");
 Console.WriteLine(response);
+```
+
+### Build a Local Agent with Tools and MCP
+
+```csharp
+using LMKit.Model;
+using LMKit.Agents;
+using LMKit.Agents.Tools.BuiltIn;
+using LMKit.Agents.Templates;
+
+var model = LM.LoadFromModelID("gptoss:20b");
+
+// Connect to an MCP server
+var mcpClient = await McpClient.ForStdio(new StdioTransportOptions
+{
+    Command = "npx",
+    Arguments = ["-y", "@modelcontextprotocol/server-github"]
+});
+
+var agent = AgentTemplates.Assistant()
+    .WithModel(model)
+    .WithTools(BuiltInTools.All())
+    .WithTools(mcpClient)
+    .Build();
+
+var result = await agent.ExecuteAsync(
+    "Extract all vendor names and amounts from the attached invoices, " +
+    "then calculate the total payable this month."
+);
 ```
 
 ### Explore More
