@@ -1,7 +1,7 @@
 using LMKit.Model;
+using LMKit.Telemetry;
 using LMKit.TextGeneration;
 using LMKit.TextGeneration.Sampling;
-using LMKit.Telemetry;
 using System.Collections.Concurrent;
 using System.Diagnostics;
 using System.Diagnostics.Metrics;
