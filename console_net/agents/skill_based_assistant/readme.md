@@ -1,167 +1,139 @@
-# Multi-Turn Chat with Agent Skills
+# Agent Skills Demo
 
-A comprehensive demo showcasing the **Agent Skills** feature in LM-Kit.NET. Agent Skills are reusable, shareable instruction sets bundled with resources that transform AI behavior for specific tasks.
+Turn a generic LLM into a specialist with a single markdown file.
 
-## Features
+**Agent Skills** are SKILL.md files that contain expert instructions for a specific task. Load one, activate it with a slash command, type a short input, and get structured output.
 
-- **Skill Activation**: Manually activate skills via slash commands
-- **Auto-Selection**: LLM automatically selects skills based on user requests (SkillTool)
-- **On-Demand Resources**: LLM loads templates/references during conversation (SkillResourceTool)
-- **Remote Loading**: Load skills from URLs, ZIP archives, or GitHub repositories
-- **Async APIs**: Non-blocking skill loading for production applications
+## What This Demo Does
 
-## Bundled Skills
+Three bundled skills, each works from a single line of input:
 
-| Skill | Resources | Description |
-|-------|-----------|-------------|
-| `/api-designer` | 2 files | Designs RESTful APIs with OpenAPI 3.1 specs |
-| `/git-commit-pro` | 1 file | Generates conventional commit messages from diffs |
-| `/release-notes` | 2 files | Generates changelogs following Keep a Changelog |
-| `/code-migrator` | 2 files | Guides framework migrations with checklists |
-| `/prompt-engineer` | 1 file | Crafts optimized prompts using proven patterns |
-| `/contract-analyzer` | 1 file | Analyzes software contracts for risks |
+| Command | You type | You get |
+|---------|----------|---------|
+| /explain | "blockchain" | Clear, jargon-free explanation with analogy and example |
+| /pros-cons | "electric cars" | Balanced table of pros, cons, and a bottom line |
+| /email-writer | "thank a vendor for fast delivery" | Complete professional email with subject line |
 
-## Commands
-
-### Skill Activation
-| Command | Description |
-|---------|-------------|
-| `/<skill-name>` | Activate a skill (e.g., `/git-commit-pro`) |
-| `/skills` | List all available skills with resource counts |
-| `/info <skill>` | Show skill details including resources |
-| `/resources <skill>` | View resource file contents |
-| `/active` | Show currently active skill |
-| `/deactivate` | Return to normal mode |
-
-### LLM Tools
-| Command | Description |
-|---------|-------------|
-| `/auto` | Toggle SkillTool (LLM can auto-select skills) |
-| `/tools` | Toggle SkillResourceTool (LLM can load resources on-demand) |
-
-### Remote Loading
-| Command | Description |
-|---------|-------------|
-| `/remote` | Load a skill from URL (SKILL.md or .zip) |
-| `/github owner/repo/path` | Load a skill from GitHub repository |
-| `/cache` | Show skill cache information |
-
-### Skill Management
-| Command | Description |
-|---------|-------------|
-| `/create` | Create a new skill interactively |
-| `/load` | Load a skill from a local directory |
-| `/search` | Search skills by keyword |
-
-## Quick Start
+## How to Run
 
 ```bash
+cd demos/console_net/agents/skill_based_assistant
 dotnet run
 ```
 
-1. Select a model
-2. Load a skill from GitHub: `/github LM-Kit/skills-library/code-review`
-3. Activate: `/code-review`
-4. Start chatting!
+1. Pick a model (Gemma 3 12B recommended, ~9 GB VRAM).
+2. Type /explain to activate a skill.
+3. Type: blockchain
+4. Get a structured explanation.
+5. Switch directly: type /pros-cons, then /email-writer. No need to /off first.
 
-## Remote Skill Loading
-
-### From URL
-
-```
-/remote
-Enter skill URL: https://example.com/skills/my-skill/SKILL.md
-```
-
-Supports:
-- Direct SKILL.md file URLs
-- ZIP archives containing skill directories
-
-### From GitHub
+## Example Session
 
 ```
-/github owner/repo/path/to/skill
+You: /explain
+Skill activated: explain
+
+You: blockchain
+
+Assistant:
+## Blockchain
+
+**In one sentence:** A blockchain is a shared digital ledger that records
+transactions in a way no single person can alter.
+
+**How it works:** Imagine a notebook that thousands of people have identical
+copies of. Every time someone writes a new entry, everyone's copy updates
+automatically, and no one can erase old entries.
+
+**Why it matters:** It lets strangers trust each other without a middleman
+like a bank.
+
+**Example:** Bitcoin uses a blockchain to track who owns which coins.
+
+
+You: /pros-cons
+Skill activated: pros-cons
+
+You: remote work
+
+Assistant:
+## Remote Work
+
+### Pros
+- **No commute:** Saves 5-10 hours per week for the average worker.
+- **Flexible schedule:** Easier to handle appointments and family needs.
+- **Wider talent pool:** Companies can hire from anywhere.
+
+### Cons
+- **Isolation:** Less spontaneous interaction with colleagues.
+- **Work-life blur:** Harder to disconnect when your office is your home.
+- **Communication overhead:** More meetings and messages to stay aligned.
+
+### Bottom Line
+Works well for self-motivated people in roles that do not require physical
+presence. Less suited for roles that depend on real-time collaboration.
+
+
+You: /email-writer
+Skill activated: email-writer
+
+You: thank a vendor for fast delivery
+
+Assistant:
+Subject: Thank You for the Fast Delivery
+
+Dear [Vendor Name],
+
+I wanted to thank you for the prompt delivery of our recent order.
+The shipment arrived two days ahead of schedule, which helped us
+stay on track with our project timeline.
+
+We look forward to continuing our partnership on future orders.
+
+Best regards,
+[Your Name]
 ```
 
-Example:
-```
-/github LM-Kit/skills-library/skills/code-review
-```
+## Commands
 
-Resources in subdirectories (scripts/, references/, templates/) are automatically downloaded.
+| Command | Description |
+|---------|-------------|
+| /explain | Activate the plain-language explainer |
+| /pros-cons | Activate the pros and cons analyst |
+| /email-writer | Activate the email writer |
+| /off | Deactivate the current skill |
+| /skills | List all available skills |
+| /help | Show available commands |
 
-## Async APIs
+## How Skills Work
 
-For production applications, use async methods:
-
-```csharp
-// Async skill loading
-var skill = await AgentSkill.LoadAsync("./skills/my-skill", cancellationToken);
-
-// Async directory loading
-int loaded = await registry.LoadFromDirectoryAsync("./skills", cancellationToken: ct);
-
-// Async remote loading
-await registry.LoadFromUrlAsync("https://example.com/skill.zip", cancellationToken: ct);
-
-// Async GitHub loading
-var skill = await registry.LoadFromGitHubAsync("owner", "repo", "path/to/skill");
-```
-
-## SkillRemoteLoader
-
-```csharp
-using (var loader = new SkillRemoteLoader())
-{
-    // Load from URL
-    var skill = await loader.LoadFromUrlAsync("https://example.com/SKILL.md");
-    
-    // Load from ZIP
-    var skills = await loader.LoadFromZipUrlAsync("https://example.com/skills.zip");
-    
-    // Load from GitHub
-    var ghSkill = await loader.LoadFromGitHubAsync("owner", "repo", "skills/code-review");
-    
-    // Cache management
-    var cacheInfo = loader.GetCacheInfo();
-    Console.WriteLine($"Cached: {cacheInfo.SkillCount} skills ({cacheInfo.TotalSizeFormatted})");
-    
-    loader.ClearCache();
-}
-```
-
-## Creating Skills
-
-### Local Skills
+A skill is a folder with a SKILL.md file containing YAML metadata and markdown instructions:
 
 ```
-my-skill/
-  SKILL.md              # Required
-  templates/            # Optional
-  references/           # Optional
-  scripts/              # Optional
+skills/
+  explain/
+    SKILL.md          <-- name, description, instructions
+  pros-cons/
+    SKILL.md
+  email-writer/
+    SKILL.md
 ```
 
-### Publishing Skills
+When you activate a skill, its instructions are injected into the conversation. The model follows them until you deactivate or switch to another skill.
 
-1. Create a GitHub repository
-2. Add your skill directory with SKILL.md and resources
-3. Share: `github.com/you/skills-repo/my-skill`
+## Creating Your Own Skill
 
-Others can load with:
-```
-/github you/skills-repo/my-skill
-```
+1. Create a folder under skills/ (e.g. skills/my-skill/).
+2. Add a SKILL.md file with name, description, and instructions.
+3. Restart the demo. Your skill appears automatically.
 
 ## Prerequisites
 
 - .NET 8.0 or later
-- LM-Kit.NET SDK
-- Sufficient VRAM (3-11 GB depending on model)
-- Internet connection (for remote loading)
+- 4 to 16 GB VRAM depending on the model
 
 ## Learn More
 
-- [LM-Kit.NET Documentation](https://docs.lm-kit.com)
+- [LM-Kit.NET Documentation](https://docs.lm-kit.com/lm-kit-net/)
 - [Agent Skills Specification](https://agentskills.io)
-- [LM-Kit Samples Repository](https://github.com/LM-Kit/lm-kit-net-samples)
+- [How-To: Add Skills to Your AI Assistant](https://docs.lm-kit.com/lm-kit-net/guides/how-to/add-skills-to-assistant.html)
