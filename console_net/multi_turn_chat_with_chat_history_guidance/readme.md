@@ -6,7 +6,7 @@ A demo for guiding LLM behavior using pre-populated chat history with LM-Kit.NET
 
 - Few-shot prompting via chat history examples
 - Custom persona creation through example conversations
-- Support for multiple LLMs: Ministral, Llama, Gemma, Phi, Qwen, Granite, GPT OSS
+- Support for multiple LLMs: Ministral, Llama, Gemma, Phi, Qwen, Granite, GPT OSS, GLM
 - Multi-turn conversation with context retention
 - Real-time streaming output
 

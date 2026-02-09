@@ -12,6 +12,8 @@ namespace multi_agent_document_review
         static readonly string DEFAULT_PHI4_MINI_3_8B_MODEL_PATH = @"https://huggingface.co/lm-kit/phi-4-mini-3.8b-instruct-gguf/resolve/main/Phi-4-mini-Instruct-Q4_K_M.gguf";
         static readonly string DEFAULT_QWEN3_8B_MODEL_PATH = @"https://huggingface.co/lm-kit/qwen-3-8b-instruct-gguf/resolve/main/Qwen3-8B-Q4_K_M.gguf";
         static readonly string DEFAULT_PHI4_14_7B_MODEL_PATH = @"https://huggingface.co/lm-kit/phi-4-14.7b-instruct-gguf/resolve/main/Phi-4-14.7B-Instruct-Q4_K_M.gguf";
+        static readonly string DEFAULT_OPENAI_GPT_OSS_20B_MODEL_PATH = @"https://huggingface.co/lm-kit/gpt-oss-20b-gguf/resolve/main/gpt-oss-20b-mxfp4.gguf";
+        static readonly string DEFAULT_GLM_4_7_FLASH_MODEL_PATH = @"https://huggingface.co/lm-kit/glm-4.7-flash-gguf/resolve/main/GLM-4.7-Flash-64x2.6B-Q4_K_M.gguf";
 
         static bool _isDownloading;
 
@@ -60,6 +62,8 @@ namespace multi_agent_document_review
             Console.WriteLine("2 - Meta Llama 3.1 8B (requires approximately 6 GB of VRAM)");
             Console.WriteLine("3 - Alibaba Qwen-3 8B (requires approximately 5.6 GB of VRAM)");
             Console.WriteLine("4 - Microsoft Phi-4 14.7B (requires approximately 11 GB of VRAM)");
+            Console.WriteLine("5 - Open AI GPT OSS 20B (requires approximately 16 GB of VRAM)");
+            Console.WriteLine("6 - Z.ai GLM 4.7 Flash 30B (requires approximately 18 GB of VRAM)");
             Console.Write("Other: Custom model URI\n\n> ");
 
             string? input = Console.ReadLine();
@@ -70,6 +74,8 @@ namespace multi_agent_document_review
                 "2" => DEFAULT_LLAMA3_1_8B_MODEL_PATH,
                 "3" => DEFAULT_QWEN3_8B_MODEL_PATH,
                 "4" => DEFAULT_PHI4_14_7B_MODEL_PATH,
+                "5" => DEFAULT_OPENAI_GPT_OSS_20B_MODEL_PATH,
+                "6" => DEFAULT_GLM_4_7_FLASH_MODEL_PATH,
                 _ => !string.IsNullOrWhiteSpace(input) ? input.Trim().Trim('"') : DEFAULT_GEMMA3_4B_MODEL_PATH
             };
 

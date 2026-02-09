@@ -5,7 +5,7 @@ A demo for classifying text into custom categories using LM-Kit.NET. Define your
 ## Features
 
 - Text classification with customizable categories
-- Support for multiple LLMs: Ministral, Llama, Gemma, Phi, Qwen, Granite, GPT OSS
+- Support for multiple LLMs: Ministral, Llama, Gemma, Phi, Qwen, Granite, GPT OSS, GLM
 - Confidence scoring for classification results
 - Fast inference with performance metrics
 

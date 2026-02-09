@@ -251,7 +251,7 @@ namespace document_classification
 
             var models = new (string Id, string Name, string Vram)[]
             {
-                ("minicpm-o", "MiniCPM 2.6 o 8.1B", "~5.9 GB"),
+                ("minicpm-o-45", "MiniCPM o 4.5 9B", "~5.9 GB"),
                 ("qwen3-vl:2b", "Alibaba Qwen 3 VL 2B", "~2.5 GB"),
                 ("qwen3-vl:4b", "Alibaba Qwen 3 VL 4B", "~4.5 GB"),
                 ("qwen3-vl:8b", "Alibaba Qwen 3 VL 8B", "~6.5 GB"),

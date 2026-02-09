@@ -9,7 +9,7 @@ A demo for fine-tuning text generation behavior using advanced sampling paramete
 - Repetition penalty settings
 - Logit bias to encourage or discourage specific words
 - Dynamic temperature adjustment
-- Support for multiple LLMs: Ministral, Llama, Gemma, Phi, Qwen, Granite, GPT OSS
+- Support for multiple LLMs: Ministral, Llama, Gemma, Phi, Qwen, Granite, GPT OSS, GLM
 
 ## Prerequisites
 

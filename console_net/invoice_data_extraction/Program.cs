@@ -58,7 +58,7 @@ namespace invoice_data_extraction
 
             Console.Clear();
             Console.WriteLine("Select a vision-language model to use for extraction:\n");
-            Console.WriteLine("0 - MiniCPM 2.6 o 8.1B (~5.9 GB VRAM)");
+            Console.WriteLine("0 - MiniCPM o 4.5 9B (~5.9 GB VRAM)");
             Console.WriteLine("1 - Alibaba Qwen 3 2B (~2.5 GB VRAM)");
             Console.WriteLine("2 - Alibaba Qwen 3 4B (~4.5 GB VRAM)");
             Console.WriteLine("3 - Alibaba Qwen 3 8B (~6.5 GB VRAM)");
@@ -154,7 +154,7 @@ namespace invoice_data_extraction
         {
             return input switch
             {
-                "0" => ModelCard.GetPredefinedModelCardByModelID("minicpm-o").ModelUri.ToString(),
+                "0" => ModelCard.GetPredefinedModelCardByModelID("minicpm-o-45").ModelUri.ToString(),
                 "1" => ModelCard.GetPredefinedModelCardByModelID("qwen3-vl:2b").ModelUri.ToString(),
                 "2" => ModelCard.GetPredefinedModelCardByModelID("qwen3-vl:4b").ModelUri.ToString(),
                 "3" => ModelCard.GetPredefinedModelCardByModelID("qwen3-vl:8b").ModelUri.ToString(),

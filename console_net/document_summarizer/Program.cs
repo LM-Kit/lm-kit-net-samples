@@ -50,7 +50,7 @@ namespace text_summarizer_from_document
 
             Console.Clear();
             Console.WriteLine("Please select the model you want to use:\n");
-            Console.WriteLine("0 - MiniCPM 2.6 o 8.1B (requires approximately 5.9 GB of VRAM)");
+            Console.WriteLine("0 - MiniCPM o 4.5 9B (requires approximately 5.9 GB of VRAM)");
             Console.WriteLine("1 - Alibaba Qwen 3 2B (requires approximately 2.5 GB of VRAM)");
             Console.WriteLine("2 - Alibaba Qwen 3 4B (requires approximately 4.5 GB of VRAM)");
             Console.WriteLine("3 - Alibaba Qwen 3 8B (requires approximately 6.5 GB of VRAM)");
@@ -68,7 +68,7 @@ namespace text_summarizer_from_document
             switch (input?.Trim())
             {
                 case "0":
-                    modelLink = ModelCard.GetPredefinedModelCardByModelID("minicpm-o").ModelUri.ToString();
+                    modelLink = ModelCard.GetPredefinedModelCardByModelID("minicpm-o-45").ModelUri.ToString();
                     break;
                 case "1":
                     modelLink = ModelCard.GetPredefinedModelCardByModelID("qwen3-vl:2b").ModelUri.ToString();

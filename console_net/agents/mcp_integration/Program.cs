@@ -17,6 +17,7 @@ namespace mcp_integration
         static readonly string DEFAULT_PHI4_14_7B_MODEL_PATH = @"https://huggingface.co/lm-kit/phi-4-14.7b-instruct-gguf/resolve/main/Phi-4-14.7B-Instruct-Q4_K_M.gguf";
         static readonly string DEFAULT_GRANITE_4_7B_MODEL_PATH = @"https://huggingface.co/lm-kit/granite-4.0-h-tiny-gguf/resolve/main/Granite-4.0-H-Tiny-64x994M-Q4_K_M.gguf";
         static readonly string DEFAULT_OPENAI_GPT_OSS_20B_MODEL_PATH = @"https://huggingface.co/lm-kit/gpt-oss-20b-gguf/resolve/main/gpt-oss-20b-mxfp4.gguf";
+        static readonly string DEFAULT_GLM_4_7_FLASH_MODEL_PATH = @"https://huggingface.co/lm-kit/glm-4.7-flash-gguf/resolve/main/GLM-4.7-Flash-64x2.6B-Q4_K_M.gguf";
 
         // Public servers (No Authentication)
         static readonly string ECHO_MCP_URI = "https://echo.mcp.inevitable.fyi/mcp";
@@ -78,6 +79,7 @@ namespace mcp_integration
             Console.WriteLine("5 - Microsoft Phi-4 14.7B Mini (requires approximately 11 GB of VRAM)");
             Console.WriteLine("6 - IBM Granite 4 7B (requires approximately 6 GB of VRAM)");
             Console.WriteLine("7 - Open AI GPT OSS 20B (requires approximately 16 GB of VRAM)");
+            Console.WriteLine("8 - Z.ai GLM 4.7 Flash 30B (requires approximately 18 GB of VRAM)");
             Console.Write("Other entry: A custom model URI\n\n> ");
 
             string? input = Console.ReadLine();
@@ -93,6 +95,7 @@ namespace mcp_integration
                 case "5": modelLink = DEFAULT_PHI4_14_7B_MODEL_PATH; break;
                 case "6": modelLink = DEFAULT_GRANITE_4_7B_MODEL_PATH; break;
                 case "7": modelLink = DEFAULT_OPENAI_GPT_OSS_20B_MODEL_PATH; break;
+                case "8": modelLink = DEFAULT_GLM_4_7_FLASH_MODEL_PATH; break;
                 default: modelLink = input!.Trim().Trim('"'); break;
             }
 

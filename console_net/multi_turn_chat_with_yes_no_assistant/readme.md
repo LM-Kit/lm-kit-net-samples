@@ -6,7 +6,7 @@ A demo for creating a constrained-output chatbot that only responds with "yes" o
 
 - Boolean-only responses enforced by grammar rules
 - Fact-checking chatbot use case
-- Support for multiple LLMs: Ministral, Llama, Gemma, Phi, Qwen, Granite, GPT OSS
+- Support for multiple LLMs: Ministral, Llama, Gemma, Phi, Qwen, Granite, GPT OSS, GLM
 - Greedy decoding for deterministic outputs
 - Multi-turn conversation with context
 

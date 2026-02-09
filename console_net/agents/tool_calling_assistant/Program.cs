@@ -17,6 +17,7 @@ namespace tool_calling_assistant
         static readonly string DEFAULT_GRANITE_4_7B_MODEL_PATH = @"https://huggingface.co/lm-kit/granite-4.0-h-tiny-gguf/resolve/main/Granite-4.0-H-Tiny-64x994M-Q4_K_M.gguf";
         static readonly string DEFAULT_OPENAI_GPT_OSS_20B_MODEL_PATH = @"https://huggingface.co/lm-kit/gpt-oss-20b-gguf/resolve/main/gpt-oss-20b-mxfp4.gguf";
         static readonly string DEFAULT_FALCON_H1R_7B_MODEL_PATH = @"https://huggingface.co/lm-kit/falcon-h1r-7b-gguf/resolve/main/Falcon-H1R-7B-Q4_K_M.gguf";
+        static readonly string DEFAULT_GLM_4_7_FLASH_MODEL_PATH = @"https://huggingface.co/lm-kit/glm-4.7-flash-gguf/resolve/main/GLM-4.7-Flash-64x2.6B-Q4_K_M.gguf";
 
         static bool _isDownloading;
 
@@ -68,6 +69,7 @@ namespace tool_calling_assistant
             Console.WriteLine("6 - IBM Granite 4 7B (requires approximately 6 GB of VRAM)");
             Console.WriteLine("7 - Open AI GPT OSS 20B (requires approximately 16 GB of VRAM)");
             Console.WriteLine("8 - TII Falcon H1R 7B (requires approximately 5-6 GB of VRAM)");
+            Console.WriteLine("9 - Z.ai GLM 4.7 Flash 30B (requires approximately 18 GB of VRAM)");
 
             Console.Write("Other entry: A custom model URI\n\n> ");
 
@@ -102,6 +104,9 @@ namespace tool_calling_assistant
                     break;
                 case "8":
                     modelLink = DEFAULT_FALCON_H1R_7B_MODEL_PATH; // NEW
+                    break;
+                case "9":
+                    modelLink = DEFAULT_GLM_4_7_FLASH_MODEL_PATH;
                     break;
                 default:
                     modelLink = !string.IsNullOrWhiteSpace(input)

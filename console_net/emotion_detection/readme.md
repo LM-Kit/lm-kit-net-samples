@@ -5,7 +5,7 @@ A demo for detecting emotions in text using LM-Kit.NET. Classify text into emoti
 ## Features
 
 - Emotion classification: happiness, anger, sadness, fear, neutral
-- Support for multiple LLMs: Ministral, Llama, Gemma, Phi, Qwen, Granite, GPT OSS
+- Support for multiple LLMs: Ministral, Llama, Gemma, Phi, Qwen, Granite, GPT OSS, GLM
 - Confidence scoring for predictions
 - Optional neutral emotion support
 - Performance metrics

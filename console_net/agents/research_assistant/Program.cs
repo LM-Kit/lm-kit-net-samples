@@ -15,6 +15,7 @@ namespace research_assistant
         static readonly string DEFAULT_QWEN3_14B_MODEL_PATH = @"https://huggingface.co/lm-kit/qwen-3-14b-instruct-gguf/resolve/main/Qwen3-14B-Q4_K_M.gguf";
         static readonly string DEFAULT_PHI4_14B_MODEL_PATH = @"https://huggingface.co/lm-kit/phi-4-14.7b-instruct-gguf/resolve/main/Phi-4-14.7B-Instruct-Q4_K_M.gguf";
         static readonly string DEFAULT_GPT_OSS_20B_MODEL_PATH = @"https://huggingface.co/lm-kit/gpt-oss-20b-gguf/resolve/main/gpt-oss-20b-mxfp4.gguf";
+        static readonly string DEFAULT_GLM_4_7_FLASH_MODEL_PATH = @"https://huggingface.co/lm-kit/glm-4.7-flash-gguf/resolve/main/GLM-4.7-Flash-64x2.6B-Q4_K_M.gguf";
         static readonly string DEFAULT_MISTRAL_SMALL_24B_MODEL_PATH = @"https://huggingface.co/lm-kit/mistral-small-3.2-2506-24b-instruct-gguf/resolve/main/Mistral-Small-3.2-24B-Instruct-2506-Q4_K_M.gguf";
         static readonly string DEFAULT_MAGISTRAL_SMALL_24B_MODEL_PATH = @"https://huggingface.co/lm-kit/magistral-small-2509-24b-gguf/resolve/main/Magistral-Small-2509-Q4_K_M.gguf";
         static readonly string DEFAULT_GEMMA3_27B_MODEL_PATH = @"https://huggingface.co/lm-kit/gemma-3-27b-instruct-lmk/resolve/main/gemma-3-27b-it-Q4_K_M.lmk";
@@ -69,6 +70,7 @@ namespace research_assistant
             Console.WriteLine("5 - Mistral Small 3.2 24B (requires approximately 16 GB of VRAM)");
             Console.WriteLine("6 - Mistral Magistral Small 1.2 24B (requires approximately 16 GB of VRAM)");
             Console.WriteLine("7 - Google Gemma 3 27B (requires approximately 18 GB of VRAM)");
+            Console.WriteLine("8 - Z.ai GLM 4.7 Flash 30B (requires approximately 18 GB of VRAM)");
             Console.Write("Other: Custom model URI\n\n> ");
 
             string? input = Console.ReadLine();
@@ -82,6 +84,7 @@ namespace research_assistant
                 "5" => DEFAULT_MISTRAL_SMALL_24B_MODEL_PATH,
                 "6" => DEFAULT_MAGISTRAL_SMALL_24B_MODEL_PATH,
                 "7" => DEFAULT_GEMMA3_27B_MODEL_PATH,
+                "8" => DEFAULT_GLM_4_7_FLASH_MODEL_PATH,
                 _ => !string.IsNullOrWhiteSpace(input) ? input.Trim().Trim('"') : DEFAULT_GEMMA3_12B_MODEL_PATH
             };
 

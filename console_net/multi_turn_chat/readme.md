@@ -5,7 +5,7 @@ A demo for conversational AI with context retention using LM-Kit.NET. Build inte
 ## Features
 
 - Multi-turn conversation with full context history
-- Support for multiple LLMs: Ministral, Llama, Gemma, Phi, Qwen, Granite, GPT OSS
+- Support for multiple LLMs: Ministral, Llama, Gemma, Phi, Qwen, Granite, GPT OSS, GLM
 - Regenerate or continue responses
 - Customizable system prompt
 - Real-time streaming output

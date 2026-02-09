@@ -16,6 +16,7 @@ namespace structured_data_extraction
         static readonly string DEFAULT_PHI4_14_7B_MODEL_PATH = @"https://huggingface.co/lm-kit/phi-4-14.7b-instruct-gguf/resolve/main/Phi-4-14.7B-Instruct-Q4_K_M.gguf";
         static readonly string DEFAULT_GRANITE_4_7B_MODEL_PATH = @"https://huggingface.co/lm-kit/granite-4.0-h-tiny-gguf/resolve/main/Granite-4.0-H-Tiny-64x994M-Q4_K_M.gguf";
         static readonly string DEFAULT_OPENAI_GPT_OSS_20B_MODEL_PATH = @"https://huggingface.co/lm-kit/gpt-oss-20b-gguf/resolve/main/gpt-oss-20b-mxfp4.gguf";
+        static readonly string DEFAULT_GLM_4_7_FLASH_MODEL_PATH = @"https://huggingface.co/lm-kit/glm-4.7-flash-gguf/resolve/main/GLM-4.7-Flash-64x2.6B-Q4_K_M.gguf";
         static readonly string DEFAULT_LLAMA_3_2_1B_MODEL_PATH = @"https://huggingface.co/lm-kit/llama-3.2-1b-instruct.gguf/resolve/main/Llama-3.2-1B-Instruct-Q4_K_M.gguf";
         static bool _isDownloading;
 
@@ -69,6 +70,7 @@ namespace structured_data_extraction
             Console.WriteLine("7 - Microsoft Phi-4 14.7B Mini (requires approximately 11 GB of VRAM)");
             Console.WriteLine("8 - IBM Granite 4 7B (requires approximately 6 GB of VRAM)");
             Console.WriteLine("9 - Open AI GPT OSS 20B (requires approximately 16 GB of VRAM)");
+            Console.WriteLine("10 - Z.ai GLM 4.7 Flash 30B (requires approximately 18 GB of VRAM)");
             Console.Write("Other entry: A custom model URI\n\n> ");
 
             string? input = Console.ReadLine();
@@ -105,6 +107,9 @@ namespace structured_data_extraction
                     break;
                 case "9":
                     modelLink = DEFAULT_OPENAI_GPT_OSS_20B_MODEL_PATH;
+                    break;
+                case "10":
+                    modelLink = DEFAULT_GLM_4_7_FLASH_MODEL_PATH;
                     break;
                 default:
                     modelLink = input?.Trim().Trim('"') ?? DEFAULT_MINISTRAL_3_8_MODEL_PATH;

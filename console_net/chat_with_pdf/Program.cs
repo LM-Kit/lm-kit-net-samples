@@ -51,7 +51,7 @@ namespace chat_with_pdf
 
             // Model selection
             PrintSection("Model Selection");
-            Console.WriteLine("  0 - MiniCPM 2.6 o 8.1B        (~5.9 GB VRAM)");
+            Console.WriteLine("  0 - MiniCPM o 4.5 9B          (~5.9 GB VRAM)");
             Console.WriteLine("  1 - Alibaba Qwen 3 2B         (~2.5 GB VRAM)");
             Console.WriteLine("  2 - Alibaba Qwen 3 4B         (~4.0 GB VRAM)");
             Console.WriteLine("  3 - Alibaba Qwen 3 8B         (~6.5 GB VRAM)");
@@ -107,7 +107,7 @@ namespace chat_with_pdf
             if (useDocumentUnderstanding)
             {
                 chat.PageProcessingMode = PageProcessingMode.DocumentUnderstanding;
-                chat.DocumentVisionParser = new LMKit.Extraction.Ocr.VlmOcr(LM.LoadFromModelID("lightonocr1025:1b"));
+                chat.DocumentVisionParser = new LMKit.Extraction.Ocr.VlmOcr(LM.LoadFromModelID("lightonocr-2:1b"));
                 PrintStatus("✓ Document understanding enabled", ConsoleColor.Cyan);
             }
             else
@@ -625,7 +625,7 @@ namespace chat_with_pdf
 
                 string? modelLink = input switch
                 {
-                    "0" => ModelCard.GetPredefinedModelCardByModelID("minicpm-o").ModelUri.ToString(),
+                    "0" => ModelCard.GetPredefinedModelCardByModelID("minicpm-o-45").ModelUri.ToString(),
                     "1" => ModelCard.GetPredefinedModelCardByModelID("qwen3-vl:2b").ModelUri.ToString(),
                     "2" => ModelCard.GetPredefinedModelCardByModelID("qwen3-vl:4b").ModelUri.ToString(),
                     "3" => ModelCard.GetPredefinedModelCardByModelID("qwen3-vl:8b").ModelUri.ToString(),

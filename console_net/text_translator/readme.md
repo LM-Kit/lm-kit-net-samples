@@ -5,7 +5,7 @@ A demo for translating text between languages using LM-Kit.NET. Automatically de
 ## Features
 
 - Text translation with automatic source language detection
-- Support for multiple LLMs: Ministral, Llama, Gemma, Phi, Qwen, Granite, GPT OSS
+- Support for multiple LLMs: Ministral, Llama, Gemma, Phi, Qwen, Granite, GPT OSS, GLM
 - Real-time streaming translation output
 - Multilingual support (depends on model capabilities)
 

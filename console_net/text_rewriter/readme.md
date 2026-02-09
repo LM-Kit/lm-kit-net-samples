@@ -5,7 +5,7 @@ A demo for rewriting text in different communication styles using LM-Kit.NET. Tr
 ## Features
 
 - Rewrite text in multiple communication styles
-- Support for multiple LLMs: Ministral, Llama, Gemma, Phi, Qwen, Granite, GPT OSS
+- Support for multiple LLMs: Ministral, Llama, Gemma, Phi, Qwen, Granite, GPT OSS, GLM
 - Real-time streaming output
 - Compare all styles at once
 - Multilingual support

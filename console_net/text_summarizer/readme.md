@@ -7,7 +7,7 @@ A demo for summarizing text files using LM-Kit.NET language models. Generate tit
 - Summarize text files with automatic title generation
 - Configurable maximum summary length
 - Confidence scoring for summary quality
-- Support for multiple LLMs: Ministral, Llama, Gemma, Phi, Qwen, Granite, GPT OSS
+- Support for multiple LLMs: Ministral, Llama, Gemma, Phi, Qwen, Granite, GPT OSS, GLM
 - Word count statistics (input vs. output)
 
 ## Prerequisites

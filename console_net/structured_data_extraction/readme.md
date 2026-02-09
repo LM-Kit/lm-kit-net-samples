@@ -9,7 +9,7 @@ A demo for extracting structured data from text documents using LM-Kit.NET. Defi
 - Support for arrays and complex object hierarchies
 - Multiple data types: string, integer, float, date
 - JSON output for easy integration
-- Support for multiple LLMs: Ministral, Llama, Gemma, Phi, Qwen, Granite, GPT OSS
+- Support for multiple LLMs: Ministral, Llama, Gemma, Phi, Qwen, Granite, GPT OSS, GLM
 
 ## Prerequisites
 

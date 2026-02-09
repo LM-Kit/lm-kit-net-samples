@@ -7,7 +7,7 @@ A demo for saving and restoring chat sessions across application restarts using 
 - Save chat sessions to disk
 - Restore previous conversations on startup
 - Full chat history preservation
-- Support for multiple LLMs: Ministral, Llama, Gemma, Phi, Qwen, Granite, GPT OSS
+- Support for multiple LLMs: Ministral, Llama, Gemma, Phi, Qwen, Granite, GPT OSS, GLM
 - Real-time streaming responses
 
 ## Prerequisites

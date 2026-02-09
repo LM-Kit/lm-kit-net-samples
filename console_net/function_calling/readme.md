@@ -7,7 +7,7 @@ A demo for single function calling using LM-Kit.NET. Let the model determine whi
 - Natural language to function call mapping
 - Automatic function invocation
 - Plugin-based function registration
-- Support for multiple LLMs: Ministral, Llama, Gemma, Phi, Qwen, Granite, GPT OSS
+- Support for multiple LLMs: Ministral, Llama, Gemma, Phi, Qwen, Granite, GPT OSS, GLM
 - Before-invoke event for logging and debugging
 
 ## Prerequisites

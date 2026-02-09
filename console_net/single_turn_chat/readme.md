@@ -5,7 +5,7 @@ A demo for stateless question-answering using LM-Kit.NET. Each prompt is handled
 ## Features
 
 - Stateless chat interactions (no context between turns)
-- Support for multiple LLMs: Ministral, Llama, Gemma, Phi, Qwen, Granite, GPT OSS
+- Support for multiple LLMs: Ministral, Llama, Gemma, Phi, Qwen, Granite, GPT OSS, GLM
 - Customizable system prompt
 - Real-time streaming responses
 - Performance metrics (tokens, speed, quality score)

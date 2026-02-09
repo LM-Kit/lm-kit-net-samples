@@ -14,8 +14,18 @@ using System.Text;
 //   /pros-cons    → gives balanced pros and cons for any decision
 //   /email-writer → writes a professional email from a one-line description
 //
-// Activate a skill, then chat normally. The model follows the skill's
-// instructions until you deactivate with /off.
+// Two activation modes demonstrate different ways to use skills:
+//
+//   Manual activation (SkillActivator)
+//     You control which skill is active using slash commands (/explain,
+//     /off, etc.). The app injects the skill's instructions into each
+//     message before sending it to the model.
+//
+//   Model-driven activation (SkillTool + function calling)
+//     A SkillTool is registered on the conversation. The model discovers
+//     available skills from the tool description and activates them
+//     autonomously via function calling. No slash commands needed.
+//
 // ──────────────────────────────────────────────────────────────────
 
 // Uncomment and set your license key for production use:
@@ -27,7 +37,6 @@ Console.OutputEncoding = Encoding.UTF8;
 // ── Step 1: Load skills from the bundled "skills" folder ──────────
 
 var registry = new SkillRegistry();
-var activator = new SkillActivator(registry);
 
 string skillsPath = Path.Combine(AppContext.BaseDirectory, "skills");
 
@@ -46,11 +55,17 @@ if (Directory.Exists(skillsPath))
 LM model = SelectModel();
 Console.Clear();
 
-// ── Step 3: Set up conversation ───────────────────────────────────
+// ── Step 3: Choose activation mode ────────────────────────────────
+
+bool useModelDriven = SelectActivationMode();
+Console.Clear();
+
+// ── Step 4: Set up conversation ───────────────────────────────────
 
 var chat = new MultiTurnConversation(model);
 chat.MaximumCompletionTokens = 4096;
 chat.SamplingMode = new RandomSampling { Temperature = 0.7f };
+
 chat.AfterTextCompletion += (_, e) =>
 {
     Console.ForegroundColor = e.SegmentType == TextSegmentType.InternalReasoning
@@ -59,11 +74,26 @@ chat.AfterTextCompletion += (_, e) =>
     Console.Write(e.Text);
 };
 
+if (useModelDriven)
+{
+    // Model-driven mode: register a SkillTool so the LLM can discover
+    // and activate skills autonomously through function calling.
+    var skillTool = new SkillTool(registry);
+    skillTool.SkillActivated += (_, e) =>
+    {
+        Console.ForegroundColor = ConsoleColor.Magenta;
+        Console.WriteLine("[SkillTool] Model activated skill: {0}", e.Skill.Name);
+        Console.ResetColor();
+    };
+    chat.Tools.Register(skillTool);
+}
+
+// ── Step 5: Show welcome and start chatting ───────────────────────
+
+SkillActivator? activator = useModelDriven ? null : new SkillActivator(registry);
 AgentSkill? activeSkill = null;
 
-// ── Step 4: Show welcome and start chatting ───────────────────────
-
-PrintWelcome(registry);
+PrintWelcome(registry, useModelDriven);
 
 while (true)
 {
@@ -75,8 +105,8 @@ while (true)
     if (string.IsNullOrWhiteSpace(input))
         break;
 
-    // Handle commands
-    if (input.StartsWith("/"))
+    // In manual mode, handle slash commands
+    if (!useModelDriven && input.StartsWith("/"))
     {
         string cmd = input.Trim().ToLowerInvariant();
 
@@ -129,15 +159,19 @@ while (true)
         continue;
     }
 
-    // Build the prompt: inject skill instructions if one is active
+    // Build the prompt
     string prompt = input;
-    if (activeSkill != null)
+
+    if (!useModelDriven && activeSkill != null)
     {
-        string instructions = activator.FormatForInjection(
+        // Manual mode: inject skill instructions into the message
+        string instructions = activator!.FormatForInjection(
             activeSkill,
             SkillInjectionMode.UserMessage);
         prompt = instructions + "\n\n---\n\nUser request: " + input;
     }
+    // In model-driven mode, the prompt is sent as-is. The model decides
+    // whether to call the activate_skill tool based on the user's request.
 
     // Generate response
     Console.ForegroundColor = ConsoleColor.Cyan;
@@ -151,7 +185,7 @@ while (true)
 
         Console.ForegroundColor = ConsoleColor.DarkGray;
         Console.Write("\n({0:0.0} tok/s", result.TokenGenerationRate);
-        if (activeSkill != null)
+        if (!useModelDriven && activeSkill != null)
             Console.Write(" | skill: {0}", activeSkill.Name);
         Console.WriteLine(")");
         Console.ResetColor();
@@ -177,6 +211,7 @@ static LM SelectModel()
     Console.WriteLine("  2 - Google Gemma 3 12B         (~9 GB VRAM)   [Recommended]");
     Console.WriteLine("  3 - Microsoft Phi-4 14.7B      (~11 GB VRAM)");
     Console.WriteLine("  4 - OpenAI GPT OSS 20B         (~16 GB VRAM)");
+    Console.WriteLine("  5 - Z.ai GLM 4.7 Flash 30B     (~18 GB VRAM)");
     Console.Write("\n  Or paste a custom model URI.\n\n> ");
 
     bool downloading = false;
@@ -189,6 +224,7 @@ static LM SelectModel()
         "2" => "https://huggingface.co/lm-kit/gemma-3-12b-instruct-lmk/resolve/main/gemma-3-12b-it-Q4_K_M.lmk",
         "3" => "https://huggingface.co/lm-kit/phi-4-14.7b-instruct-gguf/resolve/main/Phi-4-14.7B-Instruct-Q4_K_M.gguf",
         "4" => "https://huggingface.co/lm-kit/gpt-oss-20b-gguf/resolve/main/gpt-oss-20b-mxfp4.gguf",
+        "5" => "https://huggingface.co/lm-kit/glm-4.7-flash-gguf/resolve/main/GLM-4.7-Flash-64x2.6B-Q4_K_M.gguf",
         _ => !string.IsNullOrWhiteSpace(input) ? input.Trim().Trim('"')
             : "https://huggingface.co/lm-kit/gemma-3-12b-instruct-lmk/resolve/main/gemma-3-12b-it-Q4_K_M.lmk"
     };
@@ -209,33 +245,109 @@ static LM SelectModel()
         });
 }
 
-static void PrintWelcome(SkillRegistry registry)
+static bool SelectActivationMode()
+{
+    Console.Clear();
+    Console.WriteLine("=== Skill Activation Mode ===\n");
+    Console.ForegroundColor = ConsoleColor.Yellow;
+    Console.WriteLine("LM-Kit supports two ways to activate skills:\n");
+    Console.ResetColor();
+
+    Console.ForegroundColor = ConsoleColor.White;
+    Console.Write("  1 - Manual activation ");
+    Console.ForegroundColor = ConsoleColor.DarkGray;
+    Console.WriteLine("(SkillActivator + slash commands)");
+    Console.ResetColor();
+    Console.ForegroundColor = ConsoleColor.DarkGray;
+    Console.WriteLine("      You control which skill is active. Type /explain to activate,");
+    Console.WriteLine("      /off to deactivate. The app injects skill instructions into");
+    Console.WriteLine("      each message before sending it to the model.");
+    Console.ResetColor();
+
+    Console.WriteLine();
+
+    Console.ForegroundColor = ConsoleColor.White;
+    Console.Write("  2 - Model-driven activation ");
+    Console.ForegroundColor = ConsoleColor.DarkGray;
+    Console.WriteLine("(SkillTool + function calling)");
+    Console.ResetColor();
+    Console.ForegroundColor = ConsoleColor.DarkGray;
+    Console.WriteLine("      A SkillTool is registered as a function the model can call.");
+    Console.WriteLine("      The model reads the tool description, discovers available");
+    Console.WriteLine("      skills, and activates them autonomously. No slash commands.");
+    Console.ResetColor();
+
+    Console.Write("\n> ");
+    string? choice = Console.ReadLine();
+
+    return choice?.Trim() == "2";
+}
+
+static void PrintWelcome(SkillRegistry registry, bool modelDriven)
 {
     Console.ForegroundColor = ConsoleColor.Cyan;
     Console.WriteLine("Agent Skills Demo");
     Console.WriteLine("=================\n");
     Console.ResetColor();
 
-    Console.WriteLine("Skills are SKILL.md files that turn a generic LLM into a specialist.");
-    Console.WriteLine("Activate one, then chat normally.\n");
-
-    Console.ForegroundColor = ConsoleColor.Yellow;
-    Console.WriteLine("Available skills:");
-    Console.ResetColor();
-
-    foreach (var skill in registry.Skills.OrderBy(s => s.Name))
+    if (modelDriven)
     {
+        Console.ForegroundColor = ConsoleColor.Magenta;
+        Console.Write("Mode: ");
         Console.ForegroundColor = ConsoleColor.White;
-        Console.Write("  /{0,-22}", skill.Name);
-        Console.ForegroundColor = ConsoleColor.DarkGray;
-        Console.WriteLine(skill.Description);
-    }
+        Console.WriteLine("Model-driven activation (SkillTool + function calling)\n");
+        Console.ResetColor();
 
-    Console.ResetColor();
-    Console.WriteLine();
-    Console.ForegroundColor = ConsoleColor.DarkGray;
-    Console.WriteLine("Try it:  type /explain  then type \"blockchain\"");
-    Console.ResetColor();
+        Console.WriteLine("The model has access to an activate_skill tool and can discover");
+        Console.WriteLine("skills on its own. Just describe what you need.\n");
+
+        Console.ForegroundColor = ConsoleColor.Yellow;
+        Console.WriteLine("Available skills the model can activate:");
+        Console.ResetColor();
+
+        foreach (var skill in registry.Skills.OrderBy(s => s.Name))
+        {
+            Console.ForegroundColor = ConsoleColor.White;
+            Console.Write("  {0,-22}", skill.Name);
+            Console.ForegroundColor = ConsoleColor.DarkGray;
+            Console.WriteLine(skill.Description);
+        }
+
+        Console.ResetColor();
+        Console.WriteLine();
+        Console.ForegroundColor = ConsoleColor.DarkGray;
+        Console.WriteLine("Try it:  type \"explain what blockchain is\" or \"write me an email to thank a vendor\"");
+        Console.ResetColor();
+    }
+    else
+    {
+        Console.ForegroundColor = ConsoleColor.Magenta;
+        Console.Write("Mode: ");
+        Console.ForegroundColor = ConsoleColor.White;
+        Console.WriteLine("Manual activation (SkillActivator + slash commands)\n");
+        Console.ResetColor();
+
+        Console.WriteLine("Skills are SKILL.md files that turn a generic LLM into a specialist.");
+        Console.WriteLine("Activate one with a slash command, then chat normally.\n");
+
+        Console.ForegroundColor = ConsoleColor.Yellow;
+        Console.WriteLine("Available skills:");
+        Console.ResetColor();
+
+        foreach (var skill in registry.Skills.OrderBy(s => s.Name))
+        {
+            Console.ForegroundColor = ConsoleColor.White;
+            Console.Write("  /{0,-22}", skill.Name);
+            Console.ForegroundColor = ConsoleColor.DarkGray;
+            Console.WriteLine(skill.Description);
+        }
+
+        Console.ResetColor();
+        Console.WriteLine();
+        Console.ForegroundColor = ConsoleColor.DarkGray;
+        Console.WriteLine("Try it:  type /explain  then type \"blockchain\"");
+        Console.ResetColor();
+    }
 }
 
 static void PrintSkills(SkillRegistry registry, AgentSkill? active)

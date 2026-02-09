@@ -51,8 +51,8 @@ namespace document_to_markdown
 
             Console.Clear();
             Console.WriteLine("Please select the model you want to use:\n");
-            Console.WriteLine("0 - LightOn LightOnOCR 1025 1B (requires approximately 2 GB of VRAM)");
-            Console.WriteLine("1 - MiniCPM 2.6 o 8.1B (requires approximately 5.9 GB of VRAM)");
+            Console.WriteLine("0 - LightOn LightOnOCR 2 1B (requires approximately 2 GB of VRAM) (recommended)");
+            Console.WriteLine("1 - MiniCPM o 4.5 9B (requires approximately 5.9 GB of VRAM)");
             Console.WriteLine("2 - Alibaba Qwen 3 2B (requires approximately 2.5 GB of VRAM)");
             Console.WriteLine("3 - Alibaba Qwen 3 4B (requires approximately 4 GB of VRAM)");
             Console.WriteLine("4 - Alibaba Qwen 3 8B (requires approximately 6.5 GB of VRAM)");
@@ -70,10 +70,10 @@ namespace document_to_markdown
             switch (input.Trim())
             {
                 case "0":
-                    modelLink = ModelCard.GetPredefinedModelCardByModelID("lightonocr1025:1b").ModelUri.ToString();
+                    modelLink = ModelCard.GetPredefinedModelCardByModelID("lightonocr-2:1b").ModelUri.ToString();
                     break;
                 case "1":
-                    modelLink = ModelCard.GetPredefinedModelCardByModelID("minicpm-o").ModelUri.ToString();
+                    modelLink = ModelCard.GetPredefinedModelCardByModelID("minicpm-o-45").ModelUri.ToString();
                     break;
                 case "2":
                     modelLink = ModelCard.GetPredefinedModelCardByModelID("qwen3-vl:2b").ModelUri.ToString();

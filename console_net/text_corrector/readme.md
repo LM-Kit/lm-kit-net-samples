@@ -1,4 +1,4 @@
-﻿# Text Corrector
+# Text Corrector
 
 A demo for correcting grammar, spelling, and punctuation errors in text using LM-Kit.NET language models.
 
@@ -7,14 +7,14 @@ A demo for correcting grammar, spelling, and punctuation errors in text using LM
 - Fix grammar mistakes and typos
 - Correct punctuation and capitalization
 - Preserve original meaning while improving clarity
-- Support for multiple LLMs: Ministral, Llama, Gemma, Phi, Qwen, Granite, GPT OSS
+- Support for multiple LLMs: Ministral, Llama, Gemma, Phi, Qwen, Granite, GPT OSS, GLM
 - Real-time streaming output
 
 ## Prerequisites
 
 - .NET 8.0 or later
 - LM-Kit.NET SDK
-- Sufficient VRAM for the selected model (3–16 GB depending on model choice)
+- Sufficient VRAM for the selected model (3�16 GB depending on model choice)
 
 ## Usage
 
@@ -39,7 +39,7 @@ A demo for correcting grammar, spelling, and punctuation errors in text using LM
 - Their/there/they're confusion
 - Its/it's confusion
 - Your/you're confusion
-- Could of → could have
+- Could of ? could have
 - Affect vs. effect
 - Run-on sentences
 - Missing punctuation

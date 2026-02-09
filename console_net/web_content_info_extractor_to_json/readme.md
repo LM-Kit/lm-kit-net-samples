@@ -6,7 +6,7 @@ A demo for extracting and summarizing web page content into structured JSON usin
 
 - Fetch and analyze web pages by URL
 - Extract structured information with JSON grammar constraints
-- Support for multiple LLMs: Ministral, Llama, Gemma, Phi, Qwen, Granite, GPT OSS
+- Support for multiple LLMs: Ministral, Llama, Gemma, Phi, Qwen, Granite, GPT OSS, GLM
 - Guaranteed valid JSON output
 - Real-time streaming response
 

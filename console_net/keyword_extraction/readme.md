@@ -5,7 +5,7 @@ A demo for extracting keywords from PDF files, images, and text documents using 
 ## Features
 
 - Extract keywords from documents, images, and text files
-- Support for multiple LLMs: Ministral, Llama, Gemma, Phi, Qwen, Granite, GPT OSS
+- Support for multiple LLMs: Ministral, Llama, Gemma, Phi, Qwen, Granite, GPT OSS, GLM
 - Configurable keyword count
 - Confidence scoring for extraction quality
 - Performance metrics (processing time, word count)

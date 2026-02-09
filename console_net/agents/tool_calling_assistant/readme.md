@@ -5,7 +5,7 @@ A demo for multi-turn conversations with custom tool calling using LM-Kit.NET. E
 ## Features
 
 - Multi-turn chat with function calling / tool use
-- Support for multiple LLMs: Ministral, Llama, Gemma, Phi, Qwen, Granite, GPT OSS
+- Support for multiple LLMs: Ministral, Llama, Gemma, Phi, Qwen, Granite, GPT OSS, GLM
 - Sample tools included:
   - **Currency Tool**: Currency conversion
   - **Weather Tool**: Weather information lookup
