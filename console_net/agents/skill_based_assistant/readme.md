@@ -45,15 +45,10 @@ var result = chat.Submit("explain what blockchain is");
 ### When to Use Which
 
 | Criteria | Manual (SkillActivator) | Model-Driven (SkillTool) |
-
 |----------|------------------------|---------------------------|
-
 | User controls activation | Yes, via slash commands | No, model decides |
-
 | Requires function calling | No | Yes |
-
 | Best for | Predictable apps, menus | Autonomous agents |
-
 | Skill discovery | User picks from a list | Model reads tool description |
 
 
@@ -62,13 +57,9 @@ var result = chat.Submit("explain what blockchain is");
 Three bundled skills, each works from a single line of input:
 
 | Command | You type | You get |
-
 |---------|----------|----------|
-
 | /explain | "blockchain" | Clear, jargon-free explanation with analogy and example |
-
 | /pros-cons | "electric cars" | Balanced table of pros, cons, and a bottom line |
-
 | /email-writer | "thank a vendor for fast delivery" | Complete professional email with subject line |
 
 
@@ -158,17 +149,11 @@ transactions in a way no single person can alter.
 
 | Command | Description |
 |---------|-------------|
-
 | /explain | Activate the plain-language explainer |
-
 | /pros-cons | Activate the pros and cons analyst |
-
 | /email-writer | Activate the email writer |
-
 | /off | Deactivate the current skill |
-
 | /skills | List all available skills |
-
 | /help | Show available commands |
 
 
