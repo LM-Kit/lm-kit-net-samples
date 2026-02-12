@@ -1,4 +1,5 @@
-﻿using LMKit.Mcp.Client;
+﻿using LMKit.Mcp.Abstractions;
+using LMKit.Mcp.Client;
 using LMKit.Model;
 using LMKit.TextGeneration;
 using LMKit.TextGeneration.Sampling;
@@ -34,6 +35,7 @@ namespace mcp_integration
         static readonly string HUGGINGFACE_MCP_URI = "https://huggingface.co/mcp";
 
         static bool _isDownloading;
+        static LM? _model;
 
         private static bool ModelDownloadingProgress(string path, long? contentLength, long bytesRead)
         {
@@ -100,14 +102,14 @@ namespace mcp_integration
             }
 
             Uri modelUri = new(modelLink);
-            LM model = new(
+            _model = new LM(
                 modelUri,
                 downloadingProgress: ModelDownloadingProgress,
                 loadingProgress: ModelLoadingProgress);
 
             Console.Clear();
 
-            MultiTurnConversation chat = new(model);
+            MultiTurnConversation chat = new(_model);
             chat.MaximumCompletionTokens = 2048;
             chat.SamplingMode = new RandomSampling { Temperature = 0.8f };
             chat.AfterTextCompletion += Chat_AfterTextCompletion;
@@ -186,6 +188,30 @@ namespace mcp_integration
                     chat.ClearHistory();
                     prompt = FIRST_MESSAGE;
                 }
+                else if (string.Compare(prompt, "/resources", true) == 0)
+                {
+                    ShowResources(mcpClient);
+                    prompt = " ";
+                    continue;
+                }
+                else if (string.Compare(prompt, "/capabilities", true) == 0)
+                {
+                    ShowCapabilities(mcpClient);
+                    prompt = " ";
+                    continue;
+                }
+                else if (string.Compare(prompt, "/roots", true) == 0)
+                {
+                    ManageRoots(mcpClient);
+                    prompt = " ";
+                    continue;
+                }
+                else if (string.Compare(prompt, "/loglevel", true) == 0)
+                {
+                    SetLogLevel(mcpClient);
+                    prompt = " ";
+                    continue;
+                }
             }
 
             // Clean up
@@ -245,7 +271,7 @@ namespace mcp_integration
 
             McpClient mcpClient = new(serverUri);
 
-            // Handle catalog changes (tools, resources, prompts updates)
+            // ── Catalog change events ──────────────────────────────────────
             mcpClient.CatalogChanged += (sender, e) =>
             {
                 Console.ForegroundColor = ConsoleColor.Cyan;
@@ -262,7 +288,7 @@ namespace mcp_integration
                 Console.ResetColor();
             };
 
-            // Handle authentication failures (event) - provides EventArgs with StatusCode
+            // ── Authentication failure ─────────────────────────────────────
             mcpClient.AuthFailed += (sender, e) =>
             {
                 Console.ForegroundColor = ConsoleColor.Red;
@@ -270,7 +296,7 @@ namespace mcp_integration
                 Console.ResetColor();
             };
 
-            // Log received messages from MCP server (event) - provides EventArgs with Method, StatusCode, BodySnippet
+            // ── Received / Sending (protocol tracing) ──────────────────────
             mcpClient.Received += (sender, e) =>
             {
                 Console.ForegroundColor = ConsoleColor.DarkGray;
@@ -279,13 +305,156 @@ namespace mcp_integration
                 Console.ResetColor();
             };
 
-            // Log sent messages to MCP server (event) - provides EventArgs with Method, Parameters
             mcpClient.Sending += (sender, e) =>
             {
                 Console.ForegroundColor = ConsoleColor.DarkGray;
                 Console.WriteLine("\n[MCP Sending] {0} | {1}",
                     e.Method,
                     TruncateMessage(e.Parameters == null ? "null" : JsonSerializer.Serialize(e.Parameters)));
+                Console.ResetColor();
+            };
+
+            // ── Sampling: server can request LLM completions from the client ──
+            mcpClient.SetSamplingHandler((request, cancellationToken) =>
+            {
+                Console.ForegroundColor = ConsoleColor.Magenta;
+                Console.WriteLine("\n[MCP Sampling] Server requested completion ({0} message(s), max {1} tokens)",
+                    request.Messages.Count,
+                    request.MaxTokens);
+
+                if (!string.IsNullOrEmpty(request.SystemPrompt))
+                {
+                    Console.WriteLine("[MCP Sampling] System prompt: {0}", TruncateMessage(request.SystemPrompt));
+                }
+
+                Console.ResetColor();
+
+                // Use the loaded model to fulfill the sampling request
+                if (_model != null)
+                {
+                    var samplingChat = new MultiTurnConversation(_model);
+                    samplingChat.MaximumCompletionTokens = request.MaxTokens > 0 ? request.MaxTokens : 512;
+
+                    if (!string.IsNullOrEmpty(request.SystemPrompt))
+                    {
+                        samplingChat.SystemPrompt = request.SystemPrompt;
+                    }
+
+                    // Build the prompt from the last user message
+                    string prompt = "Hello";
+                    foreach (var msg in request.Messages)
+                    {
+                        if (msg.Role == McpMessageRole.User && msg.Content?.Text != null)
+                        {
+                            prompt = msg.Content.Text;
+                        }
+                    }
+
+                    var result = samplingChat.Submit(prompt, cancellationToken);
+
+                    Console.ForegroundColor = ConsoleColor.Magenta;
+                    Console.WriteLine("[MCP Sampling] Completed ({0} tokens)", result.GeneratedTokens.Count);
+                    Console.ResetColor();
+
+                    return Task.FromResult(McpSamplingResponse.FromText(
+                        result.Completion,
+                        "local-model",
+                        McpStopReason.EndTurn));
+                }
+
+                return Task.FromResult(McpSamplingResponse.FromText(
+                    "Model not available for sampling.",
+                    "none",
+                    McpStopReason.EndTurn));
+            });
+
+            // ── Elicitation: server requests structured user input ─────────
+            mcpClient.SetElicitationHandler((request, cancellationToken) =>
+            {
+                Console.ForegroundColor = ConsoleColor.Yellow;
+                Console.WriteLine("\n[MCP Elicitation] Server requests input: {0}", request.Message);
+
+                if (!string.IsNullOrEmpty(request.RequestedSchema))
+                {
+                    Console.WriteLine("[MCP Elicitation] Schema: {0}", TruncateMessage(request.RequestedSchema));
+                }
+
+                Console.Write("[MCP Elicitation] Your response (or 'decline'): ");
+                Console.ResetColor();
+
+                string? userInput = Console.ReadLine();
+
+                if (string.IsNullOrWhiteSpace(userInput) ||
+                    string.Compare(userInput.Trim(), "decline", true) == 0)
+                {
+                    return Task.FromResult(McpElicitationResponse.Decline());
+                }
+
+                var content = new Dictionary<string, object> { ["response"] = userInput.Trim() };
+                return Task.FromResult(McpElicitationResponse.Accept(content));
+            });
+
+            // ── Roots: server can request filesystem boundaries ────────────
+            mcpClient.RootsRequested += (sender, e) =>
+            {
+                Console.ForegroundColor = ConsoleColor.DarkCyan;
+                Console.WriteLine("\n[MCP Roots] Server requested root list ({0} root(s) configured)",
+                    mcpClient.Roots.Count);
+                Console.ResetColor();
+            };
+
+            // ── Progress: track long-running server operations ─────────────
+            mcpClient.ProgressReceived += (sender, e) =>
+            {
+                Console.ForegroundColor = ConsoleColor.DarkYellow;
+                string progressText = e.Percentage.HasValue
+                    ? $"{e.Percentage.Value:F0}%"
+                    : $"{e.Progress}/{e.Total?.ToString() ?? "?"}";
+                Console.Write("\r[MCP Progress] {0}", progressText);
+                if (!string.IsNullOrEmpty(e.Message))
+                {
+                    Console.Write(" - {0}", e.Message);
+                }
+                Console.WriteLine();
+                Console.ResetColor();
+            };
+
+            // ── Logging: structured server-side log messages ───────────────
+            mcpClient.LogMessageReceived += (sender, e) =>
+            {
+                ConsoleColor color = e.Level switch
+                {
+                    McpLogLevel.Error or McpLogLevel.Critical or
+                    McpLogLevel.Alert or McpLogLevel.Emergency => ConsoleColor.Red,
+                    McpLogLevel.Warning => ConsoleColor.DarkYellow,
+                    McpLogLevel.Notice or McpLogLevel.Info => ConsoleColor.DarkGray,
+                    _ => ConsoleColor.DarkGray
+                };
+                Console.ForegroundColor = color;
+                Console.WriteLine("[MCP Log] [{0}] {1}: {2}",
+                    e.Level,
+                    e.Logger ?? "server",
+                    TruncateMessage(e.Data ?? ""));
+                Console.ResetColor();
+            };
+
+            // ── Resource subscriptions: real-time update notifications ─────
+            mcpClient.ResourceUpdated += (sender, e) =>
+            {
+                Console.ForegroundColor = ConsoleColor.Cyan;
+                Console.WriteLine("\n[MCP Resource] Updated: {0} at {1}",
+                    e.Uri,
+                    e.Timestamp.ToLocalTime().ToString("HH:mm:ss"));
+                Console.ResetColor();
+            };
+
+            // ── Cancellation: server-initiated request cancellation ────────
+            mcpClient.CancellationReceived += (sender, e) =>
+            {
+                Console.ForegroundColor = ConsoleColor.Red;
+                Console.WriteLine("\n[MCP Cancel] Request {0} cancelled{1}",
+                    e.RequestId,
+                    string.IsNullOrEmpty(e.Reason) ? "" : $": {e.Reason}");
                 Console.ResetColor();
             };
 
@@ -300,9 +469,165 @@ namespace mcp_integration
                 }
             }
 
+            // Add a default filesystem root for servers that use it
+            mcpClient.AddRoot(Environment.CurrentDirectory, "working-directory", notifyServer: false);
+
             chat.Tools.Register(mcpClient);
 
+            // Display server capabilities after connection
+            ShowCapabilities(mcpClient);
+
             return mcpClient;
+        }
+
+        private static void ShowCapabilities(McpClient mcpClient)
+        {
+            Console.ForegroundColor = ConsoleColor.Cyan;
+            Console.WriteLine("\n── Server Capabilities ──");
+
+            if (mcpClient.HasCapability(McpServerCapabilities.Tools))
+                Console.WriteLine("  [x] Tools");
+            if (mcpClient.HasCapability(McpServerCapabilities.Resources))
+                Console.WriteLine("  [x] Resources");
+            if (mcpClient.HasCapability(McpServerCapabilities.Prompts))
+                Console.WriteLine("  [x] Prompts");
+            if (mcpClient.HasCapability(McpServerCapabilities.Logging))
+                Console.WriteLine("  [x] Logging");
+            if (mcpClient.HasCapability(McpServerCapabilities.Completions))
+                Console.WriteLine("  [x] Completions");
+
+            Console.WriteLine("  Session: {0}", mcpClient.SessionId ?? "n/a");
+            Console.WriteLine("  Roots: {0} configured", mcpClient.Roots.Count);
+            Console.ResetColor();
+            Console.WriteLine();
+        }
+
+        private static void ShowResources(McpClient mcpClient)
+        {
+            if (!mcpClient.HasCapability(McpServerCapabilities.Resources))
+            {
+                Console.ForegroundColor = ConsoleColor.DarkYellow;
+                Console.WriteLine("This server does not support resources.");
+                Console.ResetColor();
+                return;
+            }
+
+            Console.ForegroundColor = ConsoleColor.Cyan;
+            Console.WriteLine("\n── Resources ──");
+
+            // List resources
+            var resources = mcpClient.GetResources();
+            if (resources.Count == 0)
+            {
+                Console.WriteLine("  No resources available.");
+            }
+            else
+            {
+                int i = 0;
+                foreach (var res in resources)
+                {
+                    Console.WriteLine("  {0}. {1} ({2})", i++, res.Name, res.Uri);
+                    if (!string.IsNullOrEmpty(res.Description))
+                    {
+                        Console.WriteLine("     {0}", TruncateMessage(res.Description));
+                    }
+                }
+            }
+
+            // List resource templates
+            var templates = mcpClient.GetResourceTemplates();
+            if (templates.Count > 0)
+            {
+                Console.WriteLine("\n── Resource Templates ──");
+                foreach (var tmpl in templates)
+                {
+                    Console.WriteLine("  {0}: {1}", tmpl.Name, tmpl.UriTemplate);
+                    if (!string.IsNullOrEmpty(tmpl.Description))
+                    {
+                        Console.WriteLine("     {0}", TruncateMessage(tmpl.Description));
+                    }
+                }
+            }
+
+            // Offer to subscribe
+            Console.Write("\nEnter a resource URI to subscribe (or press Enter to skip): ");
+            Console.ResetColor();
+            string? subUri = Console.ReadLine();
+            if (!string.IsNullOrWhiteSpace(subUri))
+            {
+                mcpClient.SubscribeToResource(subUri.Trim());
+                Console.ForegroundColor = ConsoleColor.Green;
+                Console.WriteLine("Subscribed to: {0}", subUri.Trim());
+                Console.ResetColor();
+            }
+        }
+
+        private static void ManageRoots(McpClient mcpClient)
+        {
+            Console.ForegroundColor = ConsoleColor.Cyan;
+            Console.WriteLine("\n── Filesystem Roots ──");
+
+            if (mcpClient.Roots.Count == 0)
+            {
+                Console.WriteLine("  No roots configured.");
+            }
+            else
+            {
+                for (int i = 0; i < mcpClient.Roots.Count; i++)
+                {
+                    Console.WriteLine("  {0}. {1} ({2})", i, mcpClient.Roots[i].Name, mcpClient.Roots[i].Uri);
+                }
+            }
+
+            Console.Write("\nEnter a directory path to add as root (or press Enter to skip): ");
+            Console.ResetColor();
+            string? rootPath = Console.ReadLine();
+            if (!string.IsNullOrWhiteSpace(rootPath))
+            {
+                Console.Write("Root name (optional): ");
+                string? rootName = Console.ReadLine();
+                mcpClient.AddRoot(rootPath.Trim(), string.IsNullOrWhiteSpace(rootName) ? null : rootName.Trim());
+                Console.ForegroundColor = ConsoleColor.Green;
+                Console.WriteLine("Root added: {0}", rootPath.Trim());
+                Console.ResetColor();
+            }
+        }
+
+        private static void SetLogLevel(McpClient mcpClient)
+        {
+            if (!mcpClient.HasCapability(McpServerCapabilities.Logging))
+            {
+                Console.ForegroundColor = ConsoleColor.DarkYellow;
+                Console.WriteLine("This server does not support logging.");
+                Console.ResetColor();
+                return;
+            }
+
+            Console.ForegroundColor = ConsoleColor.Cyan;
+            Console.WriteLine("\n── Set Server Log Level ──");
+            Console.WriteLine("  0 - Debug");
+            Console.WriteLine("  1 - Info");
+            Console.WriteLine("  2 - Notice");
+            Console.WriteLine("  3 - Warning");
+            Console.WriteLine("  4 - Error");
+            Console.Write("> ");
+            Console.ResetColor();
+
+            string? levelInput = Console.ReadLine();
+            McpLogLevel level = levelInput?.Trim() switch
+            {
+                "0" => McpLogLevel.Debug,
+                "1" => McpLogLevel.Info,
+                "2" => McpLogLevel.Notice,
+                "3" => McpLogLevel.Warning,
+                "4" => McpLogLevel.Error,
+                _ => McpLogLevel.Info
+            };
+
+            mcpClient.SetLogLevel(level);
+            Console.ForegroundColor = ConsoleColor.Green;
+            Console.WriteLine("Log level set to: {0}", level);
+            Console.ResetColor();
         }
 
         private static string TruncateMessage(string message)
@@ -318,11 +643,15 @@ namespace mcp_integration
 
         private static void ShowSpecialPrompts()
         {
-            Console.WriteLine("-- Special Prompts --");
+            Console.WriteLine("-- Special Commands --");
             Console.WriteLine("Use '/reset' to start a fresh session.");
             Console.WriteLine("Use '/continue' to continue last assistant message.");
             Console.WriteLine("Use '/regenerate' to obtain a new completion from the last input.");
-            Console.WriteLine("Use '/server' to switch to a different MCP server.\n\n");
+            Console.WriteLine("Use '/server' to switch to a different MCP server.");
+            Console.WriteLine("Use '/resources' to browse resources and subscribe to updates.");
+            Console.WriteLine("Use '/capabilities' to view server capabilities.");
+            Console.WriteLine("Use '/roots' to manage filesystem roots.");
+            Console.WriteLine("Use '/loglevel' to set the server log level.\n\n");
         }
 
         private static void Chat_AfterTextCompletion(

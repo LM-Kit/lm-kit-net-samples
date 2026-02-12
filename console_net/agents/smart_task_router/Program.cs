@@ -1,6 +1,8 @@
 using LMKit.Agents;
 using LMKit.Agents.Orchestration;
+using LMKit.Agents.Orchestration.Streaming;
 using LMKit.Model;
+using System.Diagnostics;
 using System.Text;
 
 namespace smart_task_router
@@ -41,6 +43,118 @@ namespace smart_task_router
             }
             Console.Write($"\rLoading model {Math.Round(progress * 100)}%");
             return true;
+        }
+
+        private static DelegateOrchestrationStreamHandler CreateStreamHandler()
+        {
+            string? currentAgent = null;
+            var stopwatch = new Stopwatch();
+
+            return new DelegateOrchestrationStreamHandler(
+                onStart: (orchestrator, input) =>
+                {
+                    stopwatch.Restart();
+                    Console.ForegroundColor = ConsoleColor.Magenta;
+                    Console.WriteLine($"╔══ Orchestration Started ({orchestrator.Name}) ══╗");
+                    Console.ResetColor();
+                },
+                onToken: token =>
+                {
+                    switch (token.Type)
+                    {
+                        case OrchestrationStreamTokenType.AgentStarted:
+                            currentAgent = token.AgentName;
+                            Console.ForegroundColor = ConsoleColor.Yellow;
+                            Console.WriteLine($"\n▶ [{token.AgentName}] Thinking... (Step {token.Step})");
+                            Console.ResetColor();
+                            break;
+
+                        case OrchestrationStreamTokenType.Content:
+                            Console.Write(token.Text);
+                            break;
+
+                        case OrchestrationStreamTokenType.Thinking:
+                            Console.ForegroundColor = ConsoleColor.DarkGray;
+                            Console.Write(token.Text);
+                            Console.ResetColor();
+                            break;
+
+                        case OrchestrationStreamTokenType.ToolCall:
+                            string toolName = token.Metadata.TryGetValue("tool_name", out var tn) ? tn?.ToString() ?? "tool" : "tool";
+                            string toolArgs = token.Metadata.TryGetValue("arguments", out var a) ? a?.ToString() ?? "" : "";
+                            Console.ForegroundColor = ConsoleColor.Blue;
+                            Console.Write($"\n   🔧 Calling tool: {toolName}");
+                            if (!string.IsNullOrEmpty(toolArgs))
+                            {
+                                string preview = toolArgs.Length > 120 ? toolArgs.Substring(0, 120) + "..." : toolArgs;
+                                Console.Write($" ({preview})");
+                            }
+                            Console.WriteLine();
+                            Console.ResetColor();
+                            break;
+
+                        case OrchestrationStreamTokenType.ToolResult:
+                            string resultToolName = token.Metadata.TryGetValue("tool_name", out var rtn) ? rtn?.ToString() ?? "tool" : "tool";
+                            string resultContent = token.Metadata.TryGetValue("result", out var r) ? r?.ToString() ?? "" : "";
+                            Console.ForegroundColor = ConsoleColor.Green;
+                            Console.Write($"   ✓ {resultToolName} returned");
+                            if (!string.IsNullOrEmpty(resultContent))
+                            {
+                                string preview = resultContent.Length > 120 ? resultContent.Substring(0, 120) + "..." : resultContent;
+                                Console.Write($": {preview}");
+                            }
+                            Console.WriteLine();
+                            Console.ResetColor();
+                            break;
+
+                        case OrchestrationStreamTokenType.AgentCompleted:
+                            Console.ForegroundColor = ConsoleColor.DarkCyan;
+                            Console.WriteLine($"\n◀ [{token.AgentName}] Done");
+                            Console.ResetColor();
+                            break;
+
+                        case OrchestrationStreamTokenType.Delegation:
+                            string toAgent = token.Metadata.TryGetValue("to_agent", out var ta) ? ta?.ToString() ?? "?" : "?";
+                            string delegatedTask = token.Metadata.TryGetValue("task", out var t) ? t?.ToString() ?? "" : "";
+                            Console.ForegroundColor = ConsoleColor.Yellow;
+                            Console.Write($"\n   → Delegating to {toAgent}");
+                            if (!string.IsNullOrEmpty(delegatedTask))
+                            {
+                                string preview = delegatedTask.Length > 100 ? delegatedTask.Substring(0, 100) + "..." : delegatedTask;
+                                Console.Write($": {preview}");
+                            }
+                            Console.WriteLine();
+                            Console.ResetColor();
+                            break;
+
+                        case OrchestrationStreamTokenType.Status:
+                            Console.ForegroundColor = ConsoleColor.DarkYellow;
+                            Console.WriteLine($"   [Status] {token.Text}");
+                            Console.ResetColor();
+                            break;
+
+                        case OrchestrationStreamTokenType.Error:
+                            Console.ForegroundColor = ConsoleColor.Red;
+                            Console.WriteLine($"   [Error] {token.Text}");
+                            Console.ResetColor();
+                            break;
+                    }
+                },
+                onComplete: result =>
+                {
+                    stopwatch.Stop();
+                    Console.WriteLine();
+                    Console.ForegroundColor = ConsoleColor.Magenta;
+                    Console.WriteLine($"╚══ Orchestration Complete ({stopwatch.Elapsed.TotalSeconds:F1}s) ══╝");
+                    Console.ResetColor();
+                    currentAgent = null;
+                },
+                onError: ex =>
+                {
+                    Console.ForegroundColor = ConsoleColor.Red;
+                    Console.WriteLine($"\n[Exception] {ex.Message}");
+                    Console.ResetColor();
+                });
         }
 
         private static async Task Main(string[] args)
@@ -90,7 +204,8 @@ namespace smart_task_router
 
             // Create specialized worker agents
             var codeExpert = Agent.CreateBuilder(model)
-                .WithPersona(@"CodeExpert - You are an expert programmer and software developer.
+                .WithPersona("CodeExpert")
+                .WithInstruction(@"You are an expert programmer and software developer.
 Your specialties include:
 - Writing clean, efficient code in multiple languages
 - Debugging and code review
@@ -103,7 +218,8 @@ When explaining concepts, use code examples to illustrate.")
                 .Build();
 
             var dataAnalyst = Agent.CreateBuilder(model)
-                .WithPersona(@"DataAnalyst - You are an expert data analyst with strong statistical skills.
+                .WithPersona("DataAnalyst")
+                .WithInstruction(@"You are an expert data analyst with strong statistical skills.
 Your specialties include:
 - Analyzing numerical data and identifying trends
 - Creating summaries and insights from data
@@ -116,7 +232,8 @@ Use tables and structured formats to present findings clearly.")
                 .Build();
 
             var writer = Agent.CreateBuilder(model)
-                .WithPersona(@"Writer - You are a professional technical writer and content creator.
+                .WithPersona("Writer")
+                .WithInstruction(@"You are a professional technical writer and content creator.
 Your specialties include:
 - Writing clear documentation and guides
 - Creating engaging articles and explanations
@@ -129,7 +246,8 @@ Structure content logically with headers and bullet points where appropriate.")
                 .Build();
 
             var researcher = Agent.CreateBuilder(model)
-                .WithPersona(@"Researcher - You are a thorough researcher and knowledge synthesizer.
+                .WithPersona("Researcher")
+                .WithInstruction(@"You are a thorough researcher and knowledge synthesizer.
 Your specialties include:
 - Deep diving into topics to gather comprehensive information
 - Comparing and contrasting different approaches
@@ -142,22 +260,16 @@ Cite the basis for your conclusions.")
                 .Build();
 
             // Create the supervisor agent
+            // Note: The SupervisorOrchestrator automatically injects a prompt listing
+            // available workers and delegation instructions.
             var supervisorAgent = Agent.CreateBuilder(model)
-                .WithPersona(@"You are a Task Coordinator responsible for routing user requests to the right specialists.
-
-Available specialists:
-- CodeExpert: Programming, code writing, debugging, software development
-- DataAnalyst: Data analysis, statistics, trends, metrics interpretation
-- Writer: Documentation, content creation, explanations, editing
-- Researcher: Information gathering, comparisons, deep dives, learning
-
-For each user request:
+                .WithPersona("TaskCoordinator")
+                .WithInstruction(@"For each user request:
 1. Analyze what type of expertise is needed
 2. Delegate to the most appropriate specialist(s)
 3. If a task needs multiple skills, delegate to each relevant specialist
-4. Combine responses into a coherent final answer
-
-Always explain your routing decision briefly before delegating.")
+4. When a single worker handles the task, relay their full response without summarizing
+5. When multiple workers contribute, combine their responses into a coherent answer")
                 .WithPlanning(PlanningStrategy.ChainOfThought)
                 .Build();
 
@@ -168,23 +280,6 @@ Always explain your routing decision briefly before delegating.")
                 .AddWorker(writer)
                 .AddWorker(researcher);
 
-            // Set up event handlers to show delegation in real-time
-            supervisor.BeforeAgentExecution += (sender, e) =>
-            {
-                Console.ForegroundColor = ConsoleColor.Yellow;
-                Console.WriteLine($"\n>> Executing agent...");
-                var inputPreview = e.OriginalInput.Length > 100 ? e.OriginalInput.Substring(0, 100) + "..." : e.OriginalInput;
-                Console.WriteLine($"   Input: {inputPreview}");
-                Console.ResetColor();
-            };
-
-            supervisor.AfterAgentExecution += (sender, e) =>
-            {
-                Console.ForegroundColor = ConsoleColor.Green;
-                Console.WriteLine($"\n<< Agent completed (Status: {e.Result.Status})");
-                Console.ResetColor();
-            };
-
             Console.WriteLine("Available Specialists:");
             Console.WriteLine("  - CodeExpert   : Programming and development");
             Console.WriteLine("  - DataAnalyst  : Data analysis and insights");
@@ -194,6 +289,9 @@ Always explain your routing decision briefly before delegating.")
             Console.WriteLine("Enter any request. The supervisor will route it appropriately.");
             Console.WriteLine("Complex requests may be split across multiple specialists.");
             Console.WriteLine("Type 'quit' to exit.\n");
+
+            // Create the stream handler for real-time feedback
+            var streamHandler = CreateStreamHandler();
 
             while (true)
             {
@@ -214,31 +312,32 @@ Always explain your routing decision briefly before delegating.")
                     break;
                 }
 
-                Console.WriteLine("\n--- Supervisor Analyzing Request ---\n");
+                Console.WriteLine();
 
                 try
                 {
                     var cts = new CancellationTokenSource(TimeSpan.FromMinutes(5));
 
-                    // Execute with the supervisor orchestrator
-                    var result = await supervisor.ExecuteAsync(request, cts.Token);
+                    // Execute with streaming for real-time feedback
+                    var result = await supervisor.RunStreamingAsync(
+                        request,
+                        streamHandler,
+                        cancellationToken: cts.Token);
 
-                    Console.WriteLine("\n═══════════════════════════════════════════════════════════════");
-                    Console.ForegroundColor = ConsoleColor.White;
-                    Console.WriteLine("FINAL RESPONSE");
-                    Console.WriteLine("═══════════════════════════════════════════════════════════════");
-                    Console.ResetColor();
-                    Console.WriteLine(result.Content);
-
-                    Console.WriteLine("\n--- Task Complete ---");
+                    // Print final summary
+                    Console.WriteLine();
                     Console.ForegroundColor = ConsoleColor.DarkGray;
-                    Console.WriteLine($"(Agents involved: {result.AgentResults.Count} | Success: {result.Success})");
+                    Console.WriteLine($"(Agents involved: {result.AgentResults.Count} | " +
+                        $"Duration: {result.Duration.TotalSeconds:F1}s | " +
+                        $"Success: {result.Success})");
                     Console.ResetColor();
                     Console.WriteLine();
                 }
                 catch (OperationCanceledException)
                 {
+                    Console.ForegroundColor = ConsoleColor.Red;
                     Console.WriteLine("\nRequest timed out.");
+                    Console.ResetColor();
                 }
                 catch (Exception ex)
                 {
