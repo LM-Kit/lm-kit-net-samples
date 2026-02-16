@@ -11,7 +11,7 @@ namespace mcp_integration
     internal class Program
     {
         static readonly string DEFAULT_LLAMA3_1_8B_MODEL_PATH = @"https://huggingface.co/lm-kit/llama-3.1-8b-instruct-gguf/resolve/main/Llama-3.1-8B-Instruct-Q4_K_M.gguf";
-        static readonly string DEFAULT_GEMMA3_4B_MODEL_PATH = @"https://huggingface.co/lm-kit/gemma-3-4b-instruct-lmk/resolve/main/gemma-3-4b-it-Q4_K_M.lmk";
+        static readonly string DEFAULT_GEMMA3_12B_MODEL_PATH = @"https://huggingface.co/lm-kit/gemma-3-12b-instruct-lmk/resolve/main/gemma-3-12b-it-Q4_K_M.lmk";
         static readonly string DEFAULT_PHI4_MINI_3_8B_MODEL_PATH = @"https://huggingface.co/lm-kit/phi-4-mini-3.8b-instruct-gguf/resolve/main/Phi-4-mini-Instruct-Q4_K_M.gguf";
         static readonly string DEFAULT_QWEN3_8B_MODEL_PATH = @"https://huggingface.co/lm-kit/qwen-3-8b-instruct-gguf/resolve/main/Qwen3-8B-Q4_K_M.gguf";
         static readonly string DEFAULT_MINISTRAL_3_8_MODEL_PATH = @"https://huggingface.co/lm-kit/ministral-3-3b-instruct-lmk/resolve/main/ministral-3-3b-instruct-Q4_K_M.lmk";
@@ -75,7 +75,7 @@ namespace mcp_integration
             Console.WriteLine("Please select the model you want to use:\n");
             Console.WriteLine("0 - Mistral Ministral 3 8B (requires approximately 6 GB of VRAM)");
             Console.WriteLine("1 - Meta Llama 3.1 8B (requires approximately 6 GB of VRAM)");
-            Console.WriteLine("2 - Google Gemma 3 4B Medium (requires approximately 4 GB of VRAM)");
+            Console.WriteLine("2 - Google Gemma 3 12B Medium (requires approximately 9 GB of VRAM)");
             Console.WriteLine("3 - Microsoft Phi-4 Mini 3.82B Mini (requires approximately 3.3 GB of VRAM)");
             Console.WriteLine("4 - Alibaba Qwen-3 8B (requires approximately 5.6 GB of VRAM)");
             Console.WriteLine("5 - Microsoft Phi-4 14.7B Mini (requires approximately 11 GB of VRAM)");
@@ -91,7 +91,7 @@ namespace mcp_integration
             {
                 case "0": modelLink = DEFAULT_MINISTRAL_3_8_MODEL_PATH; break;
                 case "1": modelLink = DEFAULT_LLAMA3_1_8B_MODEL_PATH; break;
-                case "2": modelLink = DEFAULT_GEMMA3_4B_MODEL_PATH; break;
+                case "2": modelLink = DEFAULT_GEMMA3_12B_MODEL_PATH; break;
                 case "3": modelLink = DEFAULT_PHI4_MINI_3_8B_MODEL_PATH; break;
                 case "4": modelLink = DEFAULT_QWEN3_8B_MODEL_PATH; break;
                 case "5": modelLink = DEFAULT_PHI4_14_7B_MODEL_PATH; break;

@@ -116,7 +116,8 @@ namespace document_processing_agent
                     "Always confirm what actions you took and report results clearly.")
                 .WithTools(tools =>
                 {
-                    tools.Register(BuiltInTools.PdfInfo);
+                    tools.Register(BuiltInTools.PdfMetadata);
+                    tools.Register(BuiltInTools.PdfPages);
                     tools.Register(BuiltInTools.PdfSplit);
                     tools.Register(BuiltInTools.PdfMerge);
                     tools.Register(BuiltInTools.PdfToImage);
@@ -125,8 +126,8 @@ namespace document_processing_agent
                     tools.Register(BuiltInTools.ImageDeskew);
                     tools.Register(BuiltInTools.ImageCrop);
                     tools.Register(BuiltInTools.ImageResize);
-                    tools.Register(BuiltInTools.DocumentText);
-                    tools.Register(BuiltInTools.Ocr);
+                    tools.Register(BuiltInTools.DocumentTextExtract);
+                    tools.Register(BuiltInTools.OcrRecognize);
                 })
                 .WithMaxIterations(15)
                 .Build();

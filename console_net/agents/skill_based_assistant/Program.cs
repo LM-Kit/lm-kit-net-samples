@@ -68,9 +68,12 @@ chat.SamplingMode = new RandomSampling { Temperature = 0.7f };
 
 chat.AfterTextCompletion += (_, e) =>
 {
-    Console.ForegroundColor = e.SegmentType == TextSegmentType.InternalReasoning
-        ? ConsoleColor.Blue
-        : ConsoleColor.White;
+    Console.ForegroundColor = e.SegmentType switch
+    {
+        TextSegmentType.InternalReasoning => ConsoleColor.Blue,
+        TextSegmentType.ToolInvocation => ConsoleColor.Red,
+        _ => ConsoleColor.White
+    };
     Console.Write(e.Text);
 };
 
@@ -206,12 +209,11 @@ static LM SelectModel()
     Console.Clear();
     Console.WriteLine("=== Agent Skills Demo ===\n");
     Console.WriteLine("Select a model:\n");
-    Console.WriteLine("  0 - Google Gemma 3 4B         (~4 GB VRAM)");
-    Console.WriteLine("  1 - Alibaba Qwen 3 8B         (~6 GB VRAM)");
-    Console.WriteLine("  2 - Google Gemma 3 12B         (~9 GB VRAM)   [Recommended]");
-    Console.WriteLine("  3 - Microsoft Phi-4 14.7B      (~11 GB VRAM)");
-    Console.WriteLine("  4 - OpenAI GPT OSS 20B         (~16 GB VRAM)");
-    Console.WriteLine("  5 - Z.ai GLM 4.7 Flash 30B     (~18 GB VRAM)");
+    Console.WriteLine("  0 - Google Gemma 3 12B         (~9 GB VRAM)");
+    Console.WriteLine("  1 - Alibaba Qwen 3 8B          (~6 GB VRAM)   [Recommended]");
+    Console.WriteLine("  2 - Microsoft Phi-4 14.7B      (~11 GB VRAM)");
+    Console.WriteLine("  3 - OpenAI GPT OSS 20B         (~16 GB VRAM)");
+    Console.WriteLine("  4 - Z.ai GLM 4.7 Flash 30B     (~18 GB VRAM)");
     Console.Write("\n  Or paste a custom model URI.\n\n> ");
 
     bool downloading = false;
@@ -219,14 +221,13 @@ static LM SelectModel()
 
     string uri = input?.Trim() switch
     {
-        "0" => "https://huggingface.co/lm-kit/gemma-3-4b-instruct-lmk/resolve/main/gemma-3-4b-it-Q4_K_M.lmk",
+        "0" => "https://huggingface.co/lm-kit/gemma-3-12b-instruct-lmk/resolve/main/gemma-3-12b-it-Q4_K_M.lmk",
         "1" => "https://huggingface.co/lm-kit/qwen-3-8b-instruct-gguf/resolve/main/Qwen3-8B-Q4_K_M.gguf",
-        "2" => "https://huggingface.co/lm-kit/gemma-3-12b-instruct-lmk/resolve/main/gemma-3-12b-it-Q4_K_M.lmk",
-        "3" => "https://huggingface.co/lm-kit/phi-4-14.7b-instruct-gguf/resolve/main/Phi-4-14.7B-Instruct-Q4_K_M.gguf",
-        "4" => "https://huggingface.co/lm-kit/gpt-oss-20b-gguf/resolve/main/gpt-oss-20b-mxfp4.gguf",
-        "5" => "https://huggingface.co/lm-kit/glm-4.7-flash-gguf/resolve/main/GLM-4.7-Flash-64x2.6B-Q4_K_M.gguf",
+        "2" => "https://huggingface.co/lm-kit/phi-4-14.7b-instruct-gguf/resolve/main/Phi-4-14.7B-Instruct-Q4_K_M.gguf",
+        "3" => "https://huggingface.co/lm-kit/gpt-oss-20b-gguf/resolve/main/gpt-oss-20b-mxfp4.gguf",
+        "4" => "https://huggingface.co/lm-kit/glm-4.7-flash-gguf/resolve/main/GLM-4.7-Flash-64x2.6B-Q4_K_M.gguf",
         _ => !string.IsNullOrWhiteSpace(input) ? input.Trim().Trim('"')
-            : "https://huggingface.co/lm-kit/gemma-3-12b-instruct-lmk/resolve/main/gemma-3-12b-it-Q4_K_M.lmk"
+            : "https://huggingface.co/lm-kit/qwen-3-8b-instruct-gguf/resolve/main/Qwen3-8B-Q4_K_M.gguf"
     };
 
     return new LM(

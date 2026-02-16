@@ -16,7 +16,7 @@ namespace mcp_stdio_integration
     internal class Program
     {
         static readonly string DEFAULT_LLAMA3_1_8B_MODEL_PATH = @"https://huggingface.co/lm-kit/llama-3.1-8b-instruct-gguf/resolve/main/Llama-3.1-8B-Instruct-Q4_K_M.gguf";
-        static readonly string DEFAULT_GEMMA3_4B_MODEL_PATH = @"https://huggingface.co/lm-kit/gemma-3-4b-instruct-lmk/resolve/main/gemma-3-4b-it-Q4_K_M.lmk";
+        static readonly string DEFAULT_GEMMA3_12B_MODEL_PATH = @"https://huggingface.co/lm-kit/gemma-3-12b-instruct-lmk/resolve/main/gemma-3-12b-it-Q4_K_M.lmk";
         static readonly string DEFAULT_PHI4_MINI_3_8B_MODEL_PATH = @"https://huggingface.co/lm-kit/phi-4-mini-3.8b-instruct-gguf/resolve/main/Phi-4-mini-Instruct-Q4_K_M.gguf";
         static readonly string DEFAULT_QWEN3_8B_MODEL_PATH = @"https://huggingface.co/lm-kit/qwen-3-8b-instruct-gguf/resolve/main/Qwen3-8B-Q4_K_M.gguf";
         static readonly string DEFAULT_OPENAI_GPT_OSS_20B_MODEL_PATH = @"https://huggingface.co/lm-kit/gpt-oss-20b-gguf/resolve/main/gpt-oss-20b-mxfp4.gguf";
@@ -67,7 +67,7 @@ namespace mcp_stdio_integration
 
             Console.WriteLine("Please select the model you want to use:\n");
             Console.WriteLine("0 - Meta Llama 3.1 8B (requires approximately 6 GB of VRAM)");
-            Console.WriteLine("1 - Google Gemma 3 4B Medium (requires approximately 4 GB of VRAM)");
+            Console.WriteLine("1 - Google Gemma 3 12B Medium (requires approximately 9 GB of VRAM)");
             Console.WriteLine("2 - Microsoft Phi-4 Mini 3.82B (requires approximately 3.3 GB of VRAM)");
             Console.WriteLine("3 - Alibaba Qwen-3 8B (requires approximately 5.6 GB of VRAM)");
             Console.WriteLine("4 - Open AI GPT OSS 20B (requires approximately 16 GB of VRAM)");
@@ -80,7 +80,7 @@ namespace mcp_stdio_integration
             switch (input?.Trim())
             {
                 case "0": modelLink = DEFAULT_LLAMA3_1_8B_MODEL_PATH; break;
-                case "1": modelLink = DEFAULT_GEMMA3_4B_MODEL_PATH; break;
+                case "1": modelLink = DEFAULT_GEMMA3_12B_MODEL_PATH; break;
                 case "2": modelLink = DEFAULT_PHI4_MINI_3_8B_MODEL_PATH; break;
                 case "3": modelLink = DEFAULT_QWEN3_8B_MODEL_PATH; break;
                 case "4": modelLink = DEFAULT_OPENAI_GPT_OSS_20B_MODEL_PATH; break;

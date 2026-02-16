@@ -10,7 +10,7 @@ namespace news_monitoring_agent
 {
     internal class Program
     {
-        static readonly string DEFAULT_GEMMA3_4B_MODEL_PATH = @"https://huggingface.co/lm-kit/gemma-3-4b-instruct-lmk/resolve/main/gemma-3-4b-it-Q4_K_M.lmk";
+        static readonly string DEFAULT_GEMMA3_12B_MODEL_PATH = @"https://huggingface.co/lm-kit/gemma-3-12b-instruct-lmk/resolve/main/gemma-3-12b-it-Q4_K_M.lmk";
         static readonly string DEFAULT_PHI4_MINI_3_8B_MODEL_PATH = @"https://huggingface.co/lm-kit/phi-4-mini-3.8b-instruct-gguf/resolve/main/Phi-4-mini-Instruct-Q4_K_M.gguf";
         static readonly string DEFAULT_QWEN3_8B_MODEL_PATH = @"https://huggingface.co/lm-kit/qwen-3-8b-instruct-gguf/resolve/main/Qwen3-8B-Q4_K_M.gguf";
         static readonly string DEFAULT_PHI4_14_7B_MODEL_PATH = @"https://huggingface.co/lm-kit/phi-4-14.7b-instruct-gguf/resolve/main/Phi-4-14.7B-Instruct-Q4_K_M.gguf";
@@ -70,7 +70,7 @@ namespace news_monitoring_agent
 
             // Model selection
             Console.WriteLine("Please select the model you want to use:\n");
-            Console.WriteLine("0 - Google Gemma 3 4B (requires approximately 4 GB of VRAM)");
+            Console.WriteLine("0 - Google Gemma 3 12B (requires approximately 9 GB of VRAM)");
             Console.WriteLine("1 - Microsoft Phi-4 Mini 3.8B (requires approximately 3.3 GB of VRAM)");
             Console.WriteLine("2 - Alibaba Qwen-3 8B (requires approximately 5.6 GB of VRAM)");
             Console.WriteLine("3 - Microsoft Phi-4 14.7B (requires approximately 11 GB of VRAM)");
@@ -81,13 +81,13 @@ namespace news_monitoring_agent
             string? input = Console.ReadLine();
             string modelLink = input?.Trim() switch
             {
-                "0" => DEFAULT_GEMMA3_4B_MODEL_PATH,
+                "0" => DEFAULT_GEMMA3_12B_MODEL_PATH,
                 "1" => DEFAULT_PHI4_MINI_3_8B_MODEL_PATH,
                 "2" => DEFAULT_QWEN3_8B_MODEL_PATH,
                 "3" => DEFAULT_PHI4_14_7B_MODEL_PATH,
                 "4" => DEFAULT_OPENAI_GPT_OSS_20B_MODEL_PATH,
                 "5" => DEFAULT_GLM_4_7_FLASH_MODEL_PATH,
-                _ => !string.IsNullOrWhiteSpace(input) ? input.Trim().Trim('"') : DEFAULT_GEMMA3_4B_MODEL_PATH
+                _ => !string.IsNullOrWhiteSpace(input) ? input.Trim().Trim('"') : DEFAULT_GEMMA3_12B_MODEL_PATH
             };
 
             // Load model
@@ -185,9 +185,9 @@ Guidelines:
 - When comparing coverage across sources, fetch from multiple feeds and highlight differences.";
 
             // Register the RSS feed tool and web search tool
-            chat.Tools.Register(BuiltInTools.RssFeed);
+            chat.Tools.Register(BuiltInTools.RssFetch);
             chat.Tools.Register(BuiltInTools.WebSearch);
-            chat.Tools.Register(BuiltInTools.DateTime);
+            chat.Tools.Register(BuiltInTools.DateTimeNow);
 
             chat.AfterTextCompletion += (sender, e) =>
             {

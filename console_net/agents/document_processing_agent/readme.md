@@ -103,7 +103,7 @@ You — Extract text from 'quarterly_report.docx'
 
 ```
 LM-Kit Document Processing Agent
-An AI agent with 11 document tools: PDF split/merge/info/render/unlock, image-to-pdf/deskew/crop/resize, text extraction, and OCR.
+An AI agent with Document tools for PDF processing, image preprocessing, text extraction, and OCR.
 Type a document processing task, or 'q' to quit.
 
 You — Extract pages 1-3 from 'report.pdf' into 'summary.pdf', then get the text from page 1
@@ -142,7 +142,7 @@ The demo displays different types of output in different colors:
 ## Key Classes
 
 - **`Agent`** (`LMKit.Agents`): the AI agent that orchestrates tool calling based on natural language.
-- **`BuiltInTools`** (`LMKit.Agents.Tools.BuiltIn`): factory class providing all 11 document tools.
+- **`BuiltInTools`** (`LMKit.Agents.Tools.BuiltIn`): factory class providing access to the Document tool category.
 - **`AgentExecutor`** (`LMKit.Agents`): executes the agent with streaming output via `AfterTextCompletion`.
 - **`AgentExecutionResult`**: result object with `Content`, `IsSuccess`, `ToolCalls`, and `Duration`.
 

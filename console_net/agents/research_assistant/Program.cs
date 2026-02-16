@@ -62,8 +62,8 @@ namespace research_assistant
             Console.WriteLine("Watch the agent think, search, take notes, and synthesize findings.\n");
 
             Console.WriteLine("Please select the model you want to use:\n");
-            Console.WriteLine("0 - Google Gemma 3 12B (requires approximately 9 GB of VRAM) [Recommended]");
-            Console.WriteLine("1 - Alibaba Qwen-3 8B (requires approximately 5.6 GB of VRAM)");
+            Console.WriteLine("0 - Alibaba Qwen-3 8B (requires approximately 5.6 GB of VRAM) [Recommended]");
+            Console.WriteLine("1 - Google Gemma 3 12B (requires approximately 9 GB of VRAM)");
             Console.WriteLine("2 - Alibaba Qwen-3 14B (requires approximately 10 GB of VRAM)");
             Console.WriteLine("3 - Microsoft Phi-4 14.7B (requires approximately 11 GB of VRAM)");
             Console.WriteLine("4 - OpenAI GPT OSS 20B (requires approximately 16 GB of VRAM)");
@@ -76,8 +76,8 @@ namespace research_assistant
             string? input = Console.ReadLine();
             string modelLink = input?.Trim() switch
             {
-                "0" => DEFAULT_GEMMA3_12B_MODEL_PATH,
-                "1" => DEFAULT_QWEN3_8B_MODEL_PATH,
+                "0" => DEFAULT_QWEN3_8B_MODEL_PATH,
+                "1" => DEFAULT_GEMMA3_12B_MODEL_PATH,
                 "2" => DEFAULT_QWEN3_14B_MODEL_PATH,
                 "3" => DEFAULT_PHI4_14B_MODEL_PATH,
                 "4" => DEFAULT_GPT_OSS_20B_MODEL_PATH,
@@ -85,7 +85,7 @@ namespace research_assistant
                 "6" => DEFAULT_MAGISTRAL_SMALL_24B_MODEL_PATH,
                 "7" => DEFAULT_GEMMA3_27B_MODEL_PATH,
                 "8" => DEFAULT_GLM_4_7_FLASH_MODEL_PATH,
-                _ => !string.IsNullOrWhiteSpace(input) ? input.Trim().Trim('"') : DEFAULT_GEMMA3_12B_MODEL_PATH
+                _ => !string.IsNullOrWhiteSpace(input) ? input.Trim().Trim('"') : DEFAULT_QWEN3_8B_MODEL_PATH
             };
 
             // Load model
