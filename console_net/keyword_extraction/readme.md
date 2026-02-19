@@ -14,7 +14,7 @@ A demo for extracting keywords from PDF files, images, and text documents using 
 
 - .NET 8.0 or later
 - LM-Kit.NET SDK
-- Sufficient VRAM for the selected model (0.8–16 GB depending on model choice)
+- Sufficient VRAM for the selected model (0.8ï¿½16 GB depending on model choice)
 
 ## Usage
 
@@ -25,6 +25,6 @@ A demo for extracting keywords from PDF files, images, and text documents using 
 
 ## Supported Formats
 
-- PDF and Office documents
-- Images: PNG, JPG, TIFF, BMP, WebP...
-- Text files: TXT, and other plain text formats
+- Documents: PDF, DOCX, XLSX, PPTX, EML, MBOX
+- Images: PNG, JPG, TIFF, BMP, WebP
+- Text: TXT, HTML

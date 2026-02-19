@@ -1,17 +1,15 @@
-﻿using LMKit.Model;
+using LMKit.Model;
 using LMKit.TextAnalysis;
 using System.Diagnostics;
 using System.Text;
-
 
 namespace sentiment_analysis
 {
     internal class Program
     {
-        static readonly string DEFAULT_MODEL_PATH = @"https://huggingface.co/lm-kit/lm-kit-sentiment-analysis-2.0-1b-gguf/resolve/main/lm-kit-sentiment-analysis-2.0-1b-q4.gguf";
         static bool _isDownloading;
 
-        private static bool ModelDownloadingProgress(string path, long? contentLength, long bytesRead)
+        private static bool OnDownloadProgress(string path, long? contentLength, long bytesRead)
         {
             _isDownloading = true;
             if (contentLength.HasValue)
@@ -27,7 +25,7 @@ namespace sentiment_analysis
             return true;
         }
 
-        private static bool ModelLoadingProgress(float progress)
+        private static bool OnLoadProgress(float progress)
         {
             if (_isDownloading)
             {
@@ -42,17 +40,17 @@ namespace sentiment_analysis
 
         static void Main(string[] args)
         {
-            // Set an optional license key here if available. 
+            // Set an optional license key here if available.
             // A free community license can be obtained from: https://lm-kit.com/products/community-edition/
             LMKit.Licensing.LicenseManager.SetLicenseKey("");
             Console.InputEncoding = Encoding.UTF8;
             Console.OutputEncoding = Encoding.UTF8;
 
-            //Loading model
-            Uri modelUri = new(DEFAULT_MODEL_PATH);
-            LM model = new(modelUri,
-                                    downloadingProgress: ModelDownloadingProgress,
-                                    loadingProgress: ModelLoadingProgress);
+            // Load model
+            LM model = LM.LoadFromModelID(
+                "lmkit-sentiment-analysis",
+                downloadingProgress: OnDownloadProgress,
+                loadingProgress: OnLoadProgress);
 
             Console.Clear();
             Console.ForegroundColor = ConsoleColor.Blue;
@@ -63,7 +61,6 @@ namespace sentiment_analysis
             {
                 NeutralSupport = false
             };
-
 
             while (true)
             {
@@ -89,7 +86,7 @@ namespace sentiment_analysis
                 Console.WriteLine($"Category: {category} - Elapsed: {Math.Round(sw.Elapsed.TotalSeconds, 2)} seconds - Confidence: {Math.Round(classifier.Confidence * 100, 1)} %");
             }
 
-            Console.WriteLine("The program ended. Press any key to exit the application.");
+            Console.WriteLine("Demo ended. Press any key to exit.");
             _ = Console.ReadKey();
         }
     }

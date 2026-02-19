@@ -2,39 +2,14 @@ using LMKit.Agents.Skills;
 using LMKit.Model;
 using LMKit.TextGeneration;
 using LMKit.TextGeneration.Chat;
+using LMKit.TextGeneration.Events;
 using LMKit.TextGeneration.Sampling;
 using System.Text;
-
-// ──────────────────────────────────────────────────────────────────
-// Agent Skills Demo
-//
-// Shows how SKILL.md files transform a generic LLM into a specialist.
-// Three bundled skills turn the same model into:
-//   /explain      → explains any topic in plain language
-//   /pros-cons    → gives balanced pros and cons for any decision
-//   /email-writer → writes a professional email from a one-line description
-//
-// Two activation modes demonstrate different ways to use skills:
-//
-//   Manual activation (SkillActivator)
-//     You control which skill is active using slash commands (/explain,
-//     /off, etc.). The app injects the skill's instructions into each
-//     message before sending it to the model.
-//
-//   Model-driven activation (SkillTool + function calling)
-//     A SkillTool is registered on the conversation. The model discovers
-//     available skills from the tool description and activates them
-//     autonomously via function calling. No slash commands needed.
-//
-// ──────────────────────────────────────────────────────────────────
-
-// Uncomment and set your license key for production use:
-// LMKit.Licensing.LicenseManager.SetLicenseKey("");
 
 Console.InputEncoding = Encoding.UTF8;
 Console.OutputEncoding = Encoding.UTF8;
 
-// ── Step 1: Load skills from the bundled "skills" folder ──────────
+// Step 1: Load skills from the bundled "skills" folder
 
 var registry = new SkillRegistry();
 
@@ -50,17 +25,17 @@ if (Directory.Exists(skillsPath))
     });
 }
 
-// ── Step 2: Select and load a model ───────────────────────────────
+// Step 2: Select and load a model
 
 LM model = SelectModel();
 Console.Clear();
 
-// ── Step 3: Choose activation mode ────────────────────────────────
+// Step 3: Choose activation mode
 
 bool useModelDriven = SelectActivationMode();
 Console.Clear();
 
-// ── Step 4: Set up conversation ───────────────────────────────────
+// Step 4: Set up conversation
 
 var chat = new MultiTurnConversation(model);
 chat.MaximumCompletionTokens = 4096;
@@ -71,7 +46,7 @@ chat.AfterTextCompletion += (_, e) =>
     Console.ForegroundColor = e.SegmentType switch
     {
         TextSegmentType.InternalReasoning => ConsoleColor.Blue,
-        TextSegmentType.ToolInvocation => ConsoleColor.Red,
+        TextSegmentType.ToolInvocation => ConsoleColor.Magenta,
         _ => ConsoleColor.White
     };
     Console.Write(e.Text);
@@ -79,8 +54,6 @@ chat.AfterTextCompletion += (_, e) =>
 
 if (useModelDriven)
 {
-    // Model-driven mode: register a SkillTool so the LLM can discover
-    // and activate skills autonomously through function calling.
     var skillTool = new SkillTool(registry);
     skillTool.SkillActivated += (_, e) =>
     {
@@ -91,7 +64,7 @@ if (useModelDriven)
     chat.Tools.Register(skillTool);
 }
 
-// ── Step 5: Show welcome and start chatting ───────────────────────
+// Step 5: Show welcome and start chatting
 
 SkillActivator? activator = useModelDriven ? null : new SkillActivator(registry);
 AgentSkill? activeSkill = null;
@@ -167,14 +140,11 @@ while (true)
 
     if (!useModelDriven && activeSkill != null)
     {
-        // Manual mode: inject skill instructions into the message
         string instructions = activator!.FormatForInjection(
             activeSkill,
             SkillInjectionMode.UserMessage);
         prompt = instructions + "\n\n---\n\nUser request: " + input;
     }
-    // In model-driven mode, the prompt is sent as-is. The model decides
-    // whether to call the activate_skill tool based on the user's request.
 
     // Generate response
     Console.ForegroundColor = ConsoleColor.Cyan;
@@ -202,33 +172,71 @@ while (true)
 }
 
 
-// ── Helper methods ────────────────────────────────────────────────
+// Helper methods
 
 static LM SelectModel()
 {
+    bool downloading = false;
+
     Console.Clear();
     Console.WriteLine("=== Agent Skills Demo ===\n");
     Console.WriteLine("Select a model:\n");
-    Console.WriteLine("  0 - Google Gemma 3 12B         (~9 GB VRAM)");
-    Console.WriteLine("  1 - Alibaba Qwen 3 8B          (~6 GB VRAM)   [Recommended]");
-    Console.WriteLine("  2 - Microsoft Phi-4 14.7B      (~11 GB VRAM)");
-    Console.WriteLine("  3 - OpenAI GPT OSS 20B         (~16 GB VRAM)");
-    Console.WriteLine("  4 - Z.ai GLM 4.7 Flash 30B     (~18 GB VRAM)");
-    Console.Write("\n  Or paste a custom model URI.\n\n> ");
+    Console.WriteLine("  0 - Alibaba Qwen 3 8B          (~6 GB VRAM)   [Recommended]");
+    Console.WriteLine("  1 - Google Gemma 3 12B          (~9 GB VRAM)");
+    Console.WriteLine("  2 - Alibaba Qwen 3 14B          (~10 GB VRAM)");
+    Console.WriteLine("  3 - Microsoft Phi-4 14.7B       (~11 GB VRAM)");
+    Console.WriteLine("  4 - OpenAI GPT OSS 20B          (~16 GB VRAM)");
+    Console.WriteLine("  5 - Z.ai GLM 4.7 Flash 30B      (~18 GB VRAM)");
+    Console.Write("\n  Or paste a custom model URI or model ID.\n\n> ");
 
-    bool downloading = false;
     string? input = Console.ReadLine();
 
-    string uri = input?.Trim() switch
+    string? modelId = input?.Trim() switch
     {
-        "0" => "https://huggingface.co/lm-kit/gemma-3-12b-instruct-lmk/resolve/main/gemma-3-12b-it-Q4_K_M.lmk",
-        "1" => "https://huggingface.co/lm-kit/qwen-3-8b-instruct-gguf/resolve/main/Qwen3-8B-Q4_K_M.gguf",
-        "2" => "https://huggingface.co/lm-kit/phi-4-14.7b-instruct-gguf/resolve/main/Phi-4-14.7B-Instruct-Q4_K_M.gguf",
-        "3" => "https://huggingface.co/lm-kit/gpt-oss-20b-gguf/resolve/main/gpt-oss-20b-mxfp4.gguf",
-        "4" => "https://huggingface.co/lm-kit/glm-4.7-flash-gguf/resolve/main/GLM-4.7-Flash-64x2.6B-Q4_K_M.gguf",
-        _ => !string.IsNullOrWhiteSpace(input) ? input.Trim().Trim('"')
-            : "https://huggingface.co/lm-kit/qwen-3-8b-instruct-gguf/resolve/main/Qwen3-8B-Q4_K_M.gguf"
+        "0" => "qwen3:8b",
+        "1" => "gemma3:12b",
+        "2" => "qwen3:14b",
+        "3" => "phi4",
+        "4" => "gptoss:20b",
+        "5" => "glm4.7-flash",
+        _ => null
     };
+
+    if (modelId != null)
+    {
+        return LM.LoadFromModelID(modelId,
+            downloadingProgress: (_, len, read) =>
+            {
+                downloading = true;
+                if (len.HasValue) Console.Write("\rDownloading model {0:0.00}%", (double)read / len.Value * 100);
+                return true;
+            },
+            loadingProgress: p =>
+            {
+                if (downloading) { Console.Clear(); downloading = false; }
+                Console.Write("\rLoading model {0}%", Math.Round(p * 100));
+                return true;
+            });
+    }
+
+    string uri = !string.IsNullOrWhiteSpace(input) ? input.Trim().Trim('"') : "qwen3:8b";
+
+    if (!uri.Contains("://"))
+    {
+        return LM.LoadFromModelID(uri,
+            downloadingProgress: (_, len, read) =>
+            {
+                downloading = true;
+                if (len.HasValue) Console.Write("\rDownloading model {0:0.00}%", (double)read / len.Value * 100);
+                return true;
+            },
+            loadingProgress: p =>
+            {
+                if (downloading) { Console.Clear(); downloading = false; }
+                Console.Write("\rLoading model {0}%", Math.Round(p * 100));
+                return true;
+            });
+    }
 
     return new LM(
         new Uri(uri),

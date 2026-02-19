@@ -9,94 +9,67 @@ namespace document_processing_agent
 {
     internal class Program
     {
-        private static bool _isDownloading;
+        static bool _isDownloading;
 
-        private static bool ModelDownloadingProgress(string path, long? contentLength, long bytesRead)
+        static bool OnDownloadProgress(string path, long? contentLength, long bytesRead)
         {
             _isDownloading = true;
-
             if (contentLength.HasValue)
-            {
-                double progressPercentage = Math.Round((double)bytesRead / contentLength.Value * 100, 2);
-                Console.Write($"\rDownloading model {progressPercentage:0.00}%");
-            }
+                Console.Write($"\rDownloading model {Math.Round((double)bytesRead / contentLength.Value * 100, 2):0.00}%");
             else
-            {
                 Console.Write($"\rDownloading model {bytesRead} bytes");
-            }
-
             return true;
         }
 
-        private static bool ModelLoadingProgress(float progress)
+        static bool OnLoadProgress(float progress)
         {
-            if (_isDownloading)
-            {
-                Console.Clear();
-                _isDownloading = false;
-            }
-
+            if (_isDownloading) { Console.Clear(); _isDownloading = false; }
             Console.Write($"\rLoading model {Math.Round(progress * 100)}%");
-
             return true;
+        }
+
+        static LM LoadModel(string input)
+        {
+            string? modelId = input?.Trim() switch
+            {
+                "0" => "qwen3:8b",
+                "1" => "qwen3:4b",
+                "2" => "qwen3:14b",
+                "3" => "gptoss:20b",
+                "4" => "glm4.7-flash",
+                _ => null
+            };
+
+            if (modelId != null)
+                return LM.LoadFromModelID(modelId, downloadingProgress: OnDownloadProgress, loadingProgress: OnLoadProgress);
+
+            string uri = !string.IsNullOrWhiteSpace(input) ? input.Trim('"') : "qwen3:8b";
+            if (!uri.Contains("://"))
+                return LM.LoadFromModelID(uri, downloadingProgress: OnDownloadProgress, loadingProgress: OnLoadProgress);
+
+            return new LM(new Uri(uri), downloadingProgress: OnDownloadProgress, loadingProgress: OnLoadProgress);
         }
 
         private static void Main(string[] args)
         {
-            // Set an optional license key here if available.
-            // A free community license can be obtained from: https://lm-kit.com/products/community-edition/
             LMKit.Licensing.LicenseManager.SetLicenseKey("");
-
             Console.InputEncoding = Encoding.UTF8;
             Console.OutputEncoding = Encoding.UTF8;
 
             Console.Clear();
             Console.WriteLine("Please select the model you want to use:\n");
-            Console.WriteLine("0 - Alibaba Qwen 3 8B (requires approximately 6.5 GB of VRAM) (recommended)");
-            Console.WriteLine("1 - Alibaba Qwen 3 4B (requires approximately 3 GB of VRAM)");
-            Console.WriteLine("2 - Alibaba Qwen 3 14B (requires approximately 11 GB of VRAM)");
-            Console.WriteLine("3 - GPT-OSS 20B (requires approximately 15 GB of VRAM)");
-            Console.WriteLine("4 - GLM 4.7 Flash (requires approximately 18 GB of VRAM)");
+            Console.WriteLine("0 - Alibaba Qwen 3 8B      (~6 GB VRAM) [Recommended]");
+            Console.WriteLine("1 - Alibaba Qwen 3 4B      (~3 GB VRAM)");
+            Console.WriteLine("2 - Alibaba Qwen 3 14B     (~11 GB VRAM)");
+            Console.WriteLine("3 - OpenAI GPT OSS 20B      (~15 GB VRAM)");
+            Console.WriteLine("4 - Z.ai GLM 4.7 Flash      (~18 GB VRAM)");
+            Console.Write("Other: Custom model URI or model ID\n\n> ");
 
-            Console.Write("Other entry: A custom model URI\n\n> ");
-
-            string input = Console.ReadLine() ?? string.Empty;
-            string modelLink;
-
-            switch (input.Trim())
-            {
-                case "0":
-                    modelLink = ModelCard.GetPredefinedModelCardByModelID("qwen3:8b").ModelUri.ToString();
-                    break;
-                case "1":
-                    modelLink = ModelCard.GetPredefinedModelCardByModelID("qwen3:4b").ModelUri.ToString();
-                    break;
-                case "2":
-                    modelLink = ModelCard.GetPredefinedModelCardByModelID("qwen3:14b").ModelUri.ToString();
-                    break;
-                case "3":
-                    modelLink = ModelCard.GetPredefinedModelCardByModelID("gptoss:20b").ModelUri.ToString();
-                    break;
-                case "4":
-                    modelLink = ModelCard.GetPredefinedModelCardByModelID("glm4.7-flash").ModelUri.ToString();
-                    break;
-                default:
-                    modelLink = input.Trim().Trim('"').Trim('\u201C');
-                    break;
-            }
-
-            // Loading model
-            Uri modelUri = new(modelLink);
-            LM model = new(
-                modelUri,
-                downloadingProgress: ModelDownloadingProgress,
-                loadingProgress: ModelLoadingProgress);
+            string inputStr = Console.ReadLine() ?? string.Empty;
+            LM model = LoadModel(inputStr);
 
             Console.Clear();
 
-            // ──────────────────────────────────────
-            // Create the document processing agent
-            // ──────────────────────────────────────
             var agent = Agent.CreateBuilder(model)
                 .WithPersona("Document Processing Assistant")
                 .WithInstruction(
@@ -111,7 +84,7 @@ namespace document_processing_agent
                     "- Deskew images: correct rotation in scanned documents\n" +
                     "- Crop images: remove uniform borders from scans\n" +
                     "- Resize images: scale images or fit within bounding boxes\n" +
-                    "- Extract text: get text content from PDF, DOCX, XLSX, PPTX, HTML\n" +
+                    "- Extract text: get text content from PDF, DOCX, XLSX, PPTX, EML, MBOX, HTML\n" +
                     "- OCR: extract text from images using Tesseract (34 languages)\n\n" +
                     "Always confirm what actions you took and report results clearly.")
                 .WithTools(tools =>
@@ -132,25 +105,20 @@ namespace document_processing_agent
                 .WithMaxIterations(15)
                 .Build();
 
-            // Create executor with streaming event handler
             var executor = new AgentExecutor();
             executor.AfterTextCompletion += OnAfterTextCompletion;
 
             Console.ForegroundColor = ConsoleColor.Cyan;
             Console.WriteLine("LM-Kit Document Processing Agent");
             Console.ResetColor();
-            Console.WriteLine("An AI agent with 11 document tools: PDF split/merge/info/render/unlock, image-to-pdf/deskew/crop/resize, text extraction, and OCR.");
+            Console.WriteLine("An AI agent with document tools: PDF split/merge/info/render/unlock, image-to-pdf/deskew/crop/resize, text extraction, and OCR.");
             Console.WriteLine("Type a document processing task, or 'q' to quit.\n");
 
-            // ──────────────────────────────────────
-            // Interactive loop
-            // ──────────────────────────────────────
             while (true)
             {
                 Console.ForegroundColor = ConsoleColor.Green;
-                Console.Write("You");
+                Console.Write("You: ");
                 Console.ResetColor();
-                Console.Write(" \u2014 ");
 
                 string? prompt = Console.ReadLine()?.Trim();
 
@@ -158,10 +126,7 @@ namespace document_processing_agent
                     continue;
 
                 if (string.Equals(prompt, "q", StringComparison.OrdinalIgnoreCase))
-                {
-                    Console.WriteLine("\nExiting. Bye \U0001F44B");
                     break;
-                }
 
                 Console.ForegroundColor = ConsoleColor.Blue;
                 Console.WriteLine("\nProcessing...");
@@ -176,7 +141,6 @@ namespace document_processing_agent
 
                     if (result.IsSuccess)
                     {
-                        // Show stats
                         Console.ForegroundColor = ConsoleColor.DarkGray;
                         Console.Write($"  [{result.ToolCalls.Count} tool call(s)");
                         Console.Write($", {result.Duration.TotalSeconds:F1}s");
@@ -206,26 +170,19 @@ namespace document_processing_agent
 
                 Console.WriteLine();
             }
+
+            Console.WriteLine("\nDemo ended. Press any key to exit.");
+            Console.ReadKey();
         }
 
-        /// <summary>
-        /// Event handler to display agent output in real-time with color-coded segments.
-        /// </summary>
         private static void OnAfterTextCompletion(object? sender, AfterTextCompletionEventArgs e)
         {
-            switch (e.SegmentType)
+            Console.ForegroundColor = e.SegmentType switch
             {
-                case TextSegmentType.ToolInvocation:
-                    Console.ForegroundColor = ConsoleColor.DarkGray;
-                    break;
-                case TextSegmentType.InternalReasoning:
-                    Console.ForegroundColor = ConsoleColor.Blue;
-                    break;
-                case TextSegmentType.UserVisible:
-                    Console.ForegroundColor = ConsoleColor.White;
-                    break;
-            }
-
+                TextSegmentType.ToolInvocation => ConsoleColor.Magenta,
+                TextSegmentType.InternalReasoning => ConsoleColor.Blue,
+                _ => ConsoleColor.White
+            };
             Console.Write(e.Text);
             Console.ResetColor();
         }

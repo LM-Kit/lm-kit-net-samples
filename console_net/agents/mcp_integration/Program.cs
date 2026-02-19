@@ -1,7 +1,9 @@
-﻿using LMKit.Mcp.Abstractions;
+using LMKit.Mcp.Abstractions;
 using LMKit.Mcp.Client;
 using LMKit.Model;
 using LMKit.TextGeneration;
+using LMKit.TextGeneration.Chat;
+using LMKit.TextGeneration.Events;
 using LMKit.TextGeneration.Sampling;
 using System.Text;
 using System.Text.Json;
@@ -10,16 +12,6 @@ namespace mcp_integration
 {
     internal class Program
     {
-        static readonly string DEFAULT_LLAMA3_1_8B_MODEL_PATH = @"https://huggingface.co/lm-kit/llama-3.1-8b-instruct-gguf/resolve/main/Llama-3.1-8B-Instruct-Q4_K_M.gguf";
-        static readonly string DEFAULT_GEMMA3_12B_MODEL_PATH = @"https://huggingface.co/lm-kit/gemma-3-12b-instruct-lmk/resolve/main/gemma-3-12b-it-Q4_K_M.lmk";
-        static readonly string DEFAULT_PHI4_MINI_3_8B_MODEL_PATH = @"https://huggingface.co/lm-kit/phi-4-mini-3.8b-instruct-gguf/resolve/main/Phi-4-mini-Instruct-Q4_K_M.gguf";
-        static readonly string DEFAULT_QWEN3_8B_MODEL_PATH = @"https://huggingface.co/lm-kit/qwen-3-8b-instruct-gguf/resolve/main/Qwen3-8B-Q4_K_M.gguf";
-        static readonly string DEFAULT_MINISTRAL_3_8_MODEL_PATH = @"https://huggingface.co/lm-kit/ministral-3-3b-instruct-lmk/resolve/main/ministral-3-3b-instruct-Q4_K_M.lmk";
-        static readonly string DEFAULT_PHI4_14_7B_MODEL_PATH = @"https://huggingface.co/lm-kit/phi-4-14.7b-instruct-gguf/resolve/main/Phi-4-14.7B-Instruct-Q4_K_M.gguf";
-        static readonly string DEFAULT_GRANITE_4_7B_MODEL_PATH = @"https://huggingface.co/lm-kit/granite-4.0-h-tiny-gguf/resolve/main/Granite-4.0-H-Tiny-64x994M-Q4_K_M.gguf";
-        static readonly string DEFAULT_OPENAI_GPT_OSS_20B_MODEL_PATH = @"https://huggingface.co/lm-kit/gpt-oss-20b-gguf/resolve/main/gpt-oss-20b-mxfp4.gguf";
-        static readonly string DEFAULT_GLM_4_7_FLASH_MODEL_PATH = @"https://huggingface.co/lm-kit/glm-4.7-flash-gguf/resolve/main/GLM-4.7-Flash-64x2.6B-Q4_K_M.gguf";
-
         // Public servers (No Authentication)
         static readonly string ECHO_MCP_URI = "https://echo.mcp.inevitable.fyi/mcp";
         static readonly string TIME_MCP_URI = "https://time.mcp.inevitable.fyi/mcp";
@@ -37,82 +29,71 @@ namespace mcp_integration
         static bool _isDownloading;
         static LM? _model;
 
-        private static bool ModelDownloadingProgress(string path, long? contentLength, long bytesRead)
+        static bool OnDownloadProgress(string path, long? contentLength, long bytesRead)
         {
             _isDownloading = true;
             if (contentLength.HasValue)
-            {
-                double progressPercentage = Math.Round((double)bytesRead / contentLength.Value * 100, 2);
-                Console.Write("\rDownloading model {0:0.00}%", progressPercentage);
-            }
+                Console.Write("\rDownloading model {0:0.00}%", Math.Round((double)bytesRead / contentLength.Value * 100, 2));
             else
-            {
                 Console.Write("\rDownloading model {0} bytes", bytesRead);
-            }
-
             return true;
         }
 
-        private static bool ModelLoadingProgress(float progress)
+        static bool OnLoadProgress(float progress)
         {
-            if (_isDownloading)
-            {
-                Console.Clear();
-                _isDownloading = false;
-            }
-
+            if (_isDownloading) { Console.Clear(); _isDownloading = false; }
             Console.Write("\rLoading model {0}%", Math.Round(progress * 100));
             return true;
+        }
+
+        static LM LoadModel(string input)
+        {
+            string? modelId = input?.Trim() switch
+            {
+                "0" => "qwen3:8b",
+                "1" => "gemma3:12b",
+                "2" => "qwen3:14b",
+                "3" => "phi4",
+                "4" => "gptoss:20b",
+                "5" => "glm4.7-flash",
+                _ => null
+            };
+
+            if (modelId != null)
+                return LM.LoadFromModelID(modelId, downloadingProgress: OnDownloadProgress, loadingProgress: OnLoadProgress);
+
+            string uri = !string.IsNullOrWhiteSpace(input) ? input.Trim('"') : "qwen3:8b";
+            if (!uri.Contains("://"))
+                return LM.LoadFromModelID(uri, downloadingProgress: OnDownloadProgress, loadingProgress: OnLoadProgress);
+
+            return new LM(new Uri(uri), downloadingProgress: OnDownloadProgress, loadingProgress: OnLoadProgress);
         }
 
         private static void Main(string[] args)
         {
             LMKit.Licensing.LicenseManager.SetLicenseKey("");
             Console.InputEncoding = Encoding.UTF8;
-            Console.OutputEncoding = UTF8Encoding.UTF8;
+            Console.OutputEncoding = Encoding.UTF8;
 
             Console.Clear();
             Console.WriteLine("Please select the model you want to use:\n");
-            Console.WriteLine("0 - Mistral Ministral 3 8B (requires approximately 6 GB of VRAM)");
-            Console.WriteLine("1 - Meta Llama 3.1 8B (requires approximately 6 GB of VRAM)");
-            Console.WriteLine("2 - Google Gemma 3 12B Medium (requires approximately 9 GB of VRAM)");
-            Console.WriteLine("3 - Microsoft Phi-4 Mini 3.82B Mini (requires approximately 3.3 GB of VRAM)");
-            Console.WriteLine("4 - Alibaba Qwen-3 8B (requires approximately 5.6 GB of VRAM)");
-            Console.WriteLine("5 - Microsoft Phi-4 14.7B Mini (requires approximately 11 GB of VRAM)");
-            Console.WriteLine("6 - IBM Granite 4 7B (requires approximately 6 GB of VRAM)");
-            Console.WriteLine("7 - Open AI GPT OSS 20B (requires approximately 16 GB of VRAM)");
-            Console.WriteLine("8 - Z.ai GLM 4.7 Flash 30B (requires approximately 18 GB of VRAM)");
-            Console.Write("Other entry: A custom model URI\n\n> ");
+            Console.WriteLine("0 - Alibaba Qwen-3 8B      (~6 GB VRAM)");
+            Console.WriteLine("1 - Google Gemma 3 12B      (~9 GB VRAM)");
+            Console.WriteLine("2 - Alibaba Qwen-3 14B      (~10 GB VRAM)");
+            Console.WriteLine("3 - Microsoft Phi-4 14.7B    (~11 GB VRAM)");
+            Console.WriteLine("4 - OpenAI GPT OSS 20B       (~16 GB VRAM)");
+            Console.WriteLine("5 - Z.ai GLM 4.7 Flash 30B   (~18 GB VRAM)");
+            Console.Write("Other: Custom model URI or model ID\n\n> ");
 
             string? input = Console.ReadLine();
-            string modelLink;
-
-            switch (input?.Trim())
-            {
-                case "0": modelLink = DEFAULT_MINISTRAL_3_8_MODEL_PATH; break;
-                case "1": modelLink = DEFAULT_LLAMA3_1_8B_MODEL_PATH; break;
-                case "2": modelLink = DEFAULT_GEMMA3_12B_MODEL_PATH; break;
-                case "3": modelLink = DEFAULT_PHI4_MINI_3_8B_MODEL_PATH; break;
-                case "4": modelLink = DEFAULT_QWEN3_8B_MODEL_PATH; break;
-                case "5": modelLink = DEFAULT_PHI4_14_7B_MODEL_PATH; break;
-                case "6": modelLink = DEFAULT_GRANITE_4_7B_MODEL_PATH; break;
-                case "7": modelLink = DEFAULT_OPENAI_GPT_OSS_20B_MODEL_PATH; break;
-                case "8": modelLink = DEFAULT_GLM_4_7_FLASH_MODEL_PATH; break;
-                default: modelLink = input!.Trim().Trim('"'); break;
-            }
-
-            Uri modelUri = new(modelLink);
-            _model = new LM(
-                modelUri,
-                downloadingProgress: ModelDownloadingProgress,
-                loadingProgress: ModelLoadingProgress);
+            _model = LoadModel(input ?? "");
 
             Console.Clear();
 
             MultiTurnConversation chat = new(_model);
             chat.MaximumCompletionTokens = 2048;
             chat.SamplingMode = new RandomSampling { Temperature = 0.8f };
-            chat.AfterTextCompletion += Chat_AfterTextCompletion;
+            chat.AfterTextCompletion += OnAfterTextCompletion;
 
             // Initial MCP server selection
             McpClient mcpClient = SelectMcpServer(chat);
@@ -181,10 +162,7 @@ namespace mcp_integration
                         mcpClient.Dispose();
                     }
 
-                    // Select a new MCP server
                     mcpClient = SelectMcpServer(chat);
-
-                    //
                     chat.ClearHistory();
                     prompt = FIRST_MESSAGE;
                 }
@@ -214,10 +192,9 @@ namespace mcp_integration
                 }
             }
 
-            // Clean up
             mcpClient?.Dispose();
 
-            Console.WriteLine("The chat ended. Press any key to exit the application.");
+            Console.WriteLine("Demo ended. Press any key to exit.");
             Console.ReadKey();
         }
 
@@ -233,8 +210,8 @@ namespace mcp_integration
             Console.WriteLine("3 - Text Extractor - Extract clean text/Markdown from URLs");
             Console.WriteLine("4 - Everything - Reference server (prompts/resources/tools)");
             Console.WriteLine("5 - Microsoft Learn Docs - Search & fetch MS Learn docs");
-            Console.WriteLine("6 - Peek – Experiences/Activities");
-            Console.WriteLine("7 - Currency – FX conversion");
+            Console.WriteLine("6 - Peek - Experiences/Activities");
+            Console.WriteLine("7 - Currency - FX conversion");
             Console.WriteLine("8 - Find-A-Domain - Domain search & WHOIS lookup");
             Console.WriteLine();
             Console.WriteLine("=== With Authentication ===");
@@ -271,7 +248,6 @@ namespace mcp_integration
 
             McpClient mcpClient = new(serverUri);
 
-            // ── Catalog change events ──────────────────────────────────────
             mcpClient.CatalogChanged += (sender, e) =>
             {
                 Console.ForegroundColor = ConsoleColor.Cyan;
@@ -281,14 +257,11 @@ namespace mcp_integration
                     e.ReceivedAt.ToLocalTime().ToString("HH:mm:ss"));
 
                 if (!string.IsNullOrEmpty(e.RawNotification))
-                {
                     Console.WriteLine("[MCP] Notification: {0}", TruncateMessage(e.RawNotification));
-                }
 
                 Console.ResetColor();
             };
 
-            // ── Authentication failure ─────────────────────────────────────
             mcpClient.AuthFailed += (sender, e) =>
             {
                 Console.ForegroundColor = ConsoleColor.Red;
@@ -296,7 +269,6 @@ namespace mcp_integration
                 Console.ResetColor();
             };
 
-            // ── Received / Sending (protocol tracing) ──────────────────────
             mcpClient.Received += (sender, e) =>
             {
                 Console.ForegroundColor = ConsoleColor.DarkGray;
@@ -314,7 +286,6 @@ namespace mcp_integration
                 Console.ResetColor();
             };
 
-            // ── Sampling: server can request LLM completions from the client ──
             mcpClient.SetSamplingHandler((request, cancellationToken) =>
             {
                 Console.ForegroundColor = ConsoleColor.Magenta;
@@ -323,41 +294,33 @@ namespace mcp_integration
                     request.MaxTokens);
 
                 if (!string.IsNullOrEmpty(request.SystemPrompt))
-                {
                     Console.WriteLine("[MCP Sampling] System prompt: {0}", TruncateMessage(request.SystemPrompt));
-                }
 
                 Console.ResetColor();
 
-                // Use the loaded model to fulfill the sampling request
                 if (_model != null)
                 {
                     var samplingChat = new MultiTurnConversation(_model);
                     samplingChat.MaximumCompletionTokens = request.MaxTokens > 0 ? request.MaxTokens : 512;
 
                     if (!string.IsNullOrEmpty(request.SystemPrompt))
-                    {
                         samplingChat.SystemPrompt = request.SystemPrompt;
-                    }
 
-                    // Build the prompt from the last user message
-                    string prompt = "Hello";
+                    string samplingPrompt = "Hello";
                     foreach (var msg in request.Messages)
                     {
                         if (msg.Role == McpMessageRole.User && msg.Content?.Text != null)
-                        {
-                            prompt = msg.Content.Text;
-                        }
+                            samplingPrompt = msg.Content.Text;
                     }
 
-                    var result = samplingChat.Submit(prompt, cancellationToken);
+                    var samplingResult = samplingChat.Submit(samplingPrompt, cancellationToken);
 
                     Console.ForegroundColor = ConsoleColor.Magenta;
-                    Console.WriteLine("[MCP Sampling] Completed ({0} tokens)", result.GeneratedTokens.Count);
+                    Console.WriteLine("[MCP Sampling] Completed ({0} tokens)", samplingResult.GeneratedTokens.Count);
                     Console.ResetColor();
 
                     return Task.FromResult(McpSamplingResponse.FromText(
-                        result.Completion,
+                        samplingResult.Completion,
                         "local-model",
                         McpStopReason.EndTurn));
                 }
@@ -368,16 +331,13 @@ namespace mcp_integration
                     McpStopReason.EndTurn));
             });
 
-            // ── Elicitation: server requests structured user input ─────────
             mcpClient.SetElicitationHandler((request, cancellationToken) =>
             {
                 Console.ForegroundColor = ConsoleColor.Yellow;
                 Console.WriteLine("\n[MCP Elicitation] Server requests input: {0}", request.Message);
 
                 if (!string.IsNullOrEmpty(request.RequestedSchema))
-                {
                     Console.WriteLine("[MCP Elicitation] Schema: {0}", TruncateMessage(request.RequestedSchema));
-                }
 
                 Console.Write("[MCP Elicitation] Your response (or 'decline'): ");
                 Console.ResetColor();
@@ -394,7 +354,6 @@ namespace mcp_integration
                 return Task.FromResult(McpElicitationResponse.Accept(content));
             });
 
-            // ── Roots: server can request filesystem boundaries ────────────
             mcpClient.RootsRequested += (sender, e) =>
             {
                 Console.ForegroundColor = ConsoleColor.DarkCyan;
@@ -403,7 +362,6 @@ namespace mcp_integration
                 Console.ResetColor();
             };
 
-            // ── Progress: track long-running server operations ─────────────
             mcpClient.ProgressReceived += (sender, e) =>
             {
                 Console.ForegroundColor = ConsoleColor.DarkYellow;
@@ -412,14 +370,11 @@ namespace mcp_integration
                     : $"{e.Progress}/{e.Total?.ToString() ?? "?"}";
                 Console.Write("\r[MCP Progress] {0}", progressText);
                 if (!string.IsNullOrEmpty(e.Message))
-                {
                     Console.Write(" - {0}", e.Message);
-                }
                 Console.WriteLine();
                 Console.ResetColor();
             };
 
-            // ── Logging: structured server-side log messages ───────────────
             mcpClient.LogMessageReceived += (sender, e) =>
             {
                 ConsoleColor color = e.Level switch
@@ -438,7 +393,6 @@ namespace mcp_integration
                 Console.ResetColor();
             };
 
-            // ── Resource subscriptions: real-time update notifications ─────
             mcpClient.ResourceUpdated += (sender, e) =>
             {
                 Console.ForegroundColor = ConsoleColor.Cyan;
@@ -448,7 +402,6 @@ namespace mcp_integration
                 Console.ResetColor();
             };
 
-            // ── Cancellation: server-initiated request cancellation ────────
             mcpClient.CancellationReceived += (sender, e) =>
             {
                 Console.ForegroundColor = ConsoleColor.Red;
@@ -469,12 +422,10 @@ namespace mcp_integration
                 }
             }
 
-            // Add a default filesystem root for servers that use it
             mcpClient.AddRoot(Environment.CurrentDirectory, "working-directory", notifyServer: false);
 
             chat.Tools.Register(mcpClient);
 
-            // Display server capabilities after connection
             ShowCapabilities(mcpClient);
 
             return mcpClient;
@@ -483,7 +434,7 @@ namespace mcp_integration
         private static void ShowCapabilities(McpClient mcpClient)
         {
             Console.ForegroundColor = ConsoleColor.Cyan;
-            Console.WriteLine("\n── Server Capabilities ──");
+            Console.WriteLine("\n-- Server Capabilities --");
 
             if (mcpClient.HasCapability(McpServerCapabilities.Tools))
                 Console.WriteLine("  [x] Tools");
@@ -513,9 +464,8 @@ namespace mcp_integration
             }
 
             Console.ForegroundColor = ConsoleColor.Cyan;
-            Console.WriteLine("\n── Resources ──");
+            Console.WriteLine("\n-- Resources --");
 
-            // List resources
             var resources = mcpClient.GetResources();
             if (resources.Count == 0)
             {
@@ -528,28 +478,22 @@ namespace mcp_integration
                 {
                     Console.WriteLine("  {0}. {1} ({2})", i++, res.Name, res.Uri);
                     if (!string.IsNullOrEmpty(res.Description))
-                    {
                         Console.WriteLine("     {0}", TruncateMessage(res.Description));
-                    }
                 }
             }
 
-            // List resource templates
             var templates = mcpClient.GetResourceTemplates();
             if (templates.Count > 0)
             {
-                Console.WriteLine("\n── Resource Templates ──");
+                Console.WriteLine("\n-- Resource Templates --");
                 foreach (var tmpl in templates)
                 {
                     Console.WriteLine("  {0}: {1}", tmpl.Name, tmpl.UriTemplate);
                     if (!string.IsNullOrEmpty(tmpl.Description))
-                    {
                         Console.WriteLine("     {0}", TruncateMessage(tmpl.Description));
-                    }
                 }
             }
 
-            // Offer to subscribe
             Console.Write("\nEnter a resource URI to subscribe (or press Enter to skip): ");
             Console.ResetColor();
             string? subUri = Console.ReadLine();
@@ -565,7 +509,7 @@ namespace mcp_integration
         private static void ManageRoots(McpClient mcpClient)
         {
             Console.ForegroundColor = ConsoleColor.Cyan;
-            Console.WriteLine("\n── Filesystem Roots ──");
+            Console.WriteLine("\n-- Filesystem Roots --");
 
             if (mcpClient.Roots.Count == 0)
             {
@@ -574,9 +518,7 @@ namespace mcp_integration
             else
             {
                 for (int i = 0; i < mcpClient.Roots.Count; i++)
-                {
                     Console.WriteLine("  {0}. {1} ({2})", i, mcpClient.Roots[i].Name, mcpClient.Roots[i].Uri);
-                }
             }
 
             Console.Write("\nEnter a directory path to add as root (or press Enter to skip): ");
@@ -604,7 +546,7 @@ namespace mcp_integration
             }
 
             Console.ForegroundColor = ConsoleColor.Cyan;
-            Console.WriteLine("\n── Set Server Log Level ──");
+            Console.WriteLine("\n-- Set Server Log Level --");
             Console.WriteLine("  0 - Debug");
             Console.WriteLine("  1 - Info");
             Console.WriteLine("  2 - Notice");
@@ -633,9 +575,7 @@ namespace mcp_integration
         private static string TruncateMessage(string message)
         {
             if (string.IsNullOrEmpty(message))
-            {
                 return string.Empty;
-            }
 
             const int maxLength = 150;
             return (message.Length <= maxLength) ? message : message.Substring(0, maxLength) + "...";
@@ -654,19 +594,14 @@ namespace mcp_integration
             Console.WriteLine("Use '/loglevel' to set the server log level.\n\n");
         }
 
-        private static void Chat_AfterTextCompletion(
-            object? sender,
-            LMKit.TextGeneration.Events.AfterTextCompletionEventArgs e)
+        private static void OnAfterTextCompletion(object? sender, AfterTextCompletionEventArgs e)
         {
-            switch (e.SegmentType)
+            Console.ForegroundColor = e.SegmentType switch
             {
-                case LMKit.TextGeneration.Chat.TextSegmentType.InternalReasoning:
-                    Console.ForegroundColor = ConsoleColor.Blue; break;
-                case LMKit.TextGeneration.Chat.TextSegmentType.ToolInvocation:
-                    Console.ForegroundColor = ConsoleColor.Red; break;
-                case LMKit.TextGeneration.Chat.TextSegmentType.UserVisible:
-                    Console.ForegroundColor = ConsoleColor.White; break;
-            }
+                TextSegmentType.InternalReasoning => ConsoleColor.Blue,
+                TextSegmentType.ToolInvocation => ConsoleColor.Magenta,
+                _ => ConsoleColor.White
+            };
             Console.Write(e.Text);
         }
     }

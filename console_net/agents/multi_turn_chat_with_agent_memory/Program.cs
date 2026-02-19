@@ -1,5 +1,7 @@
-﻿using LMKit.Model;
+using LMKit.Model;
 using LMKit.TextGeneration;
+using LMKit.TextGeneration.Chat;
+using LMKit.TextGeneration.Events;
 using LMKit.TextGeneration.Sampling;
 using multi_turn_chat_with_agent_memory;
 using System.Diagnostics;
@@ -11,58 +13,39 @@ namespace multi_turn_chat_with_memory
     {
         static bool _isDownloading;
 
-        private static bool ModelDownloadingProgress(string path, long? contentLength, long bytesRead)
+        static bool OnDownloadProgress(string path, long? contentLength, long bytesRead)
         {
             _isDownloading = true;
             if (contentLength.HasValue)
-            {
-                double progressPercentage = Math.Round((double)bytesRead / contentLength.Value * 100, 2);
-                Console.Write($"\rDownloading model {progressPercentage:0.00}%");
-            }
+                Console.Write($"\rDownloading model {Math.Round((double)bytesRead / contentLength.Value * 100, 2):0.00}%");
             else
-            {
                 Console.Write($"\rDownloading model {bytesRead} bytes");
-            }
-
             return true;
         }
 
-        private static bool ModelLoadingProgress(float progress)
+        static bool OnLoadProgress(float progress)
         {
-            if (_isDownloading)
-            {
-                Console.Clear();
-                _isDownloading = false;
-            }
-
+            if (_isDownloading) { Console.Clear(); _isDownloading = false; }
             Console.Write($"\rLoading model {Math.Round(progress * 100)}%");
-
             return true;
         }
-
-        /*
-          How many employees do our customers usually have?
-          In which industries are they working?
-        */
 
         static async Task Main(string[] args)
         {
-            // Set an optional license key here if available. 
-            // A free community license can be obtained from: https://lm-kit.com/products/community-edition/
             LMKit.Licensing.LicenseManager.SetLicenseKey("");
             Console.InputEncoding = Encoding.UTF8;
             Console.OutputEncoding = Encoding.UTF8;
 
             Console.Clear();
-            //Loading model
             Console.WriteLine("Loading Alibaba Qwen 3 Instruct 0.6B model...");
             LM model = LM.LoadFromModelID(
                 "qwen3:0.6b",
-                downloadingProgress: ModelDownloadingProgress,
-                loadingProgress: ModelLoadingProgress);
+                downloadingProgress: OnDownloadProgress,
+                loadingProgress: OnLoadProgress);
 
             Console.WriteLine("\n\nLoading memory...");
             var memory = await MemoryBuilder.Generate();
+            Console.WriteLine($"Memory loaded: {memory.EntryCount} entries.");
 
             Console.Clear();
 
@@ -86,9 +69,8 @@ namespace multi_turn_chat_with_memory
                 Debug.WriteLine("Memory recall event triggered with content: " + e.MemoryText);
             };
 
-
-            chat.AfterTextCompletion += Chat_AfterTextCompletion;
-            chatMemory.AfterTextCompletion += Chat_AfterTextCompletion;
+            chat.AfterTextCompletion += OnAfterTextCompletion;
+            chatMemory.AfterTextCompletion += OnAfterTextCompletion;
 
             string prompt = "Hello, who are you?";
 
@@ -97,12 +79,10 @@ namespace multi_turn_chat_with_memory
                 Console.ForegroundColor = ConsoleColor.Green;
                 Console.Write("\nAssistant: ");
                 Console.ResetColor();
-                TextGenerationResult result;
 
-                result = chat.Submit(prompt, new CancellationTokenSource(TimeSpan.FromMinutes(2)).Token);
+                var result = chat.Submit(prompt, new CancellationTokenSource(TimeSpan.FromMinutes(2)).Token);
 
                 Console.Write($"\n(gen. tokens: {result.GeneratedTokens.Count} - stop reason: {result.TerminationReason} - quality score: {Math.Round(result.QualityScore, 2)} - speed: {Math.Round(result.TokenGenerationRate, 2)} tok/s - ctx usage: {result.ContextTokens.Count}/{result.ContextSize})");
-
 
                 Console.ForegroundColor = ConsoleColor.Blue;
                 Console.Write("\n\nAssistant with Memory: ");
@@ -116,28 +96,20 @@ namespace multi_turn_chat_with_memory
                 Console.Write($"\n\nUser: ");
                 Console.ResetColor();
                 prompt = Console.ReadLine() ?? string.Empty;
-
             }
 
-            Console.WriteLine("The chat ended. Press any key to exit the application.");
+            Console.WriteLine("Demo ended. Press any key to exit.");
             _ = Console.ReadKey();
         }
 
-        private static void Chat_AfterTextCompletion(object? sender, LMKit.TextGeneration.Events.AfterTextCompletionEventArgs e)
+        private static void OnAfterTextCompletion(object? sender, AfterTextCompletionEventArgs e)
         {
-            switch (e.SegmentType)
+            Console.ForegroundColor = e.SegmentType switch
             {
-                case LMKit.TextGeneration.Chat.TextSegmentType.InternalReasoning:
-                    Console.ForegroundColor = ConsoleColor.Blue;
-                    break;
-                case LMKit.TextGeneration.Chat.TextSegmentType.ToolInvocation:
-                    Console.ForegroundColor = ConsoleColor.Red;
-                    break;
-                case LMKit.TextGeneration.Chat.TextSegmentType.UserVisible:
-                    Console.ForegroundColor = ConsoleColor.White;
-                    break;
-            }
-
+                TextSegmentType.InternalReasoning => ConsoleColor.Blue,
+                TextSegmentType.ToolInvocation => ConsoleColor.Magenta,
+                _ => ConsoleColor.White
+            };
             Console.Write(e.Text);
         }
     }

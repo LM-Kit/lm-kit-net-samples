@@ -13,7 +13,7 @@ A demo for detecting the language of PDF files and images using LM-Kit.NET visio
 
 - .NET 8.0 or later
 - LM-Kit.NET SDK
-- Sufficient VRAM for the selected model (2.5–12 GB depending on model choice)
+- Sufficient VRAM for the selected model (2.5ï¿½12 GB depending on model choice)
 
 ## Usage
 
@@ -24,5 +24,6 @@ A demo for detecting the language of PDF files and images using LM-Kit.NET visio
 
 ## Supported Formats
 
-- PDF documents
+- Documents: PDF, DOCX, XLSX, PPTX, EML, MBOX
 - Images: PNG, JPG, TIFF, BMP, and other common formats
+- Text: TXT, HTML

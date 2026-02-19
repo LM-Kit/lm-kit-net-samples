@@ -10,54 +10,55 @@ namespace web_search_assistant
 {
     internal class Program
     {
-        // ── Model catalog ──────────────────────────────────────────────
-        static readonly string DEFAULT_QWEN3_8B_MODEL_PATH = @"https://huggingface.co/lm-kit/qwen-3-8b-instruct-gguf/resolve/main/Qwen3-8B-Q4_K_M.gguf";
-        static readonly string DEFAULT_GEMMA3_12B_MODEL_PATH = @"https://huggingface.co/lm-kit/gemma-3-12b-instruct-lmk/resolve/main/gemma-3-12b-it-Q4_K_M.lmk";
-        static readonly string DEFAULT_PHI4_14_7B_MODEL_PATH = @"https://huggingface.co/lm-kit/phi-4-14.7b-instruct-gguf/resolve/main/Phi-4-14.7B-Instruct-Q4_K_M.gguf";
-        static readonly string DEFAULT_OPENAI_GPT_OSS_20B_MODEL_PATH = @"https://huggingface.co/lm-kit/gpt-oss-20b-gguf/resolve/main/gpt-oss-20b-mxfp4.gguf";
-        static readonly string DEFAULT_GLM_4_7_FLASH_MODEL_PATH = @"https://huggingface.co/lm-kit/glm-4.7-flash-gguf/resolve/main/GLM-4.7-Flash-64x2.6B-Q4_K_M.gguf";
-
         static bool _isDownloading;
-
-        // Tracks whether we are currently inside a tool invocation segment,
-        // so we can print clear boundaries around tool calls.
         static bool _insideToolCall;
 
-        private static bool ModelDownloadingProgress(string path, long? contentLength, long bytesRead)
+        static bool OnDownloadProgress(string path, long? contentLength, long bytesRead)
         {
             _isDownloading = true;
             if (contentLength.HasValue)
-            {
-                double progressPercentage = Math.Round((double)bytesRead / contentLength.Value * 100, 2);
-                Console.Write($"\rDownloading model {progressPercentage:0.00}%");
-            }
+                Console.Write($"\rDownloading model {Math.Round((double)bytesRead / contentLength.Value * 100, 2):0.00}%");
             else
-            {
                 Console.Write($"\rDownloading model {bytesRead} bytes");
-            }
             return true;
         }
 
-        private static bool ModelLoadingProgress(float progress)
+        static bool OnLoadProgress(float progress)
         {
-            if (_isDownloading)
-            {
-                Console.Clear();
-                _isDownloading = false;
-            }
+            if (_isDownloading) { Console.Clear(); _isDownloading = false; }
             Console.Write($"\rLoading model {Math.Round(progress * 100)}%");
             return true;
         }
 
+        static LM LoadModel(string input)
+        {
+            string? modelId = input?.Trim() switch
+            {
+                "0" => "qwen3:8b",
+                "1" => "gemma3:12b",
+                "2" => "qwen3:14b",
+                "3" => "phi4",
+                "4" => "gptoss:20b",
+                "5" => "glm4.7-flash",
+                _ => null
+            };
+
+            if (modelId != null)
+                return LM.LoadFromModelID(modelId, downloadingProgress: OnDownloadProgress, loadingProgress: OnLoadProgress);
+
+            string uri = !string.IsNullOrWhiteSpace(input) ? input.Trim('"') : "qwen3:8b";
+            if (!uri.Contains("://"))
+                return LM.LoadFromModelID(uri, downloadingProgress: OnDownloadProgress, loadingProgress: OnLoadProgress);
+
+            return new LM(new Uri(uri), downloadingProgress: OnDownloadProgress, loadingProgress: OnLoadProgress);
+        }
+
         private static void Main(string[] args)
         {
-            // Set your license key here if you have one.
-            // A free community license can be obtained from: https://lm-kit.com/products/community-edition/
             LMKit.Licensing.LicenseManager.SetLicenseKey("");
             Console.InputEncoding = Encoding.UTF8;
             Console.OutputEncoding = Encoding.UTF8;
 
-            // ── Banner ─────────────────────────────────────────────────
             Console.Clear();
             PrintBanner();
             Console.WriteLine("A general-purpose assistant that autonomously searches the web");
@@ -67,46 +68,23 @@ namespace web_search_assistant
             Console.WriteLine("  2. How the LLM decides BY ITSELF when to search the web");
             Console.WriteLine("  3. Full call-flow visibility: reasoning, tool calls, and responses\n");
 
-            // ── Model selection ────────────────────────────────────────
             Console.WriteLine("Please select the model you want to use:\n");
-            Console.WriteLine("0 - Google Gemma 3 12B (requires approximately 9 GB of VRAM)");
-            Console.WriteLine("1 - Alibaba Qwen-3 8B (requires approximately 5.6 GB of VRAM)");
-            Console.WriteLine("2 - Microsoft Phi-4 14.7B (requires approximately 11 GB of VRAM)");
-            Console.WriteLine("3 - OpenAI GPT OSS 20B (requires approximately 16 GB of VRAM) [Recommended]");
-            Console.WriteLine("4 - Z.ai GLM 4.7 Flash 30B (requires approximately 18 GB of VRAM)");
-            Console.Write("Other: Custom model URI\n\n> ");
+            Console.WriteLine("0 - Alibaba Qwen-3 8B      (~6 GB VRAM)");
+            Console.WriteLine("1 - Google Gemma 3 12B      (~9 GB VRAM)");
+            Console.WriteLine("2 - Alibaba Qwen-3 14B      (~10 GB VRAM)");
+            Console.WriteLine("3 - Microsoft Phi-4 14.7B    (~11 GB VRAM)");
+            Console.WriteLine("4 - OpenAI GPT OSS 20B       (~16 GB VRAM) [Recommended]");
+            Console.WriteLine("5 - Z.ai GLM 4.7 Flash 30B   (~18 GB VRAM)");
+            Console.Write("Other: Custom model URI or model ID\n\n> ");
 
             string? input = Console.ReadLine();
-            string modelLink = input?.Trim() switch
-            {
-                "0" => DEFAULT_GEMMA3_12B_MODEL_PATH,
-                "1" => DEFAULT_QWEN3_8B_MODEL_PATH,
-                "2" => DEFAULT_PHI4_14_7B_MODEL_PATH,
-                "3" => DEFAULT_OPENAI_GPT_OSS_20B_MODEL_PATH,
-                "4" => DEFAULT_GLM_4_7_FLASH_MODEL_PATH,
-                _ => !string.IsNullOrWhiteSpace(input) ? input.Trim().Trim('"') : DEFAULT_QWEN3_8B_MODEL_PATH
-            };
-
-            // ── Load model ─────────────────────────────────────────────
-            Uri modelUri = new(modelLink);
-            LM model = new(modelUri,
-                downloadingProgress: ModelDownloadingProgress,
-                loadingProgress: ModelLoadingProgress);
+            LM model = LoadModel(input ?? "");
 
             Console.Clear();
             PrintBanner();
 
-            // ── Web Search provider selection ──────────────────────────
-            // By default we use DuckDuckGo which requires no API key.
-            // You can switch to a premium provider for better results:
-            //
-            //   var webSearch = BuiltInTools.CreateWebSearch(WebSearchTool.Provider.Brave, "YOUR_BRAVE_API_KEY");
-            //   var webSearch = BuiltInTools.CreateWebSearch(WebSearchTool.Provider.Tavily, "YOUR_TAVILY_API_KEY");
-            //   var webSearch = BuiltInTools.CreateWebSearch(WebSearchTool.Provider.Serper, "YOUR_SERPER_API_KEY");
-            //
             var webSearch = BuiltInTools.WebSearch;
 
-            // ── Create the conversation with tools ─────────────────────
             MultiTurnConversation chat = new(model)
             {
                 MaximumCompletionTokens = 2048,
@@ -130,19 +108,10 @@ When you use web search, always cite the source of the information in your answe
 When you don't use web search, just answer naturally from your knowledge."
             };
 
-            // ── Register the built-in WebSearchTool ────────────────────
-            // This is the key line: one call registers the tool, and the
-            // LLM will autonomously decide when to invoke it.
             chat.Tools.Register(webSearch);
-
-            // Also register DateTime so the model knows what "today" is.
             chat.Tools.Register(BuiltInTools.DateTimeNow);
-
-            // ── Attach the streaming event handler ─────────────────────
-            // This is where we get full visibility into the call flow.
             chat.AfterTextCompletion += OnAfterTextCompletion;
 
-            // ── Print usage instructions ───────────────────────────────
             Console.ForegroundColor = ConsoleColor.DarkGray;
             Console.WriteLine("╔═══════════════════════════════════════════════════════════════════╗");
             Console.WriteLine("║  Color legend:                                                    ║");
@@ -169,7 +138,6 @@ When you don't use web search, just answer naturally from your knowledge."
             Console.WriteLine("  \"What is 2 + 2?\"  (no search needed)");
             Console.ResetColor();
 
-            // ── Chat loop ──────────────────────────────────────────────
             const string FIRST_MESSAGE = "Greet the user warmly. Tell them you are an assistant with web search capabilities and that you will automatically search the web when you need fresh or factual information. Give 2-3 example questions they could ask.";
             string mode = "chat";
             string prompt = FIRST_MESSAGE;
@@ -209,13 +177,9 @@ When you don't use web search, just answer naturally from your knowledge."
                         result = chat.Submit(prompt, cts.Token);
                     }
 
-                    // Close any open tool-call block
                     if (_insideToolCall)
-                    {
                         _insideToolCall = false;
-                    }
 
-                    // ── Print generation statistics ────────────────────
                     Console.WriteLine();
                     Console.ForegroundColor = ConsoleColor.DarkGray;
                     Console.Write($"(tokens: {result.GeneratedTokens.Count}");
@@ -238,13 +202,11 @@ When you don't use web search, just answer naturally from your knowledge."
                     Console.ResetColor();
                 }
 
-                // ── Read next user input ───────────────────────────────
                 Console.ForegroundColor = ConsoleColor.Green;
                 Console.Write("\n\nUser: ");
                 Console.ResetColor();
                 prompt = Console.ReadLine() ?? string.Empty;
 
-                // ── Handle special commands ─────────────────────────────
                 if (string.Compare(prompt, "/reset", StringComparison.OrdinalIgnoreCase) == 0)
                 {
                     chat.ClearHistory();
@@ -263,20 +225,15 @@ When you don't use web search, just answer naturally from your knowledge."
                 }
             }
 
-            Console.WriteLine("\nGoodbye! Press any key to exit.");
+            Console.WriteLine("\nDemo ended. Press any key to exit.");
             Console.ReadKey();
         }
 
-        /// <summary>
-        /// Streaming event handler that provides real-time, color-coded visibility
-        /// into every phase of the LLM call flow: reasoning, tool calls, and responses.
-        /// </summary>
         private static void OnAfterTextCompletion(object? sender, AfterTextCompletionEventArgs e)
         {
             switch (e.SegmentType)
             {
                 case TextSegmentType.InternalReasoning:
-                    // The model is "thinking" before answering or before calling a tool.
                     if (_insideToolCall)
                     {
                         _insideToolCall = false;
@@ -286,8 +243,6 @@ When you don't use web search, just answer naturally from your knowledge."
                     break;
 
                 case TextSegmentType.ToolInvocation:
-                    // The model is calling a tool (web_search or get_datetime).
-                    // This segment contains the raw tool call JSON and its result.
                     if (!_insideToolCall)
                     {
                         _insideToolCall = true;
@@ -300,7 +255,6 @@ When you don't use web search, just answer naturally from your knowledge."
                     break;
 
                 case TextSegmentType.UserVisible:
-                    // The final response that the user sees.
                     if (_insideToolCall)
                     {
                         _insideToolCall = false;

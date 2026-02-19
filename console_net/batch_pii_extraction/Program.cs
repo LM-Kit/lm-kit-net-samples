@@ -1,4 +1,4 @@
-﻿using LMKit.Data;
+using LMKit.Data;
 using LMKit.Model;
 using System.Diagnostics;
 using System.Globalization;
@@ -21,52 +21,47 @@ namespace batch_pii_extraction
         private const int DocThrWidth = 8;
         private const int PgThrWidth = 9;
 
-        private static bool ModelDownloadingProgress(string path, long? contentLength, long bytesRead)
-        {
-            _isDownloading = true;
-            if (contentLength.HasValue)
-            {
-                double progressPercentage = Math.Round((double)bytesRead / contentLength.Value * 100, 2);
-                Console.Write($"\rDownloading model {progressPercentage:0.00}%");
-            }
-            else
-            {
-                Console.Write($"\rDownloading model {bytesRead} bytes");
-            }
-            return true;
-        }
-
-        private static bool ModelLoadingProgress(float progress)
-        {
-            if (_isDownloading)
-            {
-                Console.Clear();
-                _isDownloading = false;
-            }
-            Console.Write($"\rLoading model {Math.Round(progress * 100)}%");
-            return true;
-        }
-
         static void Main(string[] args)
         {
-            const string InputDirectory = @"D:\Input";
-            const string OutputDirectory = @"D:\Output";
-
             Console.InputEncoding = Encoding.UTF8;
             Console.OutputEncoding = Encoding.UTF8;
             Console.Clear();
+
+            // Get input/output directories from args or prompt
+            string inputDirectory;
+            string outputDirectory;
+
+            if (args.Length >= 2)
+            {
+                inputDirectory = args[0];
+                outputDirectory = args[1];
+            }
+            else
+            {
+                Console.Write("Input directory: ");
+                inputDirectory = Console.ReadLine()?.Trim().Trim('"') ?? "";
+
+                Console.Write("Output directory: ");
+                outputDirectory = Console.ReadLine()?.Trim().Trim('"') ?? "";
+            }
+
+            if (!Directory.Exists(inputDirectory))
+            {
+                Console.WriteLine($"Input directory not found: {inputDirectory}");
+                return;
+            }
 
             var modelCard = ModelCard.GetPredefinedModelCardByModelID(Configuration.ModelId);
 
             LM model = new(
                 modelCard,
-                downloadingProgress: ModelDownloadingProgress,
-                loadingProgress: ModelLoadingProgress);
+                downloadingProgress: OnDownloadProgress,
+                loadingProgress: OnLoadProgress);
 
             Console.Clear();
 
             var files = Directory.GetFiles(
-                path: InputDirectory,
+                path: inputDirectory,
                 searchPattern: "*.*",
                 searchOption: SearchOption.AllDirectories);
 
@@ -108,15 +103,9 @@ namespace batch_pii_extraction
                         DefaultIgnoreCondition = JsonIgnoreCondition.WhenWritingNull
                     };
 
-                    string jsonOutput = JsonSerializer.Serialize(
-                        entities,
-                        jsonOptions);
+                    string jsonOutput = JsonSerializer.Serialize(entities, jsonOptions);
 
-                    string fileOutput = BuildOutputPath(
-                        file,
-                        InputDirectory,
-                        OutputDirectory);
-
+                    string fileOutput = BuildOutputPath(file, inputDirectory, outputDirectory);
                     File.WriteAllText(fileOutput, jsonOutput);
 
                     sw.Stop();
@@ -166,7 +155,7 @@ namespace batch_pii_extraction
                         Console.WriteLine(
                             string.Format(
                                 CultureInfo.CurrentCulture,
-                                "[{0} / {1} | {2} left] Error: processing file at '{3}'. Details: {4} Please check the file path and permissions.",
+                                "[{0} / {1} | {2} left] Error: processing file at '{3}'. Details: {4}",
                                 done, totalFiles, remaining, file, e.Message));
                         Console.ResetColor();
                     }
@@ -187,7 +176,7 @@ namespace batch_pii_extraction
 
             Console.WriteLine(string.Format(
                 CultureInfo.CurrentCulture,
-                "Summary: {0} {1}, {2} {3} | Total: {4} min {5:0.##} s | Avg/doc: {6:mm\\:ss\\.ff} | Avg/page: {7:ss\\.ff} s | Throughput: {8:0.##} doc/s, {9:0.##} page/s. Press any key to exit.",
+                "Summary: {0} {1}, {2} {3} | Total: {4} min {5:0.##} s | Avg/doc: {6:mm\\:ss\\.ff} | Avg/page: {7:ss\\.ff} s | Throughput: {8:0.##} doc/s, {9:0.##} page/s.",
                 s.Documents, s.Documents == 1 ? "document" : "documents",
                 s.Pages, s.Pages == 1 ? "page" : "pages",
                 totalMinutes, totalSeconds,
@@ -197,6 +186,7 @@ namespace batch_pii_extraction
                 s.PagesPerSec
             ));
 
+            Console.WriteLine("Demo ended. Press any key to exit.");
             _ = Console.ReadKey();
         }
 
@@ -221,14 +211,10 @@ namespace batch_pii_extraction
         private static string TruncateCenter(string text, int maxWidth)
         {
             if (string.IsNullOrEmpty(text) || text.Length <= maxWidth)
-            {
                 return text ?? string.Empty;
-            }
 
             if (maxWidth <= 3)
-            {
                 return text.Substring(0, maxWidth);
-            }
 
             int keep = maxWidth - 3;
             int front = keep / 2;
@@ -243,10 +229,7 @@ namespace batch_pii_extraction
             Console.ResetColor();
         }
 
-        private static string BuildOutputPath(
-            string inputFile,
-            string inputRoot,
-            string outputRoot)
+        private static string BuildOutputPath(string inputFile, string inputRoot, string outputRoot)
         {
             var absInputRoot = Path.GetFullPath(inputRoot);
             var absOutputRoot = Path.GetFullPath(outputRoot);
@@ -257,11 +240,25 @@ namespace batch_pii_extraction
 
             var dir = Path.GetDirectoryName(outputPath);
             if (!string.IsNullOrEmpty(dir))
-            {
                 Directory.CreateDirectory(dir);
-            }
 
             return outputPath;
+        }
+
+        static bool OnDownloadProgress(string path, long? contentLength, long bytesRead)
+        {
+            _isDownloading = true;
+            Console.Write(contentLength.HasValue
+                ? $"\rDownloading model {Math.Round((double)bytesRead / contentLength.Value * 100, 2):0.00}%"
+                : $"\rDownloading model {bytesRead} bytes");
+            return true;
+        }
+
+        static bool OnLoadProgress(float progress)
+        {
+            if (_isDownloading) { Console.Clear(); _isDownloading = false; }
+            Console.Write($"\rLoading model {Math.Round(progress * 100)}%");
+            return true;
         }
     }
 }

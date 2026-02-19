@@ -11,94 +11,26 @@ namespace document_splitting
     {
         private static bool _isDownloading;
 
-        private static bool ModelDownloadingProgress(string path, long? contentLength, long bytesRead)
-        {
-            _isDownloading = true;
-
-            if (contentLength.HasValue)
-            {
-                double progressPercentage = Math.Round((double)bytesRead / contentLength.Value * 100, 2);
-                Console.Write($"\rDownloading model {progressPercentage:0.00}%");
-            }
-            else
-            {
-                Console.Write($"\rDownloading model {bytesRead} bytes");
-            }
-
-            return true;
-        }
-
-        private static bool ModelLoadingProgress(float progress)
-        {
-            if (_isDownloading)
-            {
-                Console.Clear();
-                _isDownloading = false;
-            }
-
-            Console.Write($"\rLoading model {Math.Round(progress * 100)}%");
-
-            return true;
-        }
-
         private static void Main(string[] args)
         {
             // Set an optional license key here if available.
             // A free community license can be obtained from: https://lm-kit.com/products/community-edition/
             LMKit.Licensing.LicenseManager.SetLicenseKey("");
-
             Console.InputEncoding = Encoding.UTF8;
             Console.OutputEncoding = Encoding.UTF8;
 
             Console.Clear();
             Console.WriteLine("Please select the model you want to use:\n");
-            Console.WriteLine("0 - Alibaba Qwen 3 8B (requires approximately 6.5 GB of VRAM) (recommended)");
-            Console.WriteLine("1 - Alibaba Qwen 3 4B (requires approximately 4 GB of VRAM)");
-            Console.WriteLine("2 - Google Gemma 3 4B (requires approximately 5.7 GB of VRAM)");
-            Console.WriteLine("3 - Google Gemma 3 12B (requires approximately 11 GB of VRAM)");
-            Console.WriteLine("4 - MiniCPM o 4.5 9B (requires approximately 5.9 GB of VRAM)");
-            Console.WriteLine("5 - Mistral Ministral 3 8B (requires approximately 6.5 GB of VRAM)");
-            Console.WriteLine("6 - Mistral Ministral 3 14B (requires approximately 12 GB of VRAM)");
+            Console.WriteLine("0 - MiniCPM o 4.5 9B       (~5.9 GB VRAM)");
+            Console.WriteLine("1 - Alibaba Qwen 3 VL 2B   (~2.5 GB VRAM)");
+            Console.WriteLine("2 - Alibaba Qwen 3 VL 4B   (~4.5 GB VRAM)");
+            Console.WriteLine("3 - Alibaba Qwen 3 VL 8B   (~6.5 GB VRAM)");
+            Console.WriteLine("4 - Google Gemma 3 4B       (~5.7 GB VRAM)");
+            Console.WriteLine("5 - Google Gemma 3 12B      (~11 GB VRAM)");
+            Console.Write("\nOther entry: A custom model URI\n\n> ");
 
-            Console.Write("Other entry: A custom model URI\n\n> ");
-
-            string input = Console.ReadLine() ?? string.Empty;
-            string modelLink;
-
-            switch (input.Trim())
-            {
-                case "0":
-                    modelLink = ModelCard.GetPredefinedModelCardByModelID("qwen3-vl:8b").ModelUri.ToString();
-                    break;
-                case "1":
-                    modelLink = ModelCard.GetPredefinedModelCardByModelID("qwen3-vl:4b").ModelUri.ToString();
-                    break;
-                case "2":
-                    modelLink = ModelCard.GetPredefinedModelCardByModelID("gemma3:4b").ModelUri.ToString();
-                    break;
-                case "3":
-                    modelLink = ModelCard.GetPredefinedModelCardByModelID("gemma3:12b").ModelUri.ToString();
-                    break;
-                case "4":
-                    modelLink = ModelCard.GetPredefinedModelCardByModelID("minicpm-o-45").ModelUri.ToString();
-                    break;
-                case "5":
-                    modelLink = ModelCard.GetPredefinedModelCardByModelID("ministral3:8b").ModelUri.ToString();
-                    break;
-                case "6":
-                    modelLink = ModelCard.GetPredefinedModelCardByModelID("ministral3:14b").ModelUri.ToString();
-                    break;
-                default:
-                    modelLink = input.Trim().Trim('"').Trim('\u201C');
-                    break;
-            }
-
-            // Loading model
-            Uri modelUri = new(modelLink);
-            LM model = new(
-                modelUri,
-                downloadingProgress: ModelDownloadingProgress,
-                loadingProgress: ModelLoadingProgress);
+            string input = Console.ReadLine()?.Trim() ?? "0";
+            LM model = LoadModel(input);
 
             Console.Clear();
 
@@ -114,20 +46,20 @@ namespace document_splitting
                 Attachment? attachment = null;
                 string? pdfPath = null;
 
-                // Ask for PDF path
                 while (true)
                 {
                     Console.ForegroundColor = ConsoleColor.Green;
                     Console.Write("Assistant");
                     Console.ResetColor();
-                    Console.Write(" \u2014 enter PDF file path (or 'q' to quit):\n> ");
+                    Console.Write(" - enter PDF file path (or 'q' to quit):\n> ");
 
                     string path = Console.ReadLine() ?? string.Empty;
                     path = path.Trim();
 
                     if (string.Equals(path, "q", StringComparison.OrdinalIgnoreCase))
                     {
-                        Console.WriteLine("\nExiting. Bye \U0001F44B");
+                        Console.WriteLine("\nDemo ended. Press any key to exit.");
+                        Console.ReadKey();
                         return;
                     }
 
@@ -152,14 +84,12 @@ namespace document_splitting
                 Console.WriteLine($"Analyzing {attachment.PageCount} page(s)...");
                 Console.ResetColor();
 
-                // Run document splitting
                 Stopwatch sw = Stopwatch.StartNew();
                 DocumentSplittingResult result = splitter.Split(attachment);
                 sw.Stop();
 
-                // Display results
                 Console.ForegroundColor = ConsoleColor.Blue;
-                Console.WriteLine($"\n\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500 Results \u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500");
+                Console.WriteLine($"\n---------- Results ----------");
                 Console.ResetColor();
 
                 Console.WriteLine($"  Documents found     : {result.DocumentCount}");
@@ -170,7 +100,7 @@ namespace document_splitting
                 foreach (DocumentSegment segment in result.Segments)
                 {
                     Console.ForegroundColor = ConsoleColor.Yellow;
-                    Console.Write($"  \u25B6 ");
+                    Console.Write($"  > ");
                     Console.ResetColor();
 
                     string pageRange = segment.StartPage == segment.EndPage
@@ -192,33 +122,30 @@ namespace document_splitting
                     Console.WriteLine();
                 }
 
-                // Stats
                 Console.ForegroundColor = ConsoleColor.Blue;
-                Console.WriteLine($"\n\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500 Stats \u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500");
+                Console.WriteLine($"\n---------- Stats ------------");
                 Console.WriteLine($"  elapsed time : {sw.Elapsed.TotalSeconds:F2} s");
                 Console.WriteLine($"  total pages  : {attachment.PageCount}");
                 Console.WriteLine($"  segments     : {result.DocumentCount}");
                 Console.ResetColor();
 
                 Console.ForegroundColor = ConsoleColor.DarkGray;
-                Console.WriteLine("\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500");
+                Console.WriteLine("-----------------------------");
                 Console.ResetColor();
 
-                // Offer to split the document if multiple segments were found
                 if (result.ContainsMultipleDocuments)
                 {
                     Console.WriteLine();
                     Console.ForegroundColor = ConsoleColor.Green;
                     Console.Write("Assistant");
                     Console.ResetColor();
-                    Console.Write($" \u2014 {result.DocumentCount} documents were detected. Would you like to split them into separate PDF files? (y/n)\n> ");
+                    Console.Write($" - {result.DocumentCount} documents were detected. Would you like to split them into separate PDF files? (y/n)\n> ");
 
                     string splitAnswer = Console.ReadLine()?.Trim() ?? string.Empty;
 
                     if (string.Equals(splitAnswer, "y", StringComparison.OrdinalIgnoreCase)
                         || string.Equals(splitAnswer, "yes", StringComparison.OrdinalIgnoreCase))
                     {
-                        // Ask for output directory
                         string defaultDir = Path.Combine(
                             Path.GetDirectoryName(Path.GetFullPath(pdfPath!)) ?? ".",
                             Path.GetFileNameWithoutExtension(pdfPath!) + "_split");
@@ -226,7 +153,7 @@ namespace document_splitting
                         Console.ForegroundColor = ConsoleColor.Green;
                         Console.Write("\nAssistant");
                         Console.ResetColor();
-                        Console.Write($" \u2014 enter output directory (press Enter for '{defaultDir}'):\n> ");
+                        Console.Write($" - enter output directory (press Enter for '{defaultDir}'):\n> ");
 
                         string outputDir = Console.ReadLine()?.Trim() ?? string.Empty;
 
@@ -250,7 +177,7 @@ namespace document_splitting
                                 prefix);
 
                             Console.ForegroundColor = ConsoleColor.Green;
-                            Console.WriteLine($"\n\u2714 Successfully created {outputFiles.Count} file(s):");
+                            Console.WriteLine($"\nSuccessfully created {outputFiles.Count} file(s):");
                             Console.ResetColor();
 
                             for (int i = 0; i < outputFiles.Count; i++)
@@ -259,7 +186,7 @@ namespace document_splitting
                                 string label = !string.IsNullOrEmpty(segment.Label) ? $"  ({segment.Label})" : "";
 
                                 Console.ForegroundColor = ConsoleColor.Yellow;
-                                Console.Write($"  \u25B6 ");
+                                Console.Write($"  > ");
                                 Console.ResetColor();
                                 Console.Write(Path.GetFileName(outputFiles[i]));
                                 Console.ForegroundColor = ConsoleColor.DarkGray;
@@ -283,7 +210,8 @@ namespace document_splitting
 
                 if (string.Equals(again.Trim(), "q", StringComparison.OrdinalIgnoreCase))
                 {
-                    Console.WriteLine("\nExiting. Bye \U0001F44B");
+                    Console.WriteLine("\nDemo ended. Press any key to exit.");
+                    Console.ReadKey();
                     break;
                 }
 
@@ -293,6 +221,55 @@ namespace document_splitting
                 Console.ResetColor();
                 Console.WriteLine("Type the path to a PDF (or 'q' to quit).\n");
             }
+        }
+
+        private static LM LoadModel(string input)
+        {
+            string? modelId = input switch
+            {
+                "0" => "minicpm-o-45",
+                "1" => "qwen3-vl:2b",
+                "2" => "qwen3-vl:4b",
+                "3" => "qwen3-vl:8b",
+                "4" => "gemma3:4b",
+                "5" => "gemma3:12b",
+                _ => null
+            };
+
+            if (modelId != null)
+            {
+                return LM.LoadFromModelID(
+                    modelId,
+                    downloadingProgress: OnDownloadProgress,
+                    loadingProgress: OnLoadProgress);
+            }
+
+            return new LM(
+                new Uri(input.Trim('"')),
+                downloadingProgress: OnDownloadProgress,
+                loadingProgress: OnLoadProgress);
+        }
+
+        private static bool OnDownloadProgress(string path, long? contentLength, long bytesRead)
+        {
+            _isDownloading = true;
+            if (contentLength.HasValue)
+            {
+                double percent = (double)bytesRead / contentLength.Value * 100;
+                Console.Write($"\rDownloading: {percent:F1}%   ");
+            }
+            else
+            {
+                Console.Write($"\rDownloading: {bytesRead / 1024.0 / 1024.0:F1} MB   ");
+            }
+            return true;
+        }
+
+        private static bool OnLoadProgress(float progress)
+        {
+            if (_isDownloading) { Console.WriteLine(); _isDownloading = false; }
+            Console.Write($"\rLoading: {progress * 100:F0}%   ");
+            return true;
         }
     }
 }

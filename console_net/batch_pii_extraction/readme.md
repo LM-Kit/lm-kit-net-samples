@@ -130,7 +130,7 @@ Output: D:\Output\contracts\agreement.json
 
 ## Supported Formats
 
-- **Documents**: PDF, DOCX, XLSX, PPTX
+- **Documents**: PDF, DOCX, XLSX, PPTX, EML, MBOX
 - **Images**: PNG, JPG, TIFF, BMP, WebP
 - **Text**: TXT, CSV, RTF
 

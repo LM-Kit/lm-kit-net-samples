@@ -1,4 +1,5 @@
 using LMKit.Agents;
+using LMKit.Agents.Memory;
 using LMKit.Model;
 using LMKit.TextGeneration.Chat;
 using LMKit.TextGeneration.Events;
@@ -8,112 +9,99 @@ namespace persistent_memory_assistant
 {
     internal class Program
     {
-        static readonly string DEFAULT_LLAMA3_1_8B_MODEL_PATH = @"https://huggingface.co/lm-kit/llama-3.1-8b-instruct-gguf/resolve/main/Llama-3.1-8B-Instruct-Q4_K_M.gguf";
-        static readonly string DEFAULT_GEMMA3_12B_MODEL_PATH = @"https://huggingface.co/lm-kit/gemma-3-12b-instruct-lmk/resolve/main/gemma-3-12b-it-Q4_K_M.lmk";
-        static readonly string DEFAULT_PHI4_MINI_3_8B_MODEL_PATH = @"https://huggingface.co/lm-kit/phi-4-mini-3.8b-instruct-gguf/resolve/main/Phi-4-mini-Instruct-Q4_K_M.gguf";
-        static readonly string DEFAULT_QWEN3_8B_MODEL_PATH = @"https://huggingface.co/lm-kit/qwen-3-8b-instruct-gguf/resolve/main/Qwen3-8B-Q4_K_M.gguf";
-        static readonly string DEFAULT_PHI4_14_7B_MODEL_PATH = @"https://huggingface.co/lm-kit/phi-4-14.7b-instruct-gguf/resolve/main/Phi-4-14.7B-Instruct-Q4_K_M.gguf";
-        static readonly string DEFAULT_OPENAI_GPT_OSS_20B_MODEL_PATH = @"https://huggingface.co/lm-kit/gpt-oss-20b-gguf/resolve/main/gpt-oss-20b-mxfp4.gguf";
-        static readonly string DEFAULT_GLM_4_7_FLASH_MODEL_PATH = @"https://huggingface.co/lm-kit/glm-4.7-flash-gguf/resolve/main/GLM-4.7-Flash-64x2.6B-Q4_K_M.gguf";
-
-        static readonly string EMBEDDING_MODEL_PATH = @"https://huggingface.co/lm-kit/bge-m3-gguf/resolve/main/bge-m3-f16.gguf";
         static readonly string MEMORY_FILE_PATH = "./agent_memory.bin";
 
         static bool _isDownloading;
-        static string _currentDownload = "";
 
-        private static bool ModelDownloadingProgress(string path, long? contentLength, long bytesRead)
+        static bool OnDownloadProgress(string path, long? contentLength, long bytesRead)
         {
             _isDownloading = true;
-            string modelName = path.Contains("bge") ? "embedding model" : "chat model";
-            if (_currentDownload != modelName)
-            {
-                _currentDownload = modelName;
-                Console.WriteLine();
-            }
-
+            string modelName = path.Contains("embeddinggemma") ? "embedding model" : "chat model";
             if (contentLength.HasValue)
-            {
-                double progressPercentage = Math.Round((double)bytesRead / contentLength.Value * 100, 2);
-                Console.Write($"\rDownloading {modelName} {progressPercentage:0.00}%");
-            }
+                Console.Write($"\rDownloading {modelName} {Math.Round((double)bytesRead / contentLength.Value * 100, 2):0.00}%");
             else
-            {
                 Console.Write($"\rDownloading {modelName} {bytesRead} bytes");
-            }
             return true;
         }
 
-        private static bool ModelLoadingProgress(float progress)
+        static bool OnLoadProgress(float progress)
         {
-            if (_isDownloading)
-            {
-                Console.WriteLine();
-                _isDownloading = false;
-            }
+            if (_isDownloading) { Console.WriteLine(); _isDownloading = false; }
             Console.Write($"\rLoading model {Math.Round(progress * 100)}%");
             return true;
         }
 
+        static LM LoadModel(string input)
+        {
+            string? modelId = input?.Trim() switch
+            {
+                "0" => "qwen3:8b",
+                "1" => "gemma3:12b",
+                "2" => "qwen3:14b",
+                "3" => "phi4",
+                "4" => "gptoss:20b",
+                "5" => "glm4.7-flash",
+                _ => null
+            };
+
+            if (modelId != null)
+                return LM.LoadFromModelID(modelId, downloadingProgress: OnDownloadProgress, loadingProgress: OnLoadProgress);
+
+            string uri = !string.IsNullOrWhiteSpace(input) ? input.Trim('"') : "qwen3:8b";
+            if (!uri.Contains("://"))
+                return LM.LoadFromModelID(uri, downloadingProgress: OnDownloadProgress, loadingProgress: OnLoadProgress);
+
+            return new LM(new Uri(uri), downloadingProgress: OnDownloadProgress, loadingProgress: OnLoadProgress);
+        }
+
+        private static Agent CreateAgent(LM model, AgentMemory memory)
+        {
+            return Agent.CreateBuilder(model)
+                .WithPersona("You are a helpful, conversational personal assistant.")
+                .WithPlanning(PlanningStrategy.None)
+                .WithMemory(memory)
+                .Build();
+        }
+
         private static void Main(string[] args)
         {
-            // Set an optional license key here if available.
-            // A free community license can be obtained from: https://lm-kit.com/products/community-edition/
             LMKit.Licensing.LicenseManager.SetLicenseKey("");
             Console.InputEncoding = Encoding.UTF8;
             Console.OutputEncoding = Encoding.UTF8;
 
             Console.Clear();
             Console.WriteLine("=== Persistent Memory Assistant Demo ===\n");
-            Console.WriteLine("This demo showcases agent memory for context across conversations.");
-            Console.WriteLine("The assistant remembers information you share and recalls it later.\n");
+            Console.WriteLine("This demo showcases built-in automatic memory extraction.");
+            Console.WriteLine("The assistant remembers information you share and recalls it in future sessions.\n");
 
             Console.WriteLine("Please select the model you want to use:\n");
-            Console.WriteLine("0 - Google Gemma 3 12B (requires approximately 9 GB of VRAM)");
-            Console.WriteLine("1 - Microsoft Phi-4 Mini 3.8B (requires approximately 3.3 GB of VRAM)");
-            Console.WriteLine("2 - Meta Llama 3.1 8B (requires approximately 6 GB of VRAM)");
-            Console.WriteLine("3 - Alibaba Qwen-3 8B (requires approximately 5.6 GB of VRAM)");
-            Console.WriteLine("4 - Microsoft Phi-4 14.7B (requires approximately 11 GB of VRAM)");
-            Console.WriteLine("5 - Open AI GPT OSS 20B (requires approximately 16 GB of VRAM)");
-            Console.WriteLine("6 - Z.ai GLM 4.7 Flash 30B (requires approximately 18 GB of VRAM)");
-            Console.Write("Other: Custom model URI\n\n> ");
+            Console.WriteLine("0 - Alibaba Qwen-3 8B      (~6 GB VRAM)");
+            Console.WriteLine("1 - Google Gemma 3 12B      (~9 GB VRAM)");
+            Console.WriteLine("2 - Alibaba Qwen-3 14B      (~10 GB VRAM)");
+            Console.WriteLine("3 - Microsoft Phi-4 14.7B    (~11 GB VRAM)");
+            Console.WriteLine("4 - OpenAI GPT OSS 20B       (~16 GB VRAM)");
+            Console.WriteLine("5 - Z.ai GLM 4.7 Flash 30B   (~18 GB VRAM)");
+            Console.Write("Other: Custom model URI or model ID\n\n> ");
 
             string? input = Console.ReadLine();
-            string modelLink = input?.Trim() switch
-            {
-                "0" => DEFAULT_GEMMA3_12B_MODEL_PATH,
-                "1" => DEFAULT_PHI4_MINI_3_8B_MODEL_PATH,
-                "2" => DEFAULT_LLAMA3_1_8B_MODEL_PATH,
-                "3" => DEFAULT_QWEN3_8B_MODEL_PATH,
-                "4" => DEFAULT_PHI4_14_7B_MODEL_PATH,
-                "5" => DEFAULT_OPENAI_GPT_OSS_20B_MODEL_PATH,
-                "6" => DEFAULT_GLM_4_7_FLASH_MODEL_PATH,
-                _ => !string.IsNullOrWhiteSpace(input) ? input.Trim().Trim('"') : DEFAULT_GEMMA3_12B_MODEL_PATH
-            };
 
             Console.WriteLine("\nLoading models (chat + embedding for memory)...\n");
 
             // Load chat model
-            Uri modelUri = new(modelLink);
-            LM model = new(modelUri,
-                downloadingProgress: ModelDownloadingProgress,
-                loadingProgress: ModelLoadingProgress);
-
+            LM model = LoadModel(input ?? "");
             Console.WriteLine();
 
             // Load embedding model for memory
-            Uri embeddingUri = new(EMBEDDING_MODEL_PATH);
-            var embeddingModel = new LM(embeddingUri,
-                downloadingProgress: ModelDownloadingProgress,
-                loadingProgress: ModelLoadingProgress);
+            var embeddingModel = LM.LoadFromModelID("embeddinggemma-300m",
+                downloadingProgress: OnDownloadProgress,
+                loadingProgress: OnLoadProgress);
 
             Console.Clear();
             Console.WriteLine("=== Persistent Memory Assistant ===\n");
 
-            // Create agent memory
-            var memory = new AgentMemory(embeddingModel);
+            // Create or load agent memory
+            AgentMemory memory;
 
-            // Try to load existing memories
             if (File.Exists(MEMORY_FILE_PATH))
             {
                 try
@@ -128,29 +116,52 @@ namespace persistent_memory_assistant
                     Console.ForegroundColor = ConsoleColor.Yellow;
                     Console.WriteLine($"Could not load previous memories: {ex.Message}");
                     Console.ResetColor();
+                    memory = new AgentMemory(embeddingModel);
                 }
             }
+            else
+            {
+                memory = new AgentMemory(embeddingModel);
+            }
 
-            // Create agent with memory
-            var agent = Agent.CreateBuilder(model)
-                .WithPersona(@"You are a helpful personal assistant with persistent memory.
-You remember information users share with you and use it to provide personalized assistance.
+            // Enable built-in LLM-based memory extraction.
+            memory.ExtractionMode = MemoryExtractionMode.LlmBased;
+            memory.RunExtractionSynchronously = true;
 
-When users share personal information (name, preferences, projects, etc.):
-- Acknowledge and confirm what you've learned
-- Use this information naturally in future responses
+            // Configure capacity limits
+            memory.MaxMemoryEntries = 100;
+            memory.EvictionPolicy = MemoryEvictionPolicy.OldestFirst;
 
-When answering questions:
-- Check if you have relevant memories that could help
-- Reference past conversations when appropriate
-- Be conversational and personable
+            // Enable time-decay
+            memory.TimeDecayHalfLife = TimeSpan.FromDays(30);
 
-If asked about what you remember, summarize the key facts you know about the user.")
-                .WithPlanning(PlanningStrategy.None)
-                .WithMemory(memory)
-                .Build();
+            memory.BeforeMemoryStored += (sender, e) =>
+            {
+                foreach (var mem in e.Memories)
+                {
+                    Console.ForegroundColor = ConsoleColor.DarkGray;
+                    Console.WriteLine($"  [Memory extracted: {mem.Text} ({mem.MemoryType}, {mem.Importance})]");
+                    Console.ResetColor();
+                }
+            };
 
-            // Create executor and attach event handler for streaming output
+            memory.MemoryEvicted += (sender, e) =>
+            {
+                Console.ForegroundColor = ConsoleColor.DarkYellow;
+                Console.WriteLine($"  [Memory evicted: \"{e.Text}\" from {e.DataSourceIdentifier}]");
+                Console.ResetColor();
+            };
+
+            memory.BeforeMemoryConsolidated += (sender, e) =>
+            {
+                Console.ForegroundColor = ConsoleColor.DarkCyan;
+                Console.WriteLine($"  [Consolidating {e.OriginalEntries.Count} entries in {e.DataSourceIdentifier}]");
+                Console.WriteLine($"  [Into: {e.ConsolidatedText}]");
+                Console.ResetColor();
+            };
+
+            var agent = CreateAgent(model, memory);
+
             var executor = new AgentExecutor();
             executor.AfterTextCompletion += OnAfterTextCompletion;
 
@@ -165,20 +176,26 @@ If asked about what you remember, summarize the key facts you know about the use
                 string? userInput = Console.ReadLine();
 
                 if (string.IsNullOrWhiteSpace(userInput))
-                {
                     continue;
-                }
 
                 // Handle commands
                 if (userInput.StartsWith("/"))
                 {
-                    HandleCommand(userInput, memory, embeddingModel);
+                    if (userInput.Equals("/new", StringComparison.OrdinalIgnoreCase))
+                    {
+                        agent = CreateAgent(model, memory);
+                        Console.ForegroundColor = ConsoleColor.Green;
+                        Console.WriteLine("Started a new chat session. Conversation history cleared, memories preserved.");
+                        Console.ResetColor();
+                        continue;
+                    }
+
+                    HandleCommand(userInput, memory, model, embeddingModel, executor);
                     continue;
                 }
 
                 if (userInput.Equals("quit", StringComparison.OrdinalIgnoreCase))
                 {
-                    // Auto-save on exit
                     if (memory.DataSources.Count > 0)
                     {
                         Console.WriteLine("\nSaving memories...");
@@ -194,7 +211,6 @@ If asked about what you remember, summarize the key facts you know about the use
                 {
                     var cts = new CancellationTokenSource(TimeSpan.FromMinutes(3));
 
-                    // Get response
                     Console.ForegroundColor = ConsoleColor.Green;
                     Console.Write("\nAssistant: ");
                     Console.ResetColor();
@@ -205,9 +221,6 @@ If asked about what you remember, summarize the key facts you know about the use
                         cancellationToken: cts.Token);
 
                     Console.WriteLine();
-
-                    // Extract and store new information from the conversation
-                    ExtractAndStoreMemories(userInput, result.Content ?? "", memory);
                 }
                 catch (OperationCanceledException)
                 {
@@ -221,24 +234,29 @@ If asked about what you remember, summarize the key facts you know about the use
                 }
             }
 
-            Console.WriteLine("\nThank you for using Persistent Memory Assistant. Press any key to exit.");
+            Console.WriteLine("\nDemo ended. Press any key to exit.");
             Console.ReadKey();
         }
 
         private static void ShowHelp()
         {
             Console.WriteLine("Commands:");
+            Console.WriteLine("  /new             - Start a new chat (clears history, keeps memories)");
             Console.WriteLine("  /remember <info> - Store information in memory");
-            Console.WriteLine("  /memories        - List all stored memory sources");
+            Console.WriteLine("  /memories        - List all stored memory entries with timestamps");
+            Console.WriteLine("  /capacity <n>    - Set max memory entries (0 = unlimited)");
+            Console.WriteLine("  /decay <days>    - Set time-decay half-life in days (0 = off)");
+            Console.WriteLine("  /consolidate     - Merge similar memories using LLM summarization");
+            Console.WriteLine("  /summarize       - Summarize current conversation into episodic memory");
             Console.WriteLine("  /clear           - Clear all memories");
             Console.WriteLine("  /save            - Save memories to disk");
             Console.WriteLine("  /load            - Load memories from disk");
             Console.WriteLine("  /help            - Show this help");
             Console.WriteLine("  quit             - Exit (auto-saves)\n");
-            Console.WriteLine("Chat naturally - the assistant will remember what you share!");
+            Console.WriteLine("Chat naturally. The assistant automatically extracts and remembers facts!");
         }
 
-        private static void HandleCommand(string command, AgentMemory memory, LM embeddingModel)
+        private static void HandleCommand(string command, AgentMemory memory, LM chatModel, LM embeddingModel, AgentExecutor executor)
         {
             var parts = command.Split(' ', 2);
             var cmd = parts[0].ToLowerInvariant();
@@ -267,12 +285,67 @@ If asked about what you remember, summarize the key facts you know about the use
                         return;
                     }
                     Console.ForegroundColor = ConsoleColor.Yellow;
-                    Console.WriteLine($"Memory sources ({dataSources.Count}):");
+                    string capacityStr = memory.MaxMemoryEntries > 0
+                        ? $"{memory.EntryCount} / {memory.MaxMemoryEntries}"
+                        : $"{memory.EntryCount} (unlimited)";
+                    Console.WriteLine($"Memory entries: {capacityStr}");
                     Console.ResetColor();
                     foreach (var ds in dataSources)
                     {
                         var memType = AgentMemory.GetMemoryType(ds);
-                        Console.WriteLine($"  [{memType}] {ds.Identifier} - {ds.Sections.Count()} section(s)");
+                        Console.WriteLine($"  [{memType}] {ds.Identifier}:");
+                        foreach (var section in ds.Sections)
+                        {
+                            string text = section.Partitions.Count > 0
+                                ? section.Partitions[0].Payload
+                                : "(empty)";
+                            if (text.Length > 60)
+                                text = text.Substring(0, 57) + "...";
+
+                            string ts = "";
+                            if (section.Metadata.TryGetValue("created_at", out string createdAt) &&
+                                DateTime.TryParse(createdAt, out DateTime dt))
+                            {
+                                ts = $" ({dt.ToLocalTime():g})";
+                            }
+
+                            Console.WriteLine($"    - {text}{ts}");
+                        }
+                    }
+                    break;
+
+                case "/capacity":
+                    if (int.TryParse(arg, out int cap) && cap >= 0)
+                    {
+                        memory.MaxMemoryEntries = cap;
+                        Console.ForegroundColor = ConsoleColor.Green;
+                        Console.WriteLine($"Max memory entries set to {(cap == 0 ? "unlimited" : cap.ToString())}.");
+                        Console.ResetColor();
+                    }
+                    else
+                    {
+                        Console.WriteLine($"Current capacity: {memory.EntryCount} / {(memory.MaxMemoryEntries > 0 ? memory.MaxMemoryEntries.ToString() : "unlimited")}");
+                        Console.WriteLine("Usage: /capacity <number> (0 for unlimited)");
+                    }
+                    break;
+
+                case "/decay":
+                    if (double.TryParse(arg, out double days) && days >= 0)
+                    {
+                        memory.TimeDecayHalfLife = days > 0 ? TimeSpan.FromDays(days) : TimeSpan.Zero;
+                        Console.ForegroundColor = ConsoleColor.Green;
+                        Console.WriteLine(days > 0
+                            ? $"Time-decay half-life set to {days} day(s)."
+                            : "Time-decay disabled.");
+                        Console.ResetColor();
+                    }
+                    else
+                    {
+                        string current = memory.TimeDecayHalfLife > TimeSpan.Zero
+                            ? $"{memory.TimeDecayHalfLife.TotalDays} day(s)"
+                            : "off";
+                        Console.WriteLine($"Current time-decay half-life: {current}");
+                        Console.WriteLine("Usage: /decay <days> (0 to disable)");
                     }
                     break;
 
@@ -302,7 +375,9 @@ If asked about what you remember, summarize the key facts you know about the use
                 case "/load":
                     try
                     {
-                        memory = AgentMemory.Deserialize(MEMORY_FILE_PATH, embeddingModel);
+                        var loadedMemory = AgentMemory.Deserialize(MEMORY_FILE_PATH, embeddingModel);
+                        memory.Clear();
+                        memory.AddDataSources(loadedMemory.DataSources);
                         Console.ForegroundColor = ConsoleColor.Green;
                         Console.WriteLine($"Loaded {memory.DataSources.Count} memory sources from {MEMORY_FILE_PATH}");
                         Console.ResetColor();
@@ -311,6 +386,71 @@ If asked about what you remember, summarize the key facts you know about the use
                     {
                         Console.ForegroundColor = ConsoleColor.Red;
                         Console.WriteLine($"Error loading: {ex.Message}");
+                        Console.ResetColor();
+                    }
+                    break;
+
+                case "/consolidate":
+                    try
+                    {
+                        if (memory.IsEmpty())
+                        {
+                            Console.WriteLine("No memories to consolidate.");
+                            return;
+                        }
+
+                        if (float.TryParse(arg, out float threshold) && threshold > 0)
+                            memory.ConsolidationSimilarityThreshold = threshold;
+
+                        Console.ForegroundColor = ConsoleColor.Yellow;
+                        Console.WriteLine($"Consolidating memories (threshold: {memory.ConsolidationSimilarityThreshold:F2})...");
+                        Console.ResetColor();
+
+                        var consolidationResult = memory.ConsolidateAsync(chatModel).GetAwaiter().GetResult();
+
+                        Console.ForegroundColor = ConsoleColor.Green;
+                        Console.WriteLine($"Consolidation complete: merged {consolidationResult.ClustersMerged} cluster(s), " +
+                            $"removed {consolidationResult.EntriesRemoved} entries, created {consolidationResult.EntriesCreated} new entries.");
+                        Console.WriteLine($"Entries: {consolidationResult.EntryCountBefore} -> {consolidationResult.EntryCountAfter}");
+                        Console.ResetColor();
+                    }
+                    catch (Exception ex)
+                    {
+                        Console.ForegroundColor = ConsoleColor.Red;
+                        Console.WriteLine($"Consolidation error: {ex.Message}");
+                        Console.ResetColor();
+                    }
+                    break;
+
+                case "/summarize":
+                    try
+                    {
+                        var chatHistory = executor.ChatHistory;
+                        if (chatHistory == null || chatHistory.UserMessageCount < 2)
+                        {
+                            Console.WriteLine("Not enough conversation to summarize (need at least 2 user messages).");
+                            return;
+                        }
+
+                        Console.ForegroundColor = ConsoleColor.Yellow;
+                        Console.WriteLine("Summarizing conversation into episodic memory...");
+                        Console.ResetColor();
+
+                        var summaryResult = memory.SummarizeConversationAsync(chatHistory, chatModel)
+                            .GetAwaiter().GetResult();
+
+                        Console.ForegroundColor = ConsoleColor.Green;
+                        Console.WriteLine($"Created {summaryResult.EntriesCreated} episodic memory entry(s) from {summaryResult.MessagePairsSummarized} message pairs:");
+                        foreach (var summary in summaryResult.Summaries)
+                        {
+                            Console.WriteLine($"  - {summary}");
+                        }
+                        Console.ResetColor();
+                    }
+                    catch (Exception ex)
+                    {
+                        Console.ForegroundColor = ConsoleColor.Red;
+                        Console.WriteLine($"Summarization error: {ex.Message}");
                         Console.ResetColor();
                     }
                     break;
@@ -325,58 +465,10 @@ If asked about what you remember, summarize the key facts you know about the use
             }
         }
 
-        /// <summary>
-        /// Simple heuristic to extract facts from conversation and store them.
-        /// In production, you might use the LLM itself to extract entities/facts.
-        /// </summary>
-        private static void ExtractAndStoreMemories(string userMessage, string assistantResponse, AgentMemory memory)
-        {
-            // Simple patterns to detect information worth remembering
-            var patterns = new[]
-            {
-                ("my name is ", MemoryType.Semantic),
-                ("i work ", MemoryType.Semantic),
-                ("i am a ", MemoryType.Semantic),
-                ("i live in ", MemoryType.Semantic),
-                ("i prefer ", MemoryType.Procedural),
-                ("i like ", MemoryType.Semantic),
-                ("my favorite ", MemoryType.Semantic),
-                ("i'm working on ", MemoryType.Episodic),
-                ("my project ", MemoryType.Episodic),
-                ("yesterday ", MemoryType.Episodic),
-                ("today ", MemoryType.Episodic),
-                ("remember that ", MemoryType.Semantic),
-            };
-
-            var messageLower = userMessage.ToLowerInvariant();
-
-            foreach (var (pattern, memoryType) in patterns)
-            {
-                if (messageLower.Contains(pattern))
-                {
-                    // Store a condensed version
-                    var condensed = userMessage.Length > 200 ? userMessage.Substring(0, 200) + "..." : userMessage;
-                    string dataSourceId = memoryType.ToString().ToLower() + "_memories";
-                    string sectionId = $"conversation_{DateTime.Now.Ticks}";
-                    memory.SaveInformation(dataSourceId, $"User said: {condensed}", sectionId, memoryType);
-
-                    Console.ForegroundColor = ConsoleColor.DarkGray;
-                    Console.WriteLine($"[Stored new {memoryType.ToString().ToLower()} memory]");
-                    Console.ResetColor();
-                    break; // Only store once per message
-                }
-            }
-        }
-
-        /// <summary>
-        /// Event handler to display agent output in real-time.
-        /// </summary>
         private static void OnAfterTextCompletion(object? sender, AfterTextCompletionEventArgs e)
         {
             if (e.SegmentType == TextSegmentType.UserVisible)
-            {
                 Console.Write(e.Text);
-            }
         }
     }
 }

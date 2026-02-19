@@ -1,4 +1,4 @@
-﻿using LMKit.Model;
+using LMKit.Model;
 using LMKit.TextAnalysis;
 using System.Diagnostics;
 using System.Text;
@@ -7,14 +7,9 @@ namespace sarcasm_detection
 {
     internal class Program
     {
-        /*
-             Note: This model has been fine-tuned specifically for the English language. 
-             For processing other languages, additional model fine-tuning may be required.
-         */
-        static readonly string DEFAULT_MODEL_PATH = @"https://huggingface.co/lm-kit/LM-Kit.Sarcasm_Detection-TinyLlama-1.1B-1T-OpenOrca-en-q4/resolve/main/LM-Kit.Sarcasm_Detection-TinyLlama-1.1B-1T-OpenOrca-en-q4.gguf";
         static bool _isDownloading;
 
-        private static bool ModelDownloadingProgress(string path, long? contentLength, long bytesRead)
+        private static bool OnDownloadProgress(string path, long? contentLength, long bytesRead)
         {
             _isDownloading = true;
             if (contentLength.HasValue)
@@ -30,7 +25,7 @@ namespace sarcasm_detection
             return true;
         }
 
-        private static bool ModelLoadingProgress(float progress)
+        private static bool OnLoadProgress(float progress)
         {
             if (_isDownloading)
             {
@@ -45,17 +40,17 @@ namespace sarcasm_detection
 
         static void Main(string[] args)
         {
-            // Set an optional license key here if available. 
+            // Set an optional license key here if available.
             // A free community license can be obtained from: https://lm-kit.com/products/community-edition/
             LMKit.Licensing.LicenseManager.SetLicenseKey("");
             Console.InputEncoding = Encoding.UTF8;
             Console.OutputEncoding = Encoding.UTF8;
 
-            //Loading model
-            Uri modelUri = new(DEFAULT_MODEL_PATH);
-            LM model = new(modelUri,
-                                    downloadingProgress: ModelDownloadingProgress,
-                                    loadingProgress: ModelLoadingProgress);
+            // Load model (fine-tuned specifically for English language)
+            LM model = LM.LoadFromModelID(
+                "lmkit-sarcasm-detection",
+                downloadingProgress: OnDownloadProgress,
+                loadingProgress: OnLoadProgress);
 
             Console.Clear();
             Console.ForegroundColor = ConsoleColor.Blue;
@@ -63,7 +58,6 @@ namespace sarcasm_detection
             Console.ResetColor();
 
             SarcasmDetection classifier = new(model);
-
 
             while (true)
             {
@@ -89,7 +83,7 @@ namespace sarcasm_detection
                 Console.WriteLine($"Is sarcastic: {isSarcastic} - Elapsed: {Math.Round(sw.Elapsed.TotalSeconds, 2)} seconds - Confidence: {Math.Round(classifier.Confidence * 100, 1)} %");
             }
 
-            Console.WriteLine("The program ended. Press any key to exit the application.");
+            Console.WriteLine("Demo ended. Press any key to exit.");
             _ = Console.ReadKey();
         }
     }

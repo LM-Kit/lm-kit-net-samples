@@ -10,48 +10,50 @@ namespace research_assistant
 {
     internal class Program
     {
-        static readonly string DEFAULT_GEMMA3_12B_MODEL_PATH = @"https://huggingface.co/lm-kit/gemma-3-12b-instruct-lmk/resolve/main/gemma-3-12b-it-Q4_K_M.lmk";
-        static readonly string DEFAULT_QWEN3_8B_MODEL_PATH = @"https://huggingface.co/lm-kit/qwen-3-8b-instruct-gguf/resolve/main/Qwen3-8B-Q4_K_M.gguf";
-        static readonly string DEFAULT_QWEN3_14B_MODEL_PATH = @"https://huggingface.co/lm-kit/qwen-3-14b-instruct-gguf/resolve/main/Qwen3-14B-Q4_K_M.gguf";
-        static readonly string DEFAULT_PHI4_14B_MODEL_PATH = @"https://huggingface.co/lm-kit/phi-4-14.7b-instruct-gguf/resolve/main/Phi-4-14.7B-Instruct-Q4_K_M.gguf";
-        static readonly string DEFAULT_GPT_OSS_20B_MODEL_PATH = @"https://huggingface.co/lm-kit/gpt-oss-20b-gguf/resolve/main/gpt-oss-20b-mxfp4.gguf";
-        static readonly string DEFAULT_GLM_4_7_FLASH_MODEL_PATH = @"https://huggingface.co/lm-kit/glm-4.7-flash-gguf/resolve/main/GLM-4.7-Flash-64x2.6B-Q4_K_M.gguf";
-        static readonly string DEFAULT_MISTRAL_SMALL_24B_MODEL_PATH = @"https://huggingface.co/lm-kit/mistral-small-3.2-2506-24b-instruct-gguf/resolve/main/Mistral-Small-3.2-24B-Instruct-2506-Q4_K_M.gguf";
-        static readonly string DEFAULT_MAGISTRAL_SMALL_24B_MODEL_PATH = @"https://huggingface.co/lm-kit/magistral-small-2509-24b-gguf/resolve/main/Magistral-Small-2509-Q4_K_M.gguf";
-        static readonly string DEFAULT_GEMMA3_27B_MODEL_PATH = @"https://huggingface.co/lm-kit/gemma-3-27b-instruct-lmk/resolve/main/gemma-3-27b-it-Q4_K_M.lmk";
-
         static bool _isDownloading;
 
-        private static bool ModelDownloadingProgress(string path, long? contentLength, long bytesRead)
+        static bool OnDownloadProgress(string path, long? contentLength, long bytesRead)
         {
             _isDownloading = true;
             if (contentLength.HasValue)
-            {
-                double progressPercentage = Math.Round((double)bytesRead / contentLength.Value * 100, 2);
-                Console.Write($"\rDownloading model {progressPercentage:0.00}%");
-            }
+                Console.Write($"\rDownloading model {Math.Round((double)bytesRead / contentLength.Value * 100, 2):0.00}%");
             else
-            {
                 Console.Write($"\rDownloading model {bytesRead} bytes");
-            }
             return true;
         }
 
-        private static bool ModelLoadingProgress(float progress)
+        static bool OnLoadProgress(float progress)
         {
-            if (_isDownloading)
-            {
-                Console.Clear();
-                _isDownloading = false;
-            }
+            if (_isDownloading) { Console.Clear(); _isDownloading = false; }
             Console.Write($"\rLoading model {Math.Round(progress * 100)}%");
             return true;
         }
 
+        static LM LoadModel(string input)
+        {
+            string? modelId = input?.Trim() switch
+            {
+                "0" => "qwen3:8b",
+                "1" => "gemma3:12b",
+                "2" => "qwen3:14b",
+                "3" => "phi4",
+                "4" => "gptoss:20b",
+                "5" => "glm4.7-flash",
+                _ => null
+            };
+
+            if (modelId != null)
+                return LM.LoadFromModelID(modelId, downloadingProgress: OnDownloadProgress, loadingProgress: OnLoadProgress);
+
+            string uri = !string.IsNullOrWhiteSpace(input) ? input.Trim('"') : "qwen3:8b";
+            if (!uri.Contains("://"))
+                return LM.LoadFromModelID(uri, downloadingProgress: OnDownloadProgress, loadingProgress: OnLoadProgress);
+
+            return new LM(new Uri(uri), downloadingProgress: OnDownloadProgress, loadingProgress: OnLoadProgress);
+        }
+
         private static void Main(string[] args)
         {
-            // Set an optional license key here if available.
-            // A free community license can be obtained from: https://lm-kit.com/products/community-edition/
             LMKit.Licensing.LicenseManager.SetLicenseKey("");
             Console.InputEncoding = Encoding.UTF8;
             Console.OutputEncoding = Encoding.UTF8;
@@ -62,37 +64,16 @@ namespace research_assistant
             Console.WriteLine("Watch the agent think, search, take notes, and synthesize findings.\n");
 
             Console.WriteLine("Please select the model you want to use:\n");
-            Console.WriteLine("0 - Alibaba Qwen-3 8B (requires approximately 5.6 GB of VRAM) [Recommended]");
-            Console.WriteLine("1 - Google Gemma 3 12B (requires approximately 9 GB of VRAM)");
-            Console.WriteLine("2 - Alibaba Qwen-3 14B (requires approximately 10 GB of VRAM)");
-            Console.WriteLine("3 - Microsoft Phi-4 14.7B (requires approximately 11 GB of VRAM)");
-            Console.WriteLine("4 - OpenAI GPT OSS 20B (requires approximately 16 GB of VRAM)");
-            Console.WriteLine("5 - Mistral Small 3.2 24B (requires approximately 16 GB of VRAM)");
-            Console.WriteLine("6 - Mistral Magistral Small 1.2 24B (requires approximately 16 GB of VRAM)");
-            Console.WriteLine("7 - Google Gemma 3 27B (requires approximately 18 GB of VRAM)");
-            Console.WriteLine("8 - Z.ai GLM 4.7 Flash 30B (requires approximately 18 GB of VRAM)");
-            Console.Write("Other: Custom model URI\n\n> ");
+            Console.WriteLine("0 - Alibaba Qwen-3 8B      (~6 GB VRAM) [Recommended]");
+            Console.WriteLine("1 - Google Gemma 3 12B      (~9 GB VRAM)");
+            Console.WriteLine("2 - Alibaba Qwen-3 14B      (~10 GB VRAM)");
+            Console.WriteLine("3 - Microsoft Phi-4 14.7B    (~11 GB VRAM)");
+            Console.WriteLine("4 - OpenAI GPT OSS 20B       (~16 GB VRAM)");
+            Console.WriteLine("5 - Z.ai GLM 4.7 Flash 30B   (~18 GB VRAM)");
+            Console.Write("Other: Custom model URI or model ID\n\n> ");
 
             string? input = Console.ReadLine();
-            string modelLink = input?.Trim() switch
-            {
-                "0" => DEFAULT_QWEN3_8B_MODEL_PATH,
-                "1" => DEFAULT_GEMMA3_12B_MODEL_PATH,
-                "2" => DEFAULT_QWEN3_14B_MODEL_PATH,
-                "3" => DEFAULT_PHI4_14B_MODEL_PATH,
-                "4" => DEFAULT_GPT_OSS_20B_MODEL_PATH,
-                "5" => DEFAULT_MISTRAL_SMALL_24B_MODEL_PATH,
-                "6" => DEFAULT_MAGISTRAL_SMALL_24B_MODEL_PATH,
-                "7" => DEFAULT_GEMMA3_27B_MODEL_PATH,
-                "8" => DEFAULT_GLM_4_7_FLASH_MODEL_PATH,
-                _ => !string.IsNullOrWhiteSpace(input) ? input.Trim().Trim('"') : DEFAULT_QWEN3_8B_MODEL_PATH
-            };
-
-            // Load model
-            Uri modelUri = new(modelLink);
-            LM model = new(modelUri,
-                downloadingProgress: ModelDownloadingProgress,
-                loadingProgress: ModelLoadingProgress);
+            LM model = LoadModel(input ?? "");
 
             Console.Clear();
             Console.WriteLine("=== Research Assistant Agent ===\n");
@@ -104,10 +85,6 @@ namespace research_assistant
             Console.WriteLine("Type 'quit' to exit.\n");
 
             // Create tools
-            // Use the built-in WebSearchTool with DuckDuckGo (no API key required)
-            // Other providers available: Brave, Tavily, Serper, SearXNG
-            // Example with Brave: BuiltInTools.CreateWebSearch(WebSearchTool.Provider.Brave, "your-api-key")
-            // Example with Tavily: BuiltInTools.CreateWebSearch(WebSearchTool.Provider.Tavily, Environment.GetEnvironmentVariable("TAVILY_API_KEY"))
             var webSearchTool = BuiltInTools.WebSearch;
             var noteTakingTool = new NoteTakingTool();
             var getNotesTool = new GetNotesTool(noteTakingTool);
@@ -128,7 +105,6 @@ Be thorough but concise in your final summaries.")
                 .WithMaxIterations(10)
                 .Build();
 
-            // Create executor and attach event handler for streaming output
             var executor = new AgentExecutor();
             executor.AfterTextCompletion += OnAfterTextCompletion;
 
@@ -141,11 +117,8 @@ Be thorough but concise in your final summaries.")
                 string? topic = Console.ReadLine();
 
                 if (string.IsNullOrWhiteSpace(topic) || topic.Equals("quit", StringComparison.OrdinalIgnoreCase))
-                {
                     break;
-                }
 
-                // Clear notes for new research session
                 noteTakingTool.ClearNotes();
 
                 Console.WriteLine("\n--- Agent is researching... ---\n");
@@ -154,7 +127,6 @@ Be thorough but concise in your final summaries.")
                 {
                     var cts = new CancellationTokenSource(TimeSpan.FromMinutes(5));
 
-                    // Execute agent
                     var result = executor.Execute(
                         agent,
                         $"Research the following topic and provide a comprehensive summary with key findings: {topic}",
@@ -162,7 +134,6 @@ Be thorough but concise in your final summaries.")
 
                     Console.WriteLine("\n\n--- Research Complete ---\n");
 
-                    // Display collected notes
                     var notes = noteTakingTool.GetAllNotes();
                     if (notes.Count > 0)
                     {
@@ -174,13 +145,10 @@ Be thorough but concise in your final summaries.")
                         {
                             Console.WriteLine($"  [{note.Category}] {note.Content}");
                             if (!string.IsNullOrEmpty(note.Source))
-                            {
                                 Console.WriteLine($"           Source: {note.Source}");
-                            }
                         }
                     }
 
-                    // Display stats
                     Console.ForegroundColor = ConsoleColor.DarkGray;
                     Console.WriteLine($"\n(Inferences: {result.InferenceCount} | Status: {result.Status})");
                     Console.ResetColor();
@@ -197,28 +165,18 @@ Be thorough but concise in your final summaries.")
                 }
             }
 
-            Console.WriteLine("\nThank you for using Research Assistant. Press any key to exit.");
+            Console.WriteLine("\nDemo ended. Press any key to exit.");
             Console.ReadKey();
         }
 
-        /// <summary>
-        /// Event handler to display agent output in real-time with color-coded segments.
-        /// </summary>
         private static void OnAfterTextCompletion(object? sender, AfterTextCompletionEventArgs e)
         {
-            switch (e.SegmentType)
+            Console.ForegroundColor = e.SegmentType switch
             {
-                case TextSegmentType.InternalReasoning:
-                    Console.ForegroundColor = ConsoleColor.Blue;
-                    break;
-                case TextSegmentType.ToolInvocation:
-                    Console.ForegroundColor = ConsoleColor.Magenta;
-                    break;
-                case TextSegmentType.UserVisible:
-                    Console.ForegroundColor = ConsoleColor.White;
-                    break;
-            }
-
+                TextSegmentType.InternalReasoning => ConsoleColor.Blue,
+                TextSegmentType.ToolInvocation => ConsoleColor.Magenta,
+                _ => ConsoleColor.White
+            };
             Console.Write(e.Text);
         }
     }

@@ -7,46 +7,50 @@ namespace content_creation_pipeline
 {
     internal class Program
     {
-        static readonly string DEFAULT_LLAMA3_1_8B_MODEL_PATH = @"https://huggingface.co/lm-kit/llama-3.1-8b-instruct-gguf/resolve/main/Llama-3.1-8B-Instruct-Q4_K_M.gguf";
-        static readonly string DEFAULT_GEMMA3_12B_MODEL_PATH = @"https://huggingface.co/lm-kit/gemma-3-12b-instruct-lmk/resolve/main/gemma-3-12b-it-Q4_K_M.lmk";
-        static readonly string DEFAULT_PHI4_MINI_3_8B_MODEL_PATH = @"https://huggingface.co/lm-kit/phi-4-mini-3.8b-instruct-gguf/resolve/main/Phi-4-mini-Instruct-Q4_K_M.gguf";
-        static readonly string DEFAULT_QWEN3_8B_MODEL_PATH = @"https://huggingface.co/lm-kit/qwen-3-8b-instruct-gguf/resolve/main/Qwen3-8B-Q4_K_M.gguf";
-        static readonly string DEFAULT_PHI4_14_7B_MODEL_PATH = @"https://huggingface.co/lm-kit/phi-4-14.7b-instruct-gguf/resolve/main/Phi-4-14.7B-Instruct-Q4_K_M.gguf";
-        static readonly string DEFAULT_OPENAI_GPT_OSS_20B_MODEL_PATH = @"https://huggingface.co/lm-kit/gpt-oss-20b-gguf/resolve/main/gpt-oss-20b-mxfp4.gguf";
-        static readonly string DEFAULT_GLM_4_7_FLASH_MODEL_PATH = @"https://huggingface.co/lm-kit/glm-4.7-flash-gguf/resolve/main/GLM-4.7-Flash-64x2.6B-Q4_K_M.gguf";
-
         static bool _isDownloading;
 
-        private static bool ModelDownloadingProgress(string path, long? contentLength, long bytesRead)
+        static bool OnDownloadProgress(string path, long? contentLength, long bytesRead)
         {
             _isDownloading = true;
             if (contentLength.HasValue)
-            {
-                double progressPercentage = Math.Round((double)bytesRead / contentLength.Value * 100, 2);
-                Console.Write($"\rDownloading model {progressPercentage:0.00}%");
-            }
+                Console.Write($"\rDownloading model {Math.Round((double)bytesRead / contentLength.Value * 100, 2):0.00}%");
             else
-            {
                 Console.Write($"\rDownloading model {bytesRead} bytes");
-            }
             return true;
         }
 
-        private static bool ModelLoadingProgress(float progress)
+        static bool OnLoadProgress(float progress)
         {
-            if (_isDownloading)
-            {
-                Console.Clear();
-                _isDownloading = false;
-            }
+            if (_isDownloading) { Console.Clear(); _isDownloading = false; }
             Console.Write($"\rLoading model {Math.Round(progress * 100)}%");
             return true;
         }
 
+        static LM LoadModel(string input)
+        {
+            string? modelId = input?.Trim() switch
+            {
+                "0" => "qwen3:8b",
+                "1" => "gemma3:12b",
+                "2" => "qwen3:14b",
+                "3" => "phi4",
+                "4" => "gptoss:20b",
+                "5" => "glm4.7-flash",
+                _ => null
+            };
+
+            if (modelId != null)
+                return LM.LoadFromModelID(modelId, downloadingProgress: OnDownloadProgress, loadingProgress: OnLoadProgress);
+
+            string uri = !string.IsNullOrWhiteSpace(input) ? input.Trim('"') : "qwen3:8b";
+            if (!uri.Contains("://"))
+                return LM.LoadFromModelID(uri, downloadingProgress: OnDownloadProgress, loadingProgress: OnLoadProgress);
+
+            return new LM(new Uri(uri), downloadingProgress: OnDownloadProgress, loadingProgress: OnLoadProgress);
+        }
+
         private static async Task Main(string[] args)
         {
-            // Set an optional license key here if available.
-            // A free community license can be obtained from: https://lm-kit.com/products/community-edition/
             LMKit.Licensing.LicenseManager.SetLicenseKey("");
             Console.InputEncoding = Encoding.UTF8;
             Console.OutputEncoding = Encoding.UTF8;
@@ -57,33 +61,16 @@ namespace content_creation_pipeline
             Console.WriteLine("Content flows through: Outliner → Writer → Editor → Fact-Checker\n");
 
             Console.WriteLine("Please select the model you want to use:\n");
-            Console.WriteLine("0 - Google Gemma 3 12B (requires approximately 9 GB of VRAM)");
-            Console.WriteLine("1 - Microsoft Phi-4 Mini 3.8B (requires approximately 3.3 GB of VRAM)");
-            Console.WriteLine("2 - Meta Llama 3.1 8B (requires approximately 6 GB of VRAM)");
-            Console.WriteLine("3 - Alibaba Qwen-3 8B (requires approximately 5.6 GB of VRAM)");
-            Console.WriteLine("4 - Microsoft Phi-4 14.7B (requires approximately 11 GB of VRAM)");
-            Console.WriteLine("5 - Open AI GPT OSS 20B (requires approximately 16 GB of VRAM)");
-            Console.WriteLine("6 - Z.ai GLM 4.7 Flash 30B (requires approximately 18 GB of VRAM)");
-            Console.Write("Other: Custom model URI\n\n> ");
+            Console.WriteLine("0 - Alibaba Qwen-3 8B      (~6 GB VRAM)");
+            Console.WriteLine("1 - Google Gemma 3 12B      (~9 GB VRAM)");
+            Console.WriteLine("2 - Alibaba Qwen-3 14B      (~10 GB VRAM)");
+            Console.WriteLine("3 - Microsoft Phi-4 14.7B    (~11 GB VRAM)");
+            Console.WriteLine("4 - OpenAI GPT OSS 20B       (~16 GB VRAM)");
+            Console.WriteLine("5 - Z.ai GLM 4.7 Flash 30B   (~18 GB VRAM)");
+            Console.Write("Other: Custom model URI or model ID\n\n> ");
 
             string? input = Console.ReadLine();
-            string modelLink = input?.Trim() switch
-            {
-                "0" => DEFAULT_GEMMA3_12B_MODEL_PATH,
-                "1" => DEFAULT_PHI4_MINI_3_8B_MODEL_PATH,
-                "2" => DEFAULT_LLAMA3_1_8B_MODEL_PATH,
-                "3" => DEFAULT_QWEN3_8B_MODEL_PATH,
-                "4" => DEFAULT_PHI4_14_7B_MODEL_PATH,
-                "5" => DEFAULT_OPENAI_GPT_OSS_20B_MODEL_PATH,
-                "6" => DEFAULT_GLM_4_7_FLASH_MODEL_PATH,
-                _ => !string.IsNullOrWhiteSpace(input) ? input.Trim().Trim('"') : DEFAULT_GEMMA3_12B_MODEL_PATH
-            };
-
-            // Load model
-            Uri modelUri = new(modelLink);
-            LM model = new(modelUri,
-                downloadingProgress: ModelDownloadingProgress,
-                loadingProgress: ModelLoadingProgress);
+            LM model = LoadModel(input ?? "");
 
             Console.Clear();
             Console.WriteLine("=== Content Creation Pipeline ===\n");
@@ -183,9 +170,7 @@ Add a brief 'Note:' section at the end if there are important caveats readers sh
                 }
 
                 if (topic.Equals("quit", StringComparison.OrdinalIgnoreCase))
-                {
                     break;
-                }
 
                 Console.WriteLine("\n╔═══════════════════════════════════════════════════════════════╗");
                 Console.WriteLine("║              CONTENT CREATION PIPELINE                        ║");
@@ -198,12 +183,10 @@ Add a brief 'Note:' section at the end if there are important caveats readers sh
                     string[] stageNames = { "OUTLINER", "WRITER", "EDITOR", "FACT-CHECKER" };
                     ConsoleColor[] stageColors = { ConsoleColor.Yellow, ConsoleColor.Green, ConsoleColor.Magenta, ConsoleColor.Cyan };
 
-                    // Execute pipeline
                     var result = await pipeline.ExecuteAsync(
                         $"Create content about: {topic}",
                         cts.Token);
 
-                    // Display results from each stage
                     foreach (var stageResult in result.AgentResults)
                     {
                         if (stageNumber < stageNames.Length)
@@ -214,7 +197,6 @@ Add a brief 'Note:' section at the end if there are important caveats readers sh
 
                         if (stageResult.IsSuccess)
                         {
-                            // Truncate intermediate outputs for display
                             string output = stageResult.Content ?? "";
                             if (stageNumber < stageNames.Length - 1 && output.Length > 500)
                             {
@@ -236,7 +218,6 @@ Add a brief 'Note:' section at the end if there are important caveats readers sh
                         stageNumber++;
                     }
 
-                    // Display final result
                     Console.WriteLine("╔═══════════════════════════════════════════════════════════════╗");
                     Console.ForegroundColor = ConsoleColor.White;
                     Console.WriteLine("║                    FINAL CONTENT                              ║");
@@ -263,7 +244,7 @@ Add a brief 'Note:' section at the end if there are important caveats readers sh
                 }
             }
 
-            Console.WriteLine("\nThank you for using Content Creation Pipeline. Press any key to exit.");
+            Console.WriteLine("\nDemo ended. Press any key to exit.");
             Console.ReadKey();
         }
     }

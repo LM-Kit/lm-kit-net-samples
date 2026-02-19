@@ -9,40 +9,46 @@ namespace smart_task_router
 {
     internal class Program
     {
-        static readonly string DEFAULT_LLAMA3_1_8B_MODEL_PATH = @"https://huggingface.co/lm-kit/llama-3.1-8b-instruct-gguf/resolve/main/Llama-3.1-8B-Instruct-Q4_K_M.gguf";
-        static readonly string DEFAULT_GEMMA3_12B_MODEL_PATH = @"https://huggingface.co/lm-kit/gemma-3-12b-instruct-lmk/resolve/main/gemma-3-12b-it-Q4_K_M.lmk";
-        static readonly string DEFAULT_PHI4_MINI_3_8B_MODEL_PATH = @"https://huggingface.co/lm-kit/phi-4-mini-3.8b-instruct-gguf/resolve/main/Phi-4-mini-Instruct-Q4_K_M.gguf";
-        static readonly string DEFAULT_QWEN3_8B_MODEL_PATH = @"https://huggingface.co/lm-kit/qwen-3-8b-instruct-gguf/resolve/main/Qwen3-8B-Q4_K_M.gguf";
-        static readonly string DEFAULT_PHI4_14_7B_MODEL_PATH = @"https://huggingface.co/lm-kit/phi-4-14.7b-instruct-gguf/resolve/main/Phi-4-14.7B-Instruct-Q4_K_M.gguf";
-        static readonly string DEFAULT_OPENAI_GPT_OSS_20B_MODEL_PATH = @"https://huggingface.co/lm-kit/gpt-oss-20b-gguf/resolve/main/gpt-oss-20b-mxfp4.gguf";
-        static readonly string DEFAULT_GLM_4_7_FLASH_MODEL_PATH = @"https://huggingface.co/lm-kit/glm-4.7-flash-gguf/resolve/main/GLM-4.7-Flash-64x2.6B-Q4_K_M.gguf";
-
         static bool _isDownloading;
 
-        private static bool ModelDownloadingProgress(string path, long? contentLength, long bytesRead)
+        static bool OnDownloadProgress(string path, long? contentLength, long bytesRead)
         {
             _isDownloading = true;
             if (contentLength.HasValue)
-            {
-                double progressPercentage = Math.Round((double)bytesRead / contentLength.Value * 100, 2);
-                Console.Write($"\rDownloading model {progressPercentage:0.00}%");
-            }
+                Console.Write($"\rDownloading model {Math.Round((double)bytesRead / contentLength.Value * 100, 2):0.00}%");
             else
-            {
                 Console.Write($"\rDownloading model {bytesRead} bytes");
-            }
             return true;
         }
 
-        private static bool ModelLoadingProgress(float progress)
+        static bool OnLoadProgress(float progress)
         {
-            if (_isDownloading)
-            {
-                Console.Clear();
-                _isDownloading = false;
-            }
+            if (_isDownloading) { Console.Clear(); _isDownloading = false; }
             Console.Write($"\rLoading model {Math.Round(progress * 100)}%");
             return true;
+        }
+
+        static LM LoadModel(string input)
+        {
+            string? modelId = input?.Trim() switch
+            {
+                "0" => "qwen3:8b",
+                "1" => "gemma3:12b",
+                "2" => "qwen3:14b",
+                "3" => "phi4",
+                "4" => "gptoss:20b",
+                "5" => "glm4.7-flash",
+                _ => null
+            };
+
+            if (modelId != null)
+                return LM.LoadFromModelID(modelId, downloadingProgress: OnDownloadProgress, loadingProgress: OnLoadProgress);
+
+            string uri = !string.IsNullOrWhiteSpace(input) ? input.Trim('"') : "qwen3:8b";
+            if (!uri.Contains("://"))
+                return LM.LoadFromModelID(uri, downloadingProgress: OnDownloadProgress, loadingProgress: OnLoadProgress);
+
+            return new LM(new Uri(uri), downloadingProgress: OnDownloadProgress, loadingProgress: OnLoadProgress);
         }
 
         private static DelegateOrchestrationStreamHandler CreateStreamHandler()
@@ -83,7 +89,7 @@ namespace smart_task_router
                             string toolName = token.Metadata.TryGetValue("tool_name", out var tn) ? tn?.ToString() ?? "tool" : "tool";
                             string toolArgs = token.Metadata.TryGetValue("arguments", out var a) ? a?.ToString() ?? "" : "";
                             Console.ForegroundColor = ConsoleColor.Blue;
-                            Console.Write($"\n   🔧 Calling tool: {toolName}");
+                            Console.Write($"\n   Calling tool: {toolName}");
                             if (!string.IsNullOrEmpty(toolArgs))
                             {
                                 string preview = toolArgs.Length > 120 ? toolArgs.Substring(0, 120) + "..." : toolArgs;
@@ -97,7 +103,7 @@ namespace smart_task_router
                             string resultToolName = token.Metadata.TryGetValue("tool_name", out var rtn) ? rtn?.ToString() ?? "tool" : "tool";
                             string resultContent = token.Metadata.TryGetValue("result", out var r) ? r?.ToString() ?? "" : "";
                             Console.ForegroundColor = ConsoleColor.Green;
-                            Console.Write($"   ✓ {resultToolName} returned");
+                            Console.Write($"   {resultToolName} returned");
                             if (!string.IsNullOrEmpty(resultContent))
                             {
                                 string preview = resultContent.Length > 120 ? resultContent.Substring(0, 120) + "..." : resultContent;
@@ -109,7 +115,7 @@ namespace smart_task_router
 
                         case OrchestrationStreamTokenType.AgentCompleted:
                             Console.ForegroundColor = ConsoleColor.DarkCyan;
-                            Console.WriteLine($"\n◀ [{token.AgentName}] Done");
+                            Console.WriteLine($"\n[{token.AgentName}] Done");
                             Console.ResetColor();
                             break;
 
@@ -117,7 +123,7 @@ namespace smart_task_router
                             string toAgent = token.Metadata.TryGetValue("to_agent", out var ta) ? ta?.ToString() ?? "?" : "?";
                             string delegatedTask = token.Metadata.TryGetValue("task", out var t) ? t?.ToString() ?? "" : "";
                             Console.ForegroundColor = ConsoleColor.Yellow;
-                            Console.Write($"\n   → Delegating to {toAgent}");
+                            Console.Write($"\n   Delegating to {toAgent}");
                             if (!string.IsNullOrEmpty(delegatedTask))
                             {
                                 string preview = delegatedTask.Length > 100 ? delegatedTask.Substring(0, 100) + "..." : delegatedTask;
@@ -159,8 +165,6 @@ namespace smart_task_router
 
         private static async Task Main(string[] args)
         {
-            // Set an optional license key here if available.
-            // A free community license can be obtained from: https://lm-kit.com/products/community-edition/
             LMKit.Licensing.LicenseManager.SetLicenseKey("");
             Console.InputEncoding = Encoding.UTF8;
             Console.OutputEncoding = Encoding.UTF8;
@@ -171,33 +175,16 @@ namespace smart_task_router
             Console.WriteLine("A coordinator analyzes requests and routes to specialists.\n");
 
             Console.WriteLine("Please select the model you want to use:\n");
-            Console.WriteLine("0 - Google Gemma 3 12B (requires approximately 9 GB of VRAM)");
-            Console.WriteLine("1 - Microsoft Phi-4 Mini 3.8B (requires approximately 3.3 GB of VRAM)");
-            Console.WriteLine("2 - Meta Llama 3.1 8B (requires approximately 6 GB of VRAM)");
-            Console.WriteLine("3 - Alibaba Qwen-3 8B (requires approximately 5.6 GB of VRAM)");
-            Console.WriteLine("4 - Microsoft Phi-4 14.7B (requires approximately 11 GB of VRAM)");
-            Console.WriteLine("5 - Open AI GPT OSS 20B (requires approximately 16 GB of VRAM)");
-            Console.WriteLine("6 - Z.ai GLM 4.7 Flash 30B (requires approximately 18 GB of VRAM)");
-            Console.Write("Other: Custom model URI\n\n> ");
+            Console.WriteLine("0 - Alibaba Qwen-3 8B      (~6 GB VRAM)");
+            Console.WriteLine("1 - Google Gemma 3 12B      (~9 GB VRAM)");
+            Console.WriteLine("2 - Alibaba Qwen-3 14B      (~10 GB VRAM)");
+            Console.WriteLine("3 - Microsoft Phi-4 14.7B    (~11 GB VRAM)");
+            Console.WriteLine("4 - OpenAI GPT OSS 20B       (~16 GB VRAM)");
+            Console.WriteLine("5 - Z.ai GLM 4.7 Flash 30B   (~18 GB VRAM)");
+            Console.Write("Other: Custom model URI or model ID\n\n> ");
 
             string? input = Console.ReadLine();
-            string modelLink = input?.Trim() switch
-            {
-                "0" => DEFAULT_GEMMA3_12B_MODEL_PATH,
-                "1" => DEFAULT_PHI4_MINI_3_8B_MODEL_PATH,
-                "2" => DEFAULT_LLAMA3_1_8B_MODEL_PATH,
-                "3" => DEFAULT_QWEN3_8B_MODEL_PATH,
-                "4" => DEFAULT_PHI4_14_7B_MODEL_PATH,
-                "5" => DEFAULT_OPENAI_GPT_OSS_20B_MODEL_PATH,
-                "6" => DEFAULT_GLM_4_7_FLASH_MODEL_PATH,
-                _ => !string.IsNullOrWhiteSpace(input) ? input.Trim().Trim('"') : DEFAULT_GEMMA3_12B_MODEL_PATH
-            };
-
-            // Load model
-            Uri modelUri = new(modelLink);
-            LM model = new(modelUri,
-                downloadingProgress: ModelDownloadingProgress,
-                loadingProgress: ModelLoadingProgress);
+            LM model = LoadModel(input ?? "");
 
             Console.Clear();
             Console.WriteLine("=== Smart Task Router ===\n");
@@ -259,9 +246,6 @@ Cite the basis for your conclusions.")
                 .WithPlanning(PlanningStrategy.ChainOfThought)
                 .Build();
 
-            // Create the supervisor agent
-            // Note: The SupervisorOrchestrator automatically injects a prompt listing
-            // available workers and delegation instructions.
             var supervisorAgent = Agent.CreateBuilder(model)
                 .WithPersona("TaskCoordinator")
                 .WithInstruction(@"For each user request:
@@ -273,7 +257,6 @@ Cite the basis for your conclusions.")
                 .WithPlanning(PlanningStrategy.ChainOfThought)
                 .Build();
 
-            // Create the supervisor orchestrator
             var supervisor = new SupervisorOrchestrator(supervisorAgent)
                 .AddWorker(codeExpert)
                 .AddWorker(dataAnalyst)
@@ -290,7 +273,6 @@ Cite the basis for your conclusions.")
             Console.WriteLine("Complex requests may be split across multiple specialists.");
             Console.WriteLine("Type 'quit' to exit.\n");
 
-            // Create the stream handler for real-time feedback
             var streamHandler = CreateStreamHandler();
 
             while (true)
@@ -308,9 +290,7 @@ Cite the basis for your conclusions.")
                 }
 
                 if (request.Equals("quit", StringComparison.OrdinalIgnoreCase))
-                {
                     break;
-                }
 
                 Console.WriteLine();
 
@@ -318,13 +298,11 @@ Cite the basis for your conclusions.")
                 {
                     var cts = new CancellationTokenSource(TimeSpan.FromMinutes(5));
 
-                    // Execute with streaming for real-time feedback
                     var result = await supervisor.RunStreamingAsync(
                         request,
                         streamHandler,
                         cancellationToken: cts.Token);
 
-                    // Print final summary
                     Console.WriteLine();
                     Console.ForegroundColor = ConsoleColor.DarkGray;
                     Console.WriteLine($"(Agents involved: {result.AgentResults.Count} | " +
@@ -347,7 +325,7 @@ Cite the basis for your conclusions.")
                 }
             }
 
-            Console.WriteLine("\nThank you for using Smart Task Router. Press any key to exit.");
+            Console.WriteLine("\nDemo ended. Press any key to exit.");
             Console.ReadKey();
         }
     }

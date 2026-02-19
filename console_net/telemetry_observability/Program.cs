@@ -9,19 +9,8 @@ using System.Text;
 
 namespace telemetry_observability
 {
-    /// <summary>
-    /// Demonstrates OpenTelemetry integration with LM-Kit.NET for observability.
-    /// Collects traces and metrics in memory and displays them on demand.
-    /// </summary>
     internal class Program
     {
-        static readonly string DEFAULT_GEMMA3_4B_MODEL_PATH = @"https://huggingface.co/lm-kit/gemma-3-4b-instruct-lmk/resolve/main/gemma-3-4b-it-Q4_K_M.lmk";
-        static readonly string DEFAULT_PHI4_MINI_3_8B_MODEL_PATH = @"https://huggingface.co/lm-kit/phi-4-mini-3.8b-instruct-gguf/resolve/main/Phi-4-mini-Instruct-Q4_K_M.gguf";
-        static readonly string DEFAULT_QWEN3_8B_MODEL_PATH = @"https://huggingface.co/lm-kit/qwen-3-8b-instruct-gguf/resolve/main/Qwen3-8B-Q4_K_M.gguf";
-        static readonly string DEFAULT_MINISTRAL_3_8_MODEL_PATH = @"https://huggingface.co/lm-kit/ministral-3-3b-instruct-lmk/resolve/main/ministral-3-3b-instruct-Q4_K_M.lmk";
-        static readonly string DEFAULT_OPENAI_GPT_OSS_20B_MODEL_PATH = @"https://huggingface.co/lm-kit/gpt-oss-20b-gguf/resolve/main/gpt-oss-20b-mxfp4.gguf";
-        static readonly string DEFAULT_GLM_4_7_FLASH_MODEL_PATH = @"https://huggingface.co/lm-kit/glm-4.7-flash-gguf/resolve/main/GLM-4.7-Flash-64x2.6B-Q4_K_M.gguf";
-
         static bool _isDownloading;
 
         // In-memory telemetry storage
@@ -30,7 +19,7 @@ namespace telemetry_observability
         static ActivityListener? _activityListener;
         static MeterListener? _meterListener;
 
-        private static bool ModelDownloadingProgress(string path, long? contentLength, long bytesRead)
+        private static bool OnDownloadProgress(string path, long? contentLength, long bytesRead)
         {
             _isDownloading = true;
             if (contentLength.HasValue)
@@ -46,7 +35,7 @@ namespace telemetry_observability
             return true;
         }
 
-        private static bool ModelLoadingProgress(float progress)
+        private static bool OnLoadProgress(float progress)
         {
             if (_isDownloading)
             {
@@ -74,32 +63,28 @@ namespace telemetry_observability
             PrintHeader();
 
             Console.WriteLine("Please select the model you want to use:\n");
-            Console.WriteLine("0 - Mistral Ministral 3 3B (requires approximately 3 GB of VRAM)");
-            Console.WriteLine("1 - Google Gemma 3 4B (requires approximately 4 GB of VRAM)");
-            Console.WriteLine("2 - Microsoft Phi-4 Mini 3.8B (requires approximately 3.3 GB of VRAM)");
-            Console.WriteLine("3 - Alibaba Qwen-3 8B (requires approximately 5.6 GB of VRAM)");
-            Console.WriteLine("4 - Open AI GPT OSS 20B (requires approximately 16 GB of VRAM)");
+            Console.WriteLine("0 - Google Gemma 3 4B (requires approximately 4 GB of VRAM)");
+            Console.WriteLine("1 - Alibaba Qwen-3 8B (requires approximately 5.6 GB of VRAM)");
+            Console.WriteLine("2 - Google Gemma 3 12B (requires approximately 9 GB of VRAM)");
+            Console.WriteLine("3 - Microsoft Phi-4 14.7B (requires approximately 11 GB of VRAM)");
+            Console.WriteLine("4 - OpenAI GPT OSS 20B (requires approximately 16 GB of VRAM)");
             Console.WriteLine("5 - Z.ai GLM 4.7 Flash 30B (requires approximately 18 GB of VRAM)");
-            Console.Write("Other entry: A custom model URI\n\n> ");
+            Console.Write("Other: A custom model URI\n\n> ");
 
             string? input = Console.ReadLine();
-            string modelLink = input?.Trim() switch
+            string? modelId = input?.Trim() switch
             {
-                "0" => DEFAULT_MINISTRAL_3_8_MODEL_PATH,
-                "1" => DEFAULT_GEMMA3_4B_MODEL_PATH,
-                "2" => DEFAULT_PHI4_MINI_3_8B_MODEL_PATH,
-                "3" => DEFAULT_QWEN3_8B_MODEL_PATH,
-                "4" => DEFAULT_OPENAI_GPT_OSS_20B_MODEL_PATH,
-                "5" => DEFAULT_GLM_4_7_FLASH_MODEL_PATH,
-                _ => !string.IsNullOrWhiteSpace(input) ? input.Trim().Trim('"') : DEFAULT_MINISTRAL_3_8_MODEL_PATH
+                "0" => "gemma3:4b",
+                "1" => "qwen3:8b",
+                "2" => "gemma3:12b",
+                "3" => "phi4",
+                "4" => "gptoss:20b",
+                "5" => "glm4.7-flash",
+                _ => null
             };
 
             // Load model
-            Uri modelUri = new(modelLink);
-            LM model = new(
-                modelUri,
-                downloadingProgress: ModelDownloadingProgress,
-                loadingProgress: ModelLoadingProgress);
+            LM model = LoadModel(modelId, input);
 
             Console.Clear();
             PrintHeader();
@@ -198,13 +183,38 @@ namespace telemetry_observability
             _activityListener?.Dispose();
             _meterListener?.Dispose();
 
-            Console.WriteLine("\nTelemetry demo ended. Press any key to exit.");
+            Console.WriteLine("Demo ended. Press any key to exit.");
             Console.ReadKey();
         }
 
-        /// <summary>
-        /// Configures listeners to capture LM-Kit telemetry in memory.
-        /// </summary>
+        private static LM LoadModel(string? modelId, string? rawInput)
+        {
+            if (modelId != null)
+            {
+                return LM.LoadFromModelID(
+                    modelId,
+                    downloadingProgress: OnDownloadProgress,
+                    loadingProgress: OnLoadProgress);
+            }
+
+            // Custom URI fallback
+            string uri = !string.IsNullOrWhiteSpace(rawInput) ? rawInput.Trim().Trim('"') : "gemma3:4b";
+
+            // If it looks like a model ID (no slashes, no dots besides the colon separator), treat it as one
+            if (!uri.Contains('/') && !uri.Contains('.'))
+            {
+                return LM.LoadFromModelID(
+                    uri,
+                    downloadingProgress: OnDownloadProgress,
+                    loadingProgress: OnLoadProgress);
+            }
+
+            return new LM(
+                new Uri(uri),
+                downloadingProgress: OnDownloadProgress,
+                loadingProgress: OnLoadProgress);
+        }
+
         private static void ConfigureTelemetryListeners()
         {
             // Listen to LM-Kit activities (traces)
@@ -424,13 +434,17 @@ namespace telemetry_observability
             object? sender,
             LMKit.TextGeneration.Events.AfterTextCompletionEventArgs e)
         {
+            Console.ForegroundColor = e.SegmentType switch
+            {
+                LMKit.TextGeneration.Chat.TextSegmentType.InternalReasoning => ConsoleColor.Blue,
+                LMKit.TextGeneration.Chat.TextSegmentType.ToolInvocation => ConsoleColor.Magenta,
+                _ => ConsoleColor.White
+            };
+
             Console.Write(e.Text);
         }
     }
 
-    /// <summary>
-    /// Stores information about a completed activity/span.
-    /// </summary>
     internal class ActivityInfo
     {
         public string OperationName { get; set; } = "";

@@ -1,4 +1,4 @@
-﻿using LMKit.Data;
+using LMKit.Data;
 using LMKit.Model;
 using LMKit.Translation;
 using System.Diagnostics;
@@ -8,10 +8,9 @@ namespace language_detection_from_document
 {
     internal class Program
     {
-
         static bool _isDownloading;
 
-        private static bool ModelDownloadingProgress(string path, long? contentLength, long bytesRead)
+        private static bool OnDownloadProgress(string path, long? contentLength, long bytesRead)
         {
             _isDownloading = true;
             if (contentLength.HasValue)
@@ -27,7 +26,7 @@ namespace language_detection_from_document
             return true;
         }
 
-        private static bool ModelLoadingProgress(float progress)
+        private static bool OnLoadProgress(float progress)
         {
             if (_isDownloading)
             {
@@ -42,7 +41,7 @@ namespace language_detection_from_document
 
         static void Main(string[] args)
         {
-            // Set an optional license key here if available. 
+            // Set an optional license key here if available.
             // A free community license can be obtained from: https://lm-kit.com/products/community-edition/
             LMKit.Licensing.LicenseManager.SetLicenseKey("");
             Console.InputEncoding = Encoding.UTF8;
@@ -50,60 +49,50 @@ namespace language_detection_from_document
 
             Console.Clear();
             Console.WriteLine("Please select the model you want to use:\n");
-            Console.WriteLine("0 - MiniCPM o 4.5 9B (requires approximately 5.9 GB of VRAM)");
-            Console.WriteLine("1 - Alibaba Qwen 3 2B (requires approximately 2.5 GB of VRAM)");
-            Console.WriteLine("2 - Alibaba Qwen 3 4B (requires approximately 4 GB of VRAM)");
-            Console.WriteLine("3 - Alibaba Qwen 3 8B (requires approximately 6.5 GB of VRAM)");
-            Console.WriteLine("4 - Google Gemma 3 4B (requires approximately 5.7 GB of VRAM)");
-            Console.WriteLine("5 - Google Gemma 3 12B (requires approximately 11 GB of VRAM)");
-            Console.WriteLine("6 - Mistral Ministral 3 3B (requires approximately 3.5 GB of VRAM)");
-            Console.WriteLine("7 - Mistral Ministral 3 8B (requires approximately 6.5 GB of VRAM)");
-            Console.WriteLine("8 - Mistral Ministral 3 14B (requires approximately 12 GB of VRAM)");
-
-            Console.Write("Other entry: A custom model URI\n\n> ");
+            Console.WriteLine("0 - Google Gemma 3 4B (requires approximately 4 GB of VRAM)");
+            Console.WriteLine("1 - Alibaba Qwen-3 8B (requires approximately 5.6 GB of VRAM)");
+            Console.WriteLine("2 - Google Gemma 3 12B (requires approximately 9 GB of VRAM)");
+            Console.WriteLine("3 - Microsoft Phi-4 14.7B (requires approximately 11 GB of VRAM)");
+            Console.WriteLine("4 - OpenAI GPT OSS 20B (requires approximately 16 GB of VRAM)");
+            Console.WriteLine("5 - Z.ai GLM 4.7 Flash 30B (requires approximately 18 GB of VRAM)");
+            Console.Write("Other: A custom model URI\n\n> ");
 
             string? input = Console.ReadLine();
-            string modelLink;
-
-            switch (input?.Trim())
+            string? modelId = input?.Trim() switch
             {
-                case "0":
-                    modelLink = ModelCard.GetPredefinedModelCardByModelID("minicpm-o-45").ModelUri.ToString();
-                    break;
-                case "1":
-                    modelLink = ModelCard.GetPredefinedModelCardByModelID("qwen3-vl:2b").ModelUri.ToString();
-                    break;
-                case "2":
-                    modelLink = ModelCard.GetPredefinedModelCardByModelID("qwen3-vl:4b").ModelUri.ToString();
-                    break;
-                case "3":
-                    modelLink = ModelCard.GetPredefinedModelCardByModelID("qwen3-vl:8b").ModelUri.ToString();
-                    break;
-                case "4":
-                    modelLink = ModelCard.GetPredefinedModelCardByModelID("gemma3:4b").ModelUri.ToString();
-                    break;
-                case "5":
-                    modelLink = ModelCard.GetPredefinedModelCardByModelID("gemma3:12b").ModelUri.ToString();
-                    break;
-                case "6":
-                    modelLink = ModelCard.GetPredefinedModelCardByModelID("ministral3:3b").ModelUri.ToString();
-                    break;
-                case "7":
-                    modelLink = ModelCard.GetPredefinedModelCardByModelID("ministral3:8b").ModelUri.ToString();
-                    break;
-                case "8":
-                    modelLink = ModelCard.GetPredefinedModelCardByModelID("ministral3:14b").ModelUri.ToString();
-                    break;
-                default:
-                    modelLink = input!.Trim().Trim('"').Trim('"');
-                    break;
-            }
+                "0" => "gemma3:4b",
+                "1" => "qwen3:8b",
+                "2" => "gemma3:12b",
+                "3" => "phi4",
+                "4" => "gptoss:20b",
+                "5" => "glm4.7-flash",
+                _ => null
+            };
 
-            //Loading model
-            Uri modelUri = new(modelLink);
-            LM model = new(modelUri,
-                                    downloadingProgress: ModelDownloadingProgress,
-                                    loadingProgress: ModelLoadingProgress);
+            // Load model
+            LM model;
+
+            if (modelId != null)
+            {
+                model = LM.LoadFromModelID(
+                    modelId,
+                    downloadingProgress: OnDownloadProgress,
+                    loadingProgress: OnLoadProgress);
+            }
+            else if (!string.IsNullOrWhiteSpace(input))
+            {
+                model = new LM(
+                    new Uri(input.Trim('"')),
+                    downloadingProgress: OnDownloadProgress,
+                    loadingProgress: OnLoadProgress);
+            }
+            else
+            {
+                model = LM.LoadFromModelID(
+                    "gemma3:4b",
+                    downloadingProgress: OnDownloadProgress,
+                    loadingProgress: OnLoadProgress);
+            }
 
             Console.Clear();
             TextTranslation translator = new(model);
@@ -130,13 +119,13 @@ namespace language_detection_from_document
                 }
                 catch (Exception e)
                 {
-                    Console.ForegroundColor = ConsoleColor.Green;
+                    Console.ForegroundColor = ConsoleColor.Red;
                     Console.WriteLine($"Error: Unable to open the file at '{path}'. Details: {e.Message} Please check the file path and permissions.");
                     Console.ResetColor();
                 }
             }
 
-            Console.WriteLine("The program ended. Press any key to exit the application.");
+            Console.WriteLine("Demo ended. Press any key to exit.");
             _ = Console.ReadKey();
         }
     }

@@ -1,148 +1,48 @@
-﻿using LMKit.Model;
+using LMKit.Model;
 using LMKit.TextEnhancement;
+using LMKit.TextGeneration.Chat;
 using System.Text;
 
 namespace text_rewriter
 {
     internal class Program
     {
-        static readonly string DEFAULT_LLAMA3_1_8B_MODEL_PATH = @"https://huggingface.co/lm-kit/llama-3.1-8b-instruct-gguf/resolve/main/Llama-3.1-8B-Instruct-Q4_K_M.gguf";
-        static readonly string DEFAULT_GEMMA3_4B_MODEL_PATH = @"https://huggingface.co/lm-kit/gemma-3-4b-instruct-lmk/resolve/main/gemma-3-4b-it-Q4_K_M.lmk";
-        static readonly string DEFAULT_PHI4_MINI_3_8B_MODEL_PATH = @"https://huggingface.co/lm-kit/phi-4-mini-3.8b-instruct-gguf/resolve/main/Phi-4-mini-Instruct-Q4_K_M.gguf";
-        static readonly string DEFAULT_QWEN3_8B_MODEL_PATH = @"https://huggingface.co/lm-kit/qwen-3-8b-instruct-gguf/resolve/main/Qwen3-8B-Q4_K_M.gguf";
-        static readonly string DEFAULT_MINISTRAL_3_8_MODEL_PATH = @"https://huggingface.co/lm-kit/ministral-3-3b-instruct-lmk/resolve/main/ministral-3-3b-instruct-Q4_K_M.lmk";
-        static readonly string DEFAULT_PHI4_14_7B_MODEL_PATH = @"https://huggingface.co/lm-kit/phi-4-14.7b-instruct-gguf/resolve/main/Phi-4-14.7B-Instruct-Q4_K_M.gguf";
-        static readonly string DEFAULT_GRANITE_4_7B_MODEL_PATH = @"https://huggingface.co/lm-kit/granite-4.0-h-tiny-gguf/resolve/main/Granite-4.0-H-Tiny-64x994M-Q4_K_M.gguf";
-        static readonly string DEFAULT_OPENAI_GPT_OSS_20B_MODEL_PATH = @"https://huggingface.co/lm-kit/gpt-oss-20b-gguf/resolve/main/gpt-oss-20b-mxfp4.gguf";
-        static readonly string DEFAULT_GLM_4_7_FLASH_MODEL_PATH = @"https://huggingface.co/lm-kit/glm-4.7-flash-gguf/resolve/main/GLM-4.7-Flash-64x2.6B-Q4_K_M.gguf";
         static bool _isDownloading;
-
-        private static bool ModelDownloadingProgress(string path, long? contentLength, long bytesRead)
-        {
-            _isDownloading = true;
-            if (contentLength.HasValue)
-            {
-                double progressPercentage = Math.Round((double)bytesRead / contentLength.Value * 100, 2);
-                Console.Write($"\rDownloading model {progressPercentage:0.00}%");
-            }
-            else
-            {
-                Console.Write($"\rDownloading model {bytesRead} bytes");
-            }
-
-            return true;
-        }
-
-        private static bool ModelLoadingProgress(float progress)
-        {
-            if (_isDownloading)
-            {
-                Console.Clear();
-                _isDownloading = false;
-            }
-
-            Console.Write($"\rLoading model {Math.Round(progress * 100)}%");
-
-            return true;
-        }
-
-        private static void Rewrite_AfterTextCompletion(object? sender, LMKit.TextGeneration.Events.AfterTextCompletionEventArgs e)
-        {
-            switch (e.SegmentType)
-            {
-                case LMKit.TextGeneration.Chat.TextSegmentType.InternalReasoning:
-                    Console.ForegroundColor = ConsoleColor.Blue;
-                    break;
-                case LMKit.TextGeneration.Chat.TextSegmentType.ToolInvocation:
-                    Console.ForegroundColor = ConsoleColor.Red;
-                    break;
-                case LMKit.TextGeneration.Chat.TextSegmentType.UserVisible:
-                    Console.ForegroundColor = ConsoleColor.White;
-                    break;
-            }
-
-            Console.Write(e.Text);
-        }
 
         static void Main(string[] args)
         {
-            // Set an optional license key here if available. 
-            // A free community license can be obtained from: https://lm-kit.com/products/community-edition/
             LMKit.Licensing.LicenseManager.SetLicenseKey("");
             Console.InputEncoding = Encoding.UTF8;
             Console.OutputEncoding = Encoding.UTF8;
-            var language = LMKit.TextGeneration.Language.English; //set end user language here.
+            var language = LMKit.TextGeneration.Language.English;
 
             Console.Clear();
-            Console.WriteLine("Please select the model you want to use:\n");
-            Console.WriteLine("0 - Mistral Ministral 3 8B (requires approximately 6 GB of VRAM)");
-            Console.WriteLine("1 - Meta Llama 3.1 8B (requires approximately 6 GB of VRAM)");
-            Console.WriteLine("2 - Google Gemma 3 4B Medium (requires approximately 4 GB of VRAM)");
-            Console.WriteLine("3 - Microsoft Phi-4 Mini 3.82B Mini (requires approximately 3.3 GB of VRAM)");
-            Console.WriteLine("4 - Alibaba Qwen-3 8B (requires approximately 5.6 GB of VRAM)");
-            Console.WriteLine("5 - Microsoft Phi-4 14.7B Mini (requires approximately 11 GB of VRAM)");
-            Console.WriteLine("6 - IBM Granite 4 7B (requires approximately 6 GB of VRAM)");
-            Console.WriteLine("7 - Open AI GPT OSS 20B (requires approximately 16 GB of VRAM)");
-            Console.WriteLine("8 - Z.ai GLM 4.7 Flash 30B (requires approximately 18 GB of VRAM)");
-            Console.Write("Other entry: A custom model URI\n\n> ");
+            Console.WriteLine("=== Text Rewriter Demo ===\n");
+            Console.WriteLine("Select a model:\n");
+            Console.WriteLine("  0 - Google Gemma 3 4B           (~4 GB VRAM)");
+            Console.WriteLine("  1 - Alibaba Qwen 3 8B           (~6 GB VRAM)");
+            Console.WriteLine("  2 - Google Gemma 3 12B           (~9 GB VRAM)");
+            Console.WriteLine("  3 - Microsoft Phi-4 14.7B        (~11 GB VRAM)");
+            Console.WriteLine("  4 - OpenAI GPT OSS 20B           (~16 GB VRAM)");
+            Console.WriteLine("  5 - Z.ai GLM 4.7 Flash 30B      (~18 GB VRAM)");
+            Console.Write("\n  Or enter a custom model URI\n\n> ");
 
-            string input = Console.ReadLine() ?? string.Empty;
-            string modelLink;
-
-            switch (input.Trim())
-            {
-                case "0":
-                    modelLink = DEFAULT_MINISTRAL_3_8_MODEL_PATH;
-                    break;
-                case "1":
-                    modelLink = DEFAULT_LLAMA3_1_8B_MODEL_PATH;
-                    break;
-                case "2":
-                    modelLink = DEFAULT_GEMMA3_4B_MODEL_PATH;
-                    break;
-                case "3":
-                    modelLink = DEFAULT_PHI4_MINI_3_8B_MODEL_PATH;
-                    break;
-                case "4":
-                    modelLink = DEFAULT_QWEN3_8B_MODEL_PATH;
-                    break;
-                case "5":
-                    modelLink = DEFAULT_PHI4_14_7B_MODEL_PATH;
-                    break;
-                case "6":
-                    modelLink = DEFAULT_GRANITE_4_7B_MODEL_PATH;
-                    break;
-                case "7":
-                    modelLink = DEFAULT_OPENAI_GPT_OSS_20B_MODEL_PATH;
-                    break;
-                case "8":
-                    modelLink = DEFAULT_GLM_4_7_FLASH_MODEL_PATH;
-                    break;
-                default:
-                    modelLink = input.Trim().Trim('"');
-                    break;
-            }
-
-            //Loading model
-            Uri modelUri = new(modelLink);
-            LM model = new(modelUri,
-                                    downloadingProgress: ModelDownloadingProgress,
-                                    loadingProgress: ModelLoadingProgress);
+            string input = Console.ReadLine()?.Trim() ?? "";
+            LM model = LoadModel(input);
 
             Console.Clear();
             TextRewriter rewriter = new(model);
-
-            rewriter.AfterTextCompletion += Rewrite_AfterTextCompletion;
-            int correctionCount = 0;
+            rewriter.AfterTextCompletion += OnAfterTextCompletion;
+            int rewriteCount = 0;
 
             while (true)
             {
-                if (correctionCount > 0)
+                if (rewriteCount > 0)
                 {
                     Console.Write("\n\n");
                 }
 
-                WriteLineColor($"Enter text to be rewritten, or type 'exit' to quit the app:\n", ConsoleColor.Green);
+                WriteLineColor("Enter text to be rewritten, or type 'exit' to quit:\n", ConsoleColor.Green);
 
                 string? text = Console.ReadLine();
 
@@ -153,51 +53,88 @@ namespace text_rewriter
 
                 if (text == "exit")
                 {
-                    return;
+                    break;
                 }
 
-                WriteLineColor($"\nSelect communication style:\n1 - Concise\n2 - Professional\n3 - Friendly\n4 - All styles", ConsoleColor.Green);
+                WriteLineColor("\nSelect communication style:\n1 - Concise\n2 - Professional\n3 - Friendly\n4 - All styles", ConsoleColor.Green);
 
                 char keyChar = Console.ReadKey(true).KeyChar;
 
-                if (keyChar == 52)
-                {//all
-
+                if (keyChar == '4')
+                {
                     foreach (var style in Enum.GetValues(typeof(TextRewriter.CommunicationStyle)))
                     {
-                        WriteLineColor($"\n\n>> Rewriting the text with {style.ToString()!.ToLowerInvariant()} style...\n", ConsoleColor.Blue);
-
+                        WriteLineColor($"\n\n>> Rewriting with {style.ToString()!.ToLowerInvariant()} style...\n", ConsoleColor.Blue);
                         _ = rewriter.Rewrite(text!, (TextRewriter.CommunicationStyle)style, language, new CancellationTokenSource(TimeSpan.FromMinutes(2)).Token);
                     }
                 }
                 else
                 {
-                    TextRewriter.CommunicationStyle style;
-
-                    switch ((int)keyChar)
+                    TextRewriter.CommunicationStyle style = keyChar switch
                     {
-                        case 49:
-                            style = TextRewriter.CommunicationStyle.Concise;
-                            break;
-                        case 50:
-                        default:
-                            style = TextRewriter.CommunicationStyle.Professional;
-                            break;
-                        case 51:
-                            style = TextRewriter.CommunicationStyle.Friendly;
-                            break;
-                    }
+                        '1' => TextRewriter.CommunicationStyle.Concise,
+                        '3' => TextRewriter.CommunicationStyle.Friendly,
+                        _ => TextRewriter.CommunicationStyle.Professional
+                    };
 
-                    WriteLineColor($"\n>> Rewriting the text with {style.ToString().ToLowerInvariant()} style...\n", ConsoleColor.Blue);
-
+                    WriteLineColor($"\n>> Rewriting with {style.ToString().ToLowerInvariant()} style...\n", ConsoleColor.Blue);
                     _ = rewriter.Rewrite(text!, style, language, new CancellationTokenSource(TimeSpan.FromMinutes(2)).Token);
                 }
 
-                correctionCount++;
+                rewriteCount++;
             }
+
+            Console.WriteLine("Demo ended. Press any key to exit.");
+            _ = Console.ReadKey();
         }
 
-        private static void WriteLineColor(string text, ConsoleColor color)
+        static LM LoadModel(string input)
+        {
+            string? modelId = input switch
+            {
+                "0" => "gemma3:4b",
+                "1" => "qwen3:8b",
+                "2" => "gemma3:12b",
+                "3" => "phi4",
+                "4" => "gptoss:20b",
+                "5" => "glm4.7-flash",
+                _ => null
+            };
+
+            if (modelId != null)
+                return LM.LoadFromModelID(modelId, downloadingProgress: OnDownloadProgress, loadingProgress: OnLoadProgress);
+            return new LM(new Uri(input.Trim('"')), downloadingProgress: OnDownloadProgress, loadingProgress: OnLoadProgress);
+        }
+
+        static bool OnDownloadProgress(string path, long? contentLength, long bytesRead)
+        {
+            _isDownloading = true;
+            if (contentLength.HasValue)
+                Console.Write($"\rDownloading model {Math.Round((double)bytesRead / contentLength.Value * 100, 2):0.00}%");
+            else
+                Console.Write($"\rDownloading model {bytesRead} bytes");
+            return true;
+        }
+
+        static bool OnLoadProgress(float progress)
+        {
+            if (_isDownloading) { Console.Clear(); _isDownloading = false; }
+            Console.Write($"\rLoading model {Math.Round(progress * 100)}%");
+            return true;
+        }
+
+        static void OnAfterTextCompletion(object? sender, LMKit.TextGeneration.Events.AfterTextCompletionEventArgs e)
+        {
+            Console.ForegroundColor = e.SegmentType switch
+            {
+                TextSegmentType.InternalReasoning => ConsoleColor.Blue,
+                TextSegmentType.ToolInvocation => ConsoleColor.Magenta,
+                _ => ConsoleColor.White
+            };
+            Console.Write(e.Text);
+        }
+
+        static void WriteLineColor(string text, ConsoleColor color)
         {
             Console.ForegroundColor = color;
             Console.WriteLine(text);

@@ -25,6 +25,6 @@ A demo for converting PDF files, images, and scanned documents to Markdown using
 
 ## Supported Formats
 
-- PDF documents (single and multi-page)
+- Documents: PDF, DOCX, XLSX, PPTX, EML, MBOX (single and multi-page)
 - Images: PNG, JPG, TIFF, BMP, and other common formats
 - Scanned documents

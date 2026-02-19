@@ -1,4 +1,4 @@
-﻿using LMKit.Data.Storage;
+using LMKit.Data.Storage;
 using LMKit.Integrations.Tesseract;
 using LMKit.Model;
 using LMKit.Retrieval;
@@ -12,7 +12,7 @@ namespace chat_with_pdf
         static bool _isDownloading;
         static readonly object _consoleLock = new();
 
-        private static bool ModelDownloadingProgress(string path, long? contentLength, long bytesRead)
+        private static bool OnDownloadProgress(string path, long? contentLength, long bytesRead)
         {
             _isDownloading = true;
             if (contentLength.HasValue)
@@ -28,7 +28,7 @@ namespace chat_with_pdf
             return true;
         }
 
-        private static bool ModelLoadingProgress(float progress)
+        private static bool OnLoadProgress(float progress)
         {
             if (_isDownloading)
             {
@@ -51,33 +51,25 @@ namespace chat_with_pdf
 
             // Model selection
             PrintSection("Model Selection");
-            Console.WriteLine("  0 - MiniCPM o 4.5 9B          (~5.9 GB VRAM)");
-            Console.WriteLine("  1 - Alibaba Qwen 3 2B         (~2.5 GB VRAM)");
-            Console.WriteLine("  2 - Alibaba Qwen 3 4B         (~4.0 GB VRAM)");
-            Console.WriteLine("  3 - Alibaba Qwen 3 8B         (~6.5 GB VRAM)");
-            Console.WriteLine("  4 - Google Gemma 3 4B         (~5.7 GB VRAM)");
-            Console.WriteLine("  5 - Google Gemma 3 12B        (~11 GB VRAM)");
-            Console.WriteLine("  6 - Mistral Ministral 3 3B    (~3.5 GB VRAM)");
-            Console.WriteLine("  7 - Mistral Ministral 3 8B    (~6.5 GB VRAM)");
-            Console.WriteLine("  8 - Mistral Ministral 3 14B   (~12 GB VRAM)");
+            Console.WriteLine("  0 - Google Gemma 3 4B          (~4 GB VRAM)");
+            Console.WriteLine("  1 - Alibaba Qwen-3 8B          (~5.6 GB VRAM)");
+            Console.WriteLine("  2 - Google Gemma 3 12B          (~9 GB VRAM)");
+            Console.WriteLine("  3 - Microsoft Phi-4 14.7B       (~11 GB VRAM)");
+            Console.WriteLine("  4 - OpenAI GPT OSS 20B          (~16 GB VRAM)");
+            Console.WriteLine("  5 - Z.ai GLM 4.7 Flash 30B      (~18 GB VRAM)");
             Console.WriteLine("  *   Or enter a custom model URI");
             Console.WriteLine();
 
-            Uri modelUri = PromptModelSelection();
+            LM chatModel = PromptModelSelection();
 
             // Loading models
             Console.WriteLine();
             PrintSection("Loading Models");
 
-            LM chatModel = new(
-                modelUri,
-                downloadingProgress: ModelDownloadingProgress,
-                loadingProgress: ModelLoadingProgress);
-
-            PrintStatus("✓ Chat model loaded", ConsoleColor.Green);
+            PrintStatus("Chat model loaded", ConsoleColor.Green);
 
             LM embeddingModel = LM.LoadFromModelID("embeddinggemma-300m");
-            PrintStatus("✓ Embedding model loaded", ConsoleColor.Green);
+            PrintStatus("Embedding model loaded", ConsoleColor.Green);
 
             Console.Clear();
             PrintHeader();
@@ -94,7 +86,7 @@ namespace chat_with_pdf
                 Environment.GetFolderPath(Environment.SpecialFolder.LocalApplicationData),
                 "LMKit", "ChatWithPDF", "Cache");
 
-            IVectorStore vectorStore = new FileSystemVectorStore(cacheDirectory); // Uses local filesystem for caching
+            IVectorStore vectorStore = new FileSystemVectorStore(cacheDirectory);
 
             // Initialize PdfChat
             PdfChat chat = new PdfChat(
@@ -108,7 +100,7 @@ namespace chat_with_pdf
             {
                 chat.PageProcessingMode = PageProcessingMode.DocumentUnderstanding;
                 chat.DocumentVisionParser = new LMKit.Extraction.Ocr.VlmOcr(LM.LoadFromModelID("lightonocr-2:1b"));
-                PrintStatus("✓ Document understanding enabled", ConsoleColor.Cyan);
+                PrintStatus("Document understanding enabled", ConsoleColor.Cyan);
             }
             else
             {
@@ -117,7 +109,7 @@ namespace chat_with_pdf
                     EnableLanguageDetection = true,
                     VisionModel = chatModel
                 };
-                PrintStatus("✓ Standard extraction with OCR fallback", ConsoleColor.Cyan);
+                PrintStatus("Standard extraction with OCR fallback", ConsoleColor.Cyan);
             }
 
             // Subscribe to all events
@@ -153,7 +145,6 @@ namespace chat_with_pdf
                     Console.Write("  Ask a question: ");
                     Console.ResetColor();
 
-                    // Console.ReadLine() is nullable -> guard to avoid nullability warnings
                     string? line = Console.ReadLine();
                     if (string.IsNullOrWhiteSpace(line))
                     {
@@ -190,14 +181,14 @@ namespace chat_with_pdf
                 catch (Exception ex)
                 {
                     Console.WriteLine();
-                    PrintStatus($"✗ Error: {ex.Message}", ConsoleColor.Red);
+                    PrintStatus($"Error: {ex.Message}", ConsoleColor.Red);
                 }
             }
 
             Console.WriteLine();
             PrintDivider();
             Console.ForegroundColor = ConsoleColor.DarkGray;
-            Console.WriteLine("  Session ended. Press any key to exit.");
+            Console.WriteLine("  Demo ended. Press any key to exit.");
             Console.ResetColor();
             Console.ReadKey(true);
         }
@@ -224,17 +215,17 @@ namespace chat_with_pdf
                         if (e.PageIndex == e.TotalPages - 1)
                         {
                             ClearCurrentLine();
-                            PrintStatus($"  ✓ Processed {e.TotalPages} page(s)", ConsoleColor.DarkGray);
+                            PrintStatus($"  Processed {e.TotalPages} page(s)", ConsoleColor.DarkGray);
                         }
                         break;
 
                     case DocumentImportPhase.EmbeddingStarted:
-                        Console.Write($"\r  ◌ Generating embeddings for {e.SectionCount} section(s)...".PadRight(60));
+                        Console.Write($"\r  Generating embeddings for {e.SectionCount} section(s)...".PadRight(60));
                         break;
 
                     case DocumentImportPhase.EmbeddingCompleted:
                         ClearCurrentLine();
-                        PrintStatus($"  ✓ Indexed {e.SectionCount} section(s)", ConsoleColor.DarkGray);
+                        PrintStatus($"  Indexed {e.SectionCount} section(s)", ConsoleColor.DarkGray);
                         break;
                 }
             }
@@ -246,11 +237,11 @@ namespace chat_with_pdf
             {
                 if (e.IsHit)
                 {
-                    PrintStatus("  ⚡ Cache hit: loaded pre-indexed data", ConsoleColor.DarkGreen);
+                    PrintStatus("  Cache hit: loaded pre-indexed data", ConsoleColor.DarkGreen);
                 }
                 else
                 {
-                    PrintStatus("  ◌ Cache miss: indexing document...", ConsoleColor.DarkGray);
+                    PrintStatus("  Cache miss: indexing document...", ConsoleColor.DarkGray);
                 }
             }
         }
@@ -263,11 +254,11 @@ namespace chat_with_pdf
 
                 if (e.RetrievedCount == 0)
                 {
-                    PrintStatus("  ⚠ No relevant passages found", ConsoleColor.DarkYellow);
+                    PrintStatus("  No relevant passages found", ConsoleColor.DarkYellow);
                 }
                 else
                 {
-                    PrintStatus($"  🔍 Retrieved {e.RetrievedCount} passage(s) in {e.Elapsed.TotalMilliseconds:F0}ms", ConsoleColor.DarkCyan);
+                    PrintStatus($"  Retrieved {e.RetrievedCount} passage(s) in {e.Elapsed.TotalMilliseconds:F0}ms", ConsoleColor.DarkCyan);
 
                     // Group references by document for cleaner display
                     var byDocument = e.References
@@ -281,7 +272,7 @@ namespace chat_with_pdf
                             ? string.Join(", ", pages)
                             : $"{string.Join(", ", pages.Take(4))}... +{pages.Count - 4} more";
 
-                        PrintStatus($"      └─ {group.Key}: page(s) {pageList}", ConsoleColor.DarkGray);
+                        PrintStatus($"      {group.Key}: page(s) {pageList}", ConsoleColor.DarkGray);
                     }
                 }
             }
@@ -295,11 +286,11 @@ namespace chat_with_pdf
 
                 if (e.UsesFullContext)
                 {
-                    PrintStatus("  💭 Generating response using full document context...", ConsoleColor.DarkCyan);
+                    PrintStatus("  Generating response using full document context...", ConsoleColor.DarkCyan);
                 }
                 else
                 {
-                    PrintStatus($"  💭 Generating response from {e.PassageCount} passage(s)...", ConsoleColor.DarkCyan);
+                    PrintStatus($"  Generating response from {e.PassageCount} passage(s)...", ConsoleColor.DarkCyan);
                 }
 
                 Console.WriteLine();
@@ -313,8 +304,8 @@ namespace chat_with_pdf
         {
             Console.ForegroundColor = e.SegmentType switch
             {
-                LMKit.TextGeneration.Chat.TextSegmentType.InternalReasoning => ConsoleColor.DarkBlue,
-                LMKit.TextGeneration.Chat.TextSegmentType.ToolInvocation => ConsoleColor.DarkYellow,
+                LMKit.TextGeneration.Chat.TextSegmentType.InternalReasoning => ConsoleColor.Blue,
+                LMKit.TextGeneration.Chat.TextSegmentType.ToolInvocation => ConsoleColor.Magenta,
                 _ => ConsoleColor.White
             };
 
@@ -343,7 +334,7 @@ namespace chat_with_pdf
 
                 if (!File.Exists(path))
                 {
-                    PrintStatus("  ✗ File not found", ConsoleColor.Red);
+                    PrintStatus("  File not found", ConsoleColor.Red);
                     continue;
                 }
 
@@ -357,14 +348,14 @@ namespace chat_with_pdf
                         : "passage retrieval";
 
                     Console.WriteLine();
-                    PrintStatus($"✓ Loaded: {result.Name}", ConsoleColor.Green);
+                    PrintStatus($"Loaded: {result.Name}", ConsoleColor.Green);
                     PrintStatus($"    Pages: {result.PageCount}", ConsoleColor.DarkGray);
                     PrintStatus($"    Tokens: {result.TokenCount:N0}", ConsoleColor.DarkGray);
                     PrintStatus($"    Mode: {modeText}", ConsoleColor.DarkGray);
 
                     if (result.ExceededTokenBudget)
                     {
-                        PrintStatus("    ⚠ Exceeded token budget → using passage retrieval", ConsoleColor.DarkYellow);
+                        PrintStatus("    Exceeded token budget, using passage retrieval", ConsoleColor.DarkYellow);
                     }
 
                     Console.WriteLine();
@@ -378,7 +369,7 @@ namespace chat_with_pdf
                 }
                 catch (Exception e)
                 {
-                    PrintStatus($"  ✗ Error: {e.Message}", ConsoleColor.Red);
+                    PrintStatus($"  Error: {e.Message}", ConsoleColor.Red);
                 }
             }
         }
@@ -396,7 +387,7 @@ namespace chat_with_pdf
                 case "/reset":
                     chat.ClearDocuments();
                     Console.WriteLine();
-                    PrintStatus("✓ All documents removed and chat history cleared", ConsoleColor.Yellow);
+                    PrintStatus("All documents removed and chat history cleared", ConsoleColor.Yellow);
                     PrintStatus("  You will be prompted to load new documents.", ConsoleColor.DarkGray);
                     mode = "load_document";
                     return true;
@@ -404,14 +395,14 @@ namespace chat_with_pdf
                 case "/restart":
                     chat.ClearHistory();
                     Console.WriteLine();
-                    PrintStatus("✓ Chat history cleared", ConsoleColor.Yellow);
+                    PrintStatus("Chat history cleared", ConsoleColor.Yellow);
                     PrintStatus("  Documents are still loaded. Start a fresh conversation.", ConsoleColor.DarkGray);
                     return true;
 
                 case "/add":
                     chat.ClearHistory();
                     Console.WriteLine();
-                    PrintStatus("✓ Chat history cleared", ConsoleColor.Yellow);
+                    PrintStatus("Chat history cleared", ConsoleColor.Yellow);
                     PrintStatus("  Add more documents to the existing collection.", ConsoleColor.DarkGray);
                     if (!TryLoadDocument(chat))
                     {
@@ -447,9 +438,9 @@ namespace chat_with_pdf
         {
             Console.ForegroundColor = ConsoleColor.Cyan;
             Console.WriteLine();
-            Console.WriteLine("  ╔═══════════════════════════════════════════════════════════╗");
-            Console.WriteLine("  ║             📄  LM-Kit PDF Chat Assistant  📄             ║");
-            Console.WriteLine("  ╚═══════════════════════════════════════════════════════════╝");
+            Console.WriteLine("  ===================================================");
+            Console.WriteLine("              LM-Kit PDF Chat Assistant               ");
+            Console.WriteLine("  ===================================================");
             Console.ResetColor();
             Console.WriteLine();
         }
@@ -457,7 +448,7 @@ namespace chat_with_pdf
         private static void PrintSection(string title)
         {
             Console.ForegroundColor = ConsoleColor.Yellow;
-            Console.WriteLine($"  ── {title} ──");
+            Console.WriteLine($"  -- {title} --");
             Console.ResetColor();
             Console.WriteLine();
         }
@@ -465,7 +456,7 @@ namespace chat_with_pdf
         private static void PrintDivider()
         {
             Console.ForegroundColor = ConsoleColor.DarkGray;
-            Console.WriteLine("  " + new string('─', 59));
+            Console.WriteLine("  " + new string('-', 59));
             Console.ResetColor();
         }
 
@@ -487,7 +478,7 @@ namespace chat_with_pdf
         {
             Console.WriteLine();
             PrintDivider();
-            PrintStatus("✓ Chat is ready.", ConsoleColor.Green);
+            PrintStatus("Chat is ready.", ConsoleColor.Green);
 
             Console.ForegroundColor = ConsoleColor.DarkGray;
             Console.WriteLine("  Type a question and press Enter.");
@@ -608,7 +599,7 @@ namespace chat_with_pdf
         {
             int filled = (int)(percent / 100f * width);
             int empty = width - filled;
-            return $"[{new string('█', filled)}{new string('░', empty)}] {percent,3}%";
+            return $"[{new string('#', filled)}{new string('.', empty)}] {percent,3}%";
         }
 
         private static void ClearCurrentLine()
@@ -616,31 +607,30 @@ namespace chat_with_pdf
             Console.Write("\r" + new string(' ', 70) + "\r");
         }
 
-        private static Uri PromptModelSelection()
+        private static LM PromptModelSelection()
         {
             while (true)
             {
                 Console.Write("  Select: ");
                 string input = Console.ReadLine()?.Trim() ?? "";
 
-                string? modelLink = input switch
+                string? modelId = input switch
                 {
-                    "0" => ModelCard.GetPredefinedModelCardByModelID("minicpm-o-45").ModelUri.ToString(),
-                    "1" => ModelCard.GetPredefinedModelCardByModelID("qwen3-vl:2b").ModelUri.ToString(),
-                    "2" => ModelCard.GetPredefinedModelCardByModelID("qwen3-vl:4b").ModelUri.ToString(),
-                    "3" => ModelCard.GetPredefinedModelCardByModelID("qwen3-vl:8b").ModelUri.ToString(),
-                    "4" => ModelCard.GetPredefinedModelCardByModelID("gemma3:4b").ModelUri.ToString(),
-                    "5" => ModelCard.GetPredefinedModelCardByModelID("gemma3:12b").ModelUri.ToString(),
-                    "6" => ModelCard.GetPredefinedModelCardByModelID("ministral3:3b").ModelUri.ToString(),
-                    "7" => ModelCard.GetPredefinedModelCardByModelID("ministral3:8b").ModelUri.ToString(),
-                    "8" => ModelCard.GetPredefinedModelCardByModelID("ministral3:14b").ModelUri.ToString(),
+                    "0" => "gemma3:4b",
+                    "1" => "qwen3:8b",
+                    "2" => "gemma3:12b",
+                    "3" => "phi4",
+                    "4" => "gptoss:20b",
+                    "5" => "glm4.7-flash",
                     _ => null
                 };
 
-                // If a predefined model was selected, return its URI
-                if (modelLink != null)
+                if (modelId != null)
                 {
-                    return new Uri(modelLink);
+                    return LM.LoadFromModelID(
+                        modelId,
+                        downloadingProgress: OnDownloadProgress,
+                        loadingProgress: OnLoadProgress);
                 }
 
                 // Otherwise, try to parse the input as a custom URI
@@ -650,11 +640,14 @@ namespace chat_with_pdf
 
                     if (Uri.TryCreate(trimmedInput, UriKind.Absolute, out Uri? customUri))
                     {
-                        return customUri;
+                        return new LM(
+                            customUri,
+                            downloadingProgress: OnDownloadProgress,
+                            loadingProgress: OnLoadProgress);
                     }
                 }
 
-                PrintStatus("  ✗ Invalid selection. Enter 0-8 or a valid model URI.", ConsoleColor.Red);
+                PrintStatus("  Invalid selection. Enter 0-5 or a valid model URI.", ConsoleColor.Red);
                 Console.WriteLine();
             }
         }
@@ -676,7 +669,7 @@ namespace chat_with_pdf
                     return true;
                 }
 
-                PrintStatus("  ✗ Invalid selection. Please enter 0 or 1.", ConsoleColor.Red);
+                PrintStatus("  Invalid selection. Please enter 0 or 1.", ConsoleColor.Red);
                 Console.WriteLine();
             }
         }

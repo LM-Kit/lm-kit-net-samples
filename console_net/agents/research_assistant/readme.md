@@ -15,7 +15,7 @@ A demo showcasing an AI research agent using LM-Kit.NET's Agent framework with R
 
 - .NET 8.0 or later
 - LM-Kit.NET SDK
-- Sufficient VRAM for the selected model (4-16 GB depending on model choice)
+- Sufficient VRAM for the selected model (5.6-18 GB depending on model choice)
 
 ## How It Works
 
@@ -59,7 +59,7 @@ var agent = Agent.CreateBuilder(model)
     .WithPersona("Expert Research Analyst")
     .WithPlanning(PlanningStrategy.ReAct)
     .WithTools(tools => {
-        tools.Register(new WebSearchTool());
+        tools.Register(BuiltInTools.WebSearch);
         tools.Register(new NoteTakingTool());
     })
     .WithMaxIterations(10)
@@ -70,7 +70,7 @@ var agent = Agent.CreateBuilder(model)
 
 The demo displays different types of output in different colors:
 - **Blue**: Internal reasoning (Thought)
-- **Red**: Tool invocations (Action)
+- **Magenta**: Tool invocations (Action)
 - **White**: Final response and observations
 
 ## Customization

@@ -1,48 +1,18 @@
-﻿using LMKit.Data;
+using LMKit.Data;
 using LMKit.Model;
 using LMKit.TextAnalysis;
 using System.Diagnostics;
 using System.Text;
 
-namespace language_detection_from_document
+namespace pii_extraction
 {
     internal class Program
     {
-
         static bool _isDownloading;
-
-        private static bool ModelDownloadingProgress(string path, long? contentLength, long bytesRead)
-        {
-            _isDownloading = true;
-            if (contentLength.HasValue)
-            {
-                double progressPercentage = Math.Round((double)bytesRead / contentLength.Value * 100, 2);
-                Console.Write($"\rDownloading model {progressPercentage:0.00}%");
-            }
-            else
-            {
-                Console.Write($"\rDownloading model {bytesRead} bytes");
-            }
-
-            return true;
-        }
-
-        private static bool ModelLoadingProgress(float progress)
-        {
-            if (_isDownloading)
-            {
-                Console.Clear();
-                _isDownloading = false;
-            }
-
-            Console.Write($"\rLoading model {Math.Round(progress * 100)}%");
-
-            return true;
-        }
 
         static void Main(string[] args)
         {
-            // Set an optional license key here if available. 
+            // Set an optional license key here if available.
             // A free community license can be obtained from: https://lm-kit.com/products/community-edition/
             LMKit.Licensing.LicenseManager.SetLicenseKey("");
             Console.InputEncoding = Encoding.UTF8;
@@ -50,61 +20,16 @@ namespace language_detection_from_document
 
             Console.Clear();
             Console.WriteLine("Please select the model you want to use:\n");
-            Console.WriteLine("0 - MiniCPM o 4.5 9B (requires approximately 5.9 GB of VRAM)");
-            Console.WriteLine("1 - Alibaba Qwen 3 2B (requires approximately 2.5 GB of VRAM)");
-            Console.WriteLine("2 - Alibaba Qwen 3 4B (requires approximately 4 GB of VRAM)");
-            Console.WriteLine("3 - Alibaba Qwen 3 8B (requires approximately 6.5 GB of VRAM)");
-            Console.WriteLine("4 - Google Gemma 3 4B (requires approximately 5.7 GB of VRAM)");
-            Console.WriteLine("5 - Google Gemma 3 12B (requires approximately 11 GB of VRAM)");
-            Console.WriteLine("6 - Mistral Ministral 3 3B (requires approximately 3.5 GB of VRAM)");
-            Console.WriteLine("7 - Mistral Ministral 3 8B (requires approximately 6.5 GB of VRAM)");
-            Console.WriteLine("8 - Mistral Ministral 3 14B (requires approximately 12 GB of VRAM)");
+            Console.WriteLine("0 - MiniCPM o 4.5 (requires approximately 5.9 GB of VRAM)");
+            Console.WriteLine("1 - Qwen 3 VL 2B (requires approximately 2.5 GB of VRAM)");
+            Console.WriteLine("2 - Qwen 3 VL 4B (requires approximately 4 GB of VRAM)");
+            Console.WriteLine("3 - Qwen 3 VL 8B (requires approximately 6.5 GB of VRAM)");
+            Console.WriteLine("4 - Gemma 3 4B (requires approximately 5.7 GB of VRAM)");
+            Console.WriteLine("5 - Gemma 3 12B (requires approximately 11 GB of VRAM)");
+            Console.Write("Other: A custom model URI\n\n> ");
 
-            Console.Write("Other entry: A custom model URI\n\n> ");
-
-            string? input = Console.ReadLine();
-            string modelLink;
-
-            switch (input?.Trim())
-            {
-                case "0":
-                    modelLink = ModelCard.GetPredefinedModelCardByModelID("minicpm-o-45").ModelUri.ToString();
-                    break;
-                case "1":
-                    modelLink = ModelCard.GetPredefinedModelCardByModelID("qwen3-vl:2b").ModelUri.ToString();
-                    break;
-                case "2":
-                    modelLink = ModelCard.GetPredefinedModelCardByModelID("qwen3-vl:4b").ModelUri.ToString();
-                    break;
-                case "3":
-                    modelLink = ModelCard.GetPredefinedModelCardByModelID("qwen3-vl:8b").ModelUri.ToString();
-                    break;
-                case "4":
-                    modelLink = ModelCard.GetPredefinedModelCardByModelID("gemma3:4b").ModelUri.ToString();
-                    break;
-                case "5":
-                    modelLink = ModelCard.GetPredefinedModelCardByModelID("gemma3:12b").ModelUri.ToString();
-                    break;
-                case "6":
-                    modelLink = ModelCard.GetPredefinedModelCardByModelID("ministral3:3b").ModelUri.ToString();
-                    break;
-                case "7":
-                    modelLink = ModelCard.GetPredefinedModelCardByModelID("ministral3:8b").ModelUri.ToString();
-                    break;
-                case "8":
-                    modelLink = ModelCard.GetPredefinedModelCardByModelID("ministral3:14b").ModelUri.ToString();
-                    break;
-                default:
-                    modelLink = input!.Trim().Trim('"').Trim('"');
-                    break;
-            }
-
-            //Loading model
-            Uri modelUri = new(modelLink);
-            LM model = new(
-                modelUri,
-                downloadingProgress: ModelDownloadingProgress,
-                loadingProgress: ModelLoadingProgress);
+            string input = Console.ReadLine()?.Trim() ?? "";
+            LM model = LoadModel(input);
 
             Console.Clear();
             PiiExtraction engine = new(model);
@@ -115,9 +40,7 @@ namespace language_detection_from_document
                 string? path = Console.ReadLine();
 
                 if (string.IsNullOrEmpty(path))
-                {
                     break;
-                }
 
                 try
                 {
@@ -125,6 +48,7 @@ namespace language_detection_from_document
                     var attachment = new Attachment(path);
                     var entities = engine.Extract(attachment);
                     sw.Stop();
+
                     Console.ForegroundColor = ConsoleColor.Green;
                     Console.WriteLine($"{entities.Count} detected entities | processing time: {sw.Elapsed}\n");
                     Console.ResetColor();
@@ -138,14 +62,49 @@ namespace language_detection_from_document
                 }
                 catch (Exception e)
                 {
-                    Console.ForegroundColor = ConsoleColor.Green;
-                    Console.WriteLine($"Error: Unable to open the file at '{path}'. Details: {e.Message} Please check the file path and permissions.");
+                    Console.ForegroundColor = ConsoleColor.Red;
+                    Console.WriteLine($"Error: Unable to open the file at '{path}'. Details: {e.Message}");
                     Console.ResetColor();
                 }
             }
 
-            Console.WriteLine("The program ended. Press any key to exit the application.");
+            Console.WriteLine("Demo ended. Press any key to exit.");
             _ = Console.ReadKey();
+        }
+
+        static LM LoadModel(string input)
+        {
+            string? modelId = input switch
+            {
+                "0" => "minicpm-o-45",
+                "1" => "qwen3-vl:2b",
+                "2" => "qwen3-vl:4b",
+                "3" => "qwen3-vl:8b",
+                "4" => "gemma3:4b",
+                "5" => "gemma3:12b",
+                _ => null
+            };
+
+            if (modelId != null)
+                return LM.LoadFromModelID(modelId, downloadingProgress: OnDownloadProgress, loadingProgress: OnLoadProgress);
+
+            return new LM(new Uri(input.Trim('"')), downloadingProgress: OnDownloadProgress, loadingProgress: OnLoadProgress);
+        }
+
+        static bool OnDownloadProgress(string path, long? contentLength, long bytesRead)
+        {
+            _isDownloading = true;
+            Console.Write(contentLength.HasValue
+                ? $"\rDownloading model {Math.Round((double)bytesRead / contentLength.Value * 100, 2):0.00}%"
+                : $"\rDownloading model {bytesRead} bytes");
+            return true;
+        }
+
+        static bool OnLoadProgress(float progress)
+        {
+            if (_isDownloading) { Console.Clear(); _isDownloading = false; }
+            Console.Write($"\rLoading model {Math.Round(progress * 100)}%");
+            return true;
         }
     }
 }

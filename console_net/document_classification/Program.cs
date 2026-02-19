@@ -1,4 +1,4 @@
-﻿using LMKit.Data;
+using LMKit.Data;
 using LMKit.Model;
 using LMKit.TextAnalysis;
 using System.Diagnostics;
@@ -12,7 +12,7 @@ namespace document_classification
 
         private static readonly string[] SupportedExtensions =
             { ".png", ".bmp", ".gif", ".psd", ".pic", ".jpeg", ".jpg", ".pnm", ".hdr",
-              ".tga", ".webp", ".tiff", ".txt", ".html", ".pdf", ".docx", ".xlsx", ".pptx" };
+              ".tga", ".webp", ".tiff", ".txt", ".html", ".pdf", ".docx", ".xlsx", ".pptx", ".eml", ".mbox" };
 
         private static readonly List<string> Categories = new()
         {
@@ -42,13 +42,36 @@ namespace document_classification
 
         static void Main(string[] args)
         {
-            // Set an optional license key here if available. 
+            // Set an optional license key here if available.
             // A free community license can be obtained from: https://lm-kit.com/products/community-edition/
             LMKit.Licensing.LicenseManager.SetLicenseKey("");
             Console.InputEncoding = Encoding.UTF8;
             Console.OutputEncoding = Encoding.UTF8;
 
-            LM model = LoadModel();
+            Console.Clear();
+            PrintHeader("Model Selection");
+
+            var models = new (string Id, string Name, string Vram)[]
+            {
+                ("minicpm-o-45",  "MiniCPM o 4.5 9B",       "~5.9 GB"),
+                ("qwen3-vl:2b",  "Alibaba Qwen 3 VL 2B",   "~2.5 GB"),
+                ("qwen3-vl:4b",  "Alibaba Qwen 3 VL 4B",   "~4.5 GB"),
+                ("qwen3-vl:8b",  "Alibaba Qwen 3 VL 8B",   "~6.5 GB"),
+                ("gemma3:4b",    "Google Gemma 3 4B",       "~5.7 GB"),
+                ("gemma3:12b",   "Google Gemma 3 12B",      "~11 GB")
+            };
+
+            Console.WriteLine("Available models:\n");
+            for (int i = 0; i < models.Length; i++)
+            {
+                Console.WriteLine($"  [{i}] {models[i].Name,-30} (VRAM: {models[i].Vram})");
+            }
+            Console.WriteLine($"\n  [*] Enter a custom model URI");
+
+            Console.Write("\nSelection: ");
+            string input = Console.ReadLine()?.Trim() ?? "0";
+
+            LM model = LoadModel(input, models);
             Console.Clear();
 
             PrintHeader("Document Classification Demo");
@@ -66,7 +89,7 @@ namespace document_classification
             {
                 Console.WriteLine();
                 Console.Write("Enter path (or command): ");
-                string input = Console.ReadLine()?.Trim().Trim('"') ?? "";
+                input = Console.ReadLine()?.Trim().Trim('"') ?? "";
 
                 if (string.IsNullOrEmpty(input) || input.Equals("exit", StringComparison.OrdinalIgnoreCase))
                 {
@@ -95,8 +118,46 @@ namespace document_classification
                 ProcessPath(input, categorizer);
             }
 
-            Console.WriteLine("\nGoodbye! Press any key to exit.");
+            Console.WriteLine("\nDemo ended. Press any key to exit.");
             Console.ReadKey();
+        }
+
+        private static LM LoadModel(string input, (string Id, string Name, string Vram)[] models)
+        {
+            if (int.TryParse(input, out int index) && index >= 0 && index < models.Length)
+            {
+                return LM.LoadFromModelID(
+                    models[index].Id,
+                    downloadingProgress: OnDownloadProgress,
+                    loadingProgress: OnLoadProgress);
+            }
+
+            return new LM(
+                new Uri(input.Trim('"')),
+                downloadingProgress: OnDownloadProgress,
+                loadingProgress: OnLoadProgress);
+        }
+
+        private static bool OnDownloadProgress(string path, long? contentLength, long bytesRead)
+        {
+            _isDownloading = true;
+            if (contentLength.HasValue)
+            {
+                double percent = (double)bytesRead / contentLength.Value * 100;
+                Console.Write($"\rDownloading: {percent:F1}%   ");
+            }
+            else
+            {
+                Console.Write($"\rDownloading: {bytesRead / 1024.0 / 1024.0:F1} MB   ");
+            }
+            return true;
+        }
+
+        private static bool OnLoadProgress(float progress)
+        {
+            if (_isDownloading) { Console.WriteLine(); _isDownloading = false; }
+            Console.Write($"\rLoading: {progress * 100:F0}%   ");
+            return true;
         }
 
         private static void ProcessPath(string path, Categorization categorizer)
@@ -145,7 +206,6 @@ namespace document_classification
 
             totalSw.Stop();
 
-            // Print summary
             Console.WriteLine(new string('─', 70));
             WriteColored($"Batch complete: {results.Count}/{files.Count} processed in {totalSw.ElapsedMilliseconds:N0} ms", ConsoleColor.Cyan);
 
@@ -189,7 +249,7 @@ namespace document_classification
             {
                 if (isBatch)
                 {
-                    WriteColored($"  ✗ {fileName}: {ex.Message}", ConsoleColor.Red);
+                    WriteColored($"  x {fileName}: {ex.Message}", ConsoleColor.Red);
                 }
                 else
                 {
@@ -211,7 +271,7 @@ namespace document_classification
             if (isBatch)
             {
                 Console.Write("  ");
-                WriteColored("✓ ", ConsoleColor.Green);
+                WriteColored("+ ", ConsoleColor.Green);
                 Console.Write($"{TruncateFileName(fileName, 30),-32}");
                 WriteColored($"{category,-20}", ConsoleColor.White);
                 WriteColored($"{confidence,6:P0}", confidenceColor);
@@ -220,15 +280,15 @@ namespace document_classification
             else
             {
                 Console.WriteLine();
-                Console.WriteLine($"┌{"".PadRight(50, '─')}┐");
-                Console.Write($"│ Category:   ");
+                Console.WriteLine($"+{"".PadRight(50, '-')}+");
+                Console.Write($"| Category:   ");
                 WriteColored($"{category,-36}", ConsoleColor.White);
-                Console.WriteLine("│");
-                Console.Write($"│ Confidence: ");
+                Console.WriteLine("|");
+                Console.Write($"| Confidence: ");
                 WriteColored($"{confidence,-6:P0}", confidenceColor);
-                Console.WriteLine($"{"",30}│");
-                Console.WriteLine($"│ Time:       {elapsedMs:N0} ms{"",32}│".Substring(0, 52) + "│");
-                Console.WriteLine($"└{"".PadRight(50, '─')}┘");
+                Console.WriteLine($"{"",30}|");
+                Console.WriteLine($"| Time:       {elapsedMs:N0} ms{"",32}|".Substring(0, 52) + "|");
+                Console.WriteLine($"+{"".PadRight(50, '-')}+");
             }
         }
 
@@ -244,93 +304,10 @@ namespace document_classification
             return fileName.Substring(0, nameLength) + "..." + ext;
         }
 
-        private static LM LoadModel()
-        {
-            Console.Clear();
-            PrintHeader("Model Selection");
-
-            var models = new (string Id, string Name, string Vram)[]
-            {
-                ("minicpm-o-45", "MiniCPM o 4.5 9B", "~5.9 GB"),
-                ("qwen3-vl:2b", "Alibaba Qwen 3 VL 2B", "~2.5 GB"),
-                ("qwen3-vl:4b", "Alibaba Qwen 3 VL 4B", "~4.5 GB"),
-                ("qwen3-vl:8b", "Alibaba Qwen 3 VL 8B", "~6.5 GB"),
-                ("gemma3:4b", "Google Gemma 3 4B", "~5.7 GB"),
-                ("gemma3:12b", "Google Gemma 3 12B", "~11 GB"),
-                ("ministral3:3b", "Mistral Ministral 3 3B", "~3.5 GB"),
-                ("ministral3:8b", "Mistral Ministral 3 8B", "~6.5 GB"),
-                ("ministral3:14b", "Mistral Ministral 3 14B", "~12 GB")
-            };
-
-            Console.WriteLine("Available models:\n");
-            for (int i = 0; i < models.Length; i++)
-            {
-                Console.WriteLine($"  [{i}] {models[i].Name,-30} (VRAM: {models[i].Vram})");
-            }
-            Console.WriteLine($"\n  [*] Enter a custom model URI");
-
-            Console.Write("\nSelection: ");
-            string input = Console.ReadLine()?.Trim() ?? "1";
-
-            string modelLink;
-            if (int.TryParse(input, out int index) && index >= 0 && index < models.Length)
-            {
-                modelLink = ModelCard.GetPredefinedModelCardByModelID(models[index].Id).ModelUri.ToString();
-            }
-            else
-            {
-                modelLink = input.Trim('"');
-            }
-
-            Console.WriteLine();
-
-            return new LM(
-                new Uri(modelLink),
-                downloadingProgress: ModelDownloadingProgress,
-                loadingProgress: ModelLoadingProgress);
-        }
-
-        private static bool ModelDownloadingProgress(string path, long? contentLength, long bytesRead)
-        {
-            _isDownloading = true;
-            if (contentLength.HasValue)
-            {
-                double progressPercentage = (double)bytesRead / contentLength.Value * 100;
-                string progressBar = CreateProgressBar(progressPercentage, 30);
-                Console.Write($"\rDownloading: {progressBar} {progressPercentage:F1}%   ");
-            }
-            else
-            {
-                Console.Write($"\rDownloading: {bytesRead / 1024.0 / 1024.0:F1} MB   ");
-            }
-            return true;
-        }
-
-        private static bool ModelLoadingProgress(float progress)
-        {
-            if (_isDownloading)
-            {
-                Console.WriteLine();
-                _isDownloading = false;
-            }
-
-            string progressBar = CreateProgressBar(progress * 100, 30);
-            Console.Write($"\rLoading:     {progressBar} {progress * 100:F0}%   ");
-            return true;
-        }
-
-        private static string CreateProgressBar(double percentage, int width)
-        {
-            int filled = (int)(percentage / 100 * width);
-            return "[" + new string('█', filled) + new string('░', width - filled) + "]";
-        }
-
         private static void PrintHeader(string title)
         {
             Console.ForegroundColor = ConsoleColor.Cyan;
-            Console.WriteLine($"╔{"".PadRight(58, '═')}╗");
-            Console.WriteLine($"║{title.PadLeft((58 + title.Length) / 2).PadRight(58)}║");
-            Console.WriteLine($"╚{"".PadRight(58, '═')}╝");
+            Console.WriteLine($"=== {title} ===");
             Console.ResetColor();
             Console.WriteLine();
         }

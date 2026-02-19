@@ -1,4 +1,4 @@
-﻿using LMKit.Extraction;
+using LMKit.Extraction;
 using LMKit.Integrations.Tesseract;
 using LMKit.Model;
 using System.Diagnostics;
@@ -9,86 +9,34 @@ namespace invoice_data_extraction
 {
     internal class Program
     {
-
         private static bool _isDownloading;
-
-
-        private static bool ModelDownloadingProgress(
-            string path,
-            long? contentLength,
-            long bytesRead)
-        {
-            _isDownloading = true;
-            if (contentLength.HasValue)
-            {
-                double percent = Math.Round((double)bytesRead / contentLength.Value * 100, 2);
-                Console.Write($"\rDownloading model: {percent:0.00}%");
-            }
-            else
-            {
-                Console.Write($"\rDownloading model: {bytesRead} bytes transferred");
-            }
-
-            return true;
-        }
-
-
-        private static bool ModelLoadingProgress(float progress)
-        {
-            // Clear download message once loading begins
-            if (_isDownloading)
-            {
-                Console.Clear();
-                _isDownloading = false;
-            }
-
-            Console.Write($"\rLoading model: {Math.Round(progress * 100)}%");
-            return true;
-        }
-
 
         private static void Main(string[] args)
         {
-            // Optionally set a license key; use a community license from https://lm-kit.com/products/community-edition/ if available.
+            // Set an optional license key here if available.
+            // A free community license can be obtained from: https://lm-kit.com/products/community-edition/
             LMKit.Licensing.LicenseManager.SetLicenseKey("");
-
-            // Enable UTF-8 support for proper display of multilingual text.
             Console.InputEncoding = Encoding.UTF8;
             Console.OutputEncoding = Encoding.UTF8;
 
             Console.Clear();
             Console.WriteLine("Select a vision-language model to use for extraction:\n");
-            Console.WriteLine("0 - MiniCPM o 4.5 9B (~5.9 GB VRAM)");
-            Console.WriteLine("1 - Alibaba Qwen 3 2B (~2.5 GB VRAM)");
-            Console.WriteLine("2 - Alibaba Qwen 3 4B (~4.5 GB VRAM)");
-            Console.WriteLine("3 - Alibaba Qwen 3 8B (~6.5 GB VRAM)");
-            Console.WriteLine("4 - Google Gemma 3 4B (~5.7 GB VRAM)");
-            Console.WriteLine("5 - Google Gemma 3 12B (~11 GB VRAM)");
-            Console.WriteLine("6 - Mistral Pixtral 12B (~12 GB VRAM)");
-            Console.Write("Other entry: custom model URI\n\n> ");
+            Console.WriteLine("0 - MiniCPM o 4.5 9B       (~5.9 GB VRAM)");
+            Console.WriteLine("1 - Alibaba Qwen 3 VL 2B   (~2.5 GB VRAM)");
+            Console.WriteLine("2 - Alibaba Qwen 3 VL 4B   (~4.5 GB VRAM)");
+            Console.WriteLine("3 - Alibaba Qwen 3 VL 8B   (~6.5 GB VRAM)");
+            Console.WriteLine("4 - Google Gemma 3 4B       (~5.7 GB VRAM)");
+            Console.WriteLine("5 - Google Gemma 3 12B      (~11 GB VRAM)");
+            Console.Write("\nOther entry: A custom model URI\n\n> ");
 
-            // Read user selection or custom URI
-            string input = Console.ReadLine() ?? string.Empty;
-            string modelLink = ResolveModelUri(input.Trim());
+            string input = Console.ReadLine()?.Trim() ?? "0";
+            LM model = LoadModel(input);
 
-            // Instantiate and load the selected model with progress callbacks
-            var modelUri = new Uri(modelLink);
-            var model = new LM(
-                modelUri,
-                downloadingProgress: ModelDownloadingProgress,
-                loadingProgress: ModelLoadingProgress);
-
-            // Initialize text extraction engine with loaded model
             var textExtraction = new TextExtraction(model);
 
-            // Configure the extraction fields by loading definitions from a JSON schema file.
-            // Alternatively, extraction fields can be defined manually via the `textExtraction.Elements` property.
             string schemaJson = File.ReadAllText("schema.json");
             textExtraction.SetElementsFromJsonSchema(schemaJson);
 
-            // Attach an optional OCR engine to improve VLM accuracy.
-            // You can also use other pre‑integrated or custom OCR engines. See the available list at:
-            // https://docs.lm-kit.com/lm-kit-net/api/LMKit.Extraction.Ocr.OcrEngine.html
             var ocrEngine = new TesseractOcr
             {
                 EnableLanguageDetection = true,
@@ -96,7 +44,6 @@ namespace invoice_data_extraction
                 EnableOrientationDetection = true
             };
 
-            // Log detected invoice language and orientation to console
             ocrEngine.LanguageDetected += lang =>
                 Console.WriteLine($"Detected language: {lang}");
             ocrEngine.OrientationDetected += angle =>
@@ -104,7 +51,6 @@ namespace invoice_data_extraction
 
             textExtraction.OcrEngine = ocrEngine;
 
-            // Continuous loop: allow user to process multiple invoices in one session
             while (true)
             {
                 Console.Clear();
@@ -120,10 +66,8 @@ namespace invoice_data_extraction
                 string documentPath = GetDocumentPath(input.Trim('"'));
 
                 Console.Clear();
-                // Display the selected invoice for visual confirmation
                 OpenDocument(documentPath);
 
-                // Set input content
                 textExtraction.SetContent(new LMKit.Data.Attachment(documentPath));
 
                 Console.WriteLine($"\nExtracting structured data from document {Path.GetFileName(documentPath)}...\n");
@@ -131,7 +75,6 @@ namespace invoice_data_extraction
                 var extractionResult = textExtraction.Parse();
                 stopwatch.Stop();
 
-                // Output each extracted field and its value
                 WriteColor("\nExtraction results:\n", ConsoleColor.Green);
                 foreach (var element in extractionResult.Elements)
                 {
@@ -140,7 +83,6 @@ namespace invoice_data_extraction
                     Console.WriteLine();
                 }
 
-                // Present the full JSON payload for integration or storage
                 WriteColor("\nJSON Output:\n", ConsoleColor.Green);
                 Console.WriteLine(extractionResult.Json);
 
@@ -150,19 +92,31 @@ namespace invoice_data_extraction
             }
         }
 
-        private static string ResolveModelUri(string input)
+        private static LM LoadModel(string input)
         {
-            return input switch
+            string? modelId = input switch
             {
-                "0" => ModelCard.GetPredefinedModelCardByModelID("minicpm-o-45").ModelUri.ToString(),
-                "1" => ModelCard.GetPredefinedModelCardByModelID("qwen3-vl:2b").ModelUri.ToString(),
-                "2" => ModelCard.GetPredefinedModelCardByModelID("qwen3-vl:4b").ModelUri.ToString(),
-                "3" => ModelCard.GetPredefinedModelCardByModelID("qwen3-vl:8b").ModelUri.ToString(),
-                "4" => ModelCard.GetPredefinedModelCardByModelID("gemma3:4b").ModelUri.ToString(),
-                "5" => ModelCard.GetPredefinedModelCardByModelID("gemma3:12b").ModelUri.ToString(),
-                "6" => ModelCard.GetPredefinedModelCardByModelID("pixtral").ModelUri.ToString(),
-                _ => input.Trim('"')
+                "0" => "minicpm-o-45",
+                "1" => "qwen3-vl:2b",
+                "2" => "qwen3-vl:4b",
+                "3" => "qwen3-vl:8b",
+                "4" => "gemma3:4b",
+                "5" => "gemma3:12b",
+                _ => null
             };
+
+            if (modelId != null)
+            {
+                return LM.LoadFromModelID(
+                    modelId,
+                    downloadingProgress: OnDownloadProgress,
+                    loadingProgress: OnLoadProgress);
+            }
+
+            return new LM(
+                new Uri(input.Trim('"')),
+                downloadingProgress: OnDownloadProgress,
+                loadingProgress: OnLoadProgress);
         }
 
         private static string GetDocumentPath(string selection)
@@ -177,6 +131,27 @@ namespace invoice_data_extraction
             };
         }
 
+        private static bool OnDownloadProgress(string path, long? contentLength, long bytesRead)
+        {
+            _isDownloading = true;
+            if (contentLength.HasValue)
+            {
+                double percent = (double)bytesRead / contentLength.Value * 100;
+                Console.Write($"\rDownloading: {percent:F1}%   ");
+            }
+            else
+            {
+                Console.Write($"\rDownloading: {bytesRead / 1024.0 / 1024.0:F1} MB   ");
+            }
+            return true;
+        }
+
+        private static bool OnLoadProgress(float progress)
+        {
+            if (_isDownloading) { Console.WriteLine(); _isDownloading = false; }
+            Console.Write($"\rLoading: {progress * 100:F0}%   ");
+            return true;
+        }
 
         private static void WriteColor(string text, ConsoleColor color, bool addNL = true)
         {
@@ -189,10 +164,8 @@ namespace invoice_data_extraction
             {
                 Console.Write(text);
             }
-
             Console.ResetColor();
         }
-
 
         private static void OpenDocument(string filePath)
         {

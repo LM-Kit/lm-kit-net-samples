@@ -2,63 +2,63 @@ using LMKit.Mcp.Client;
 using LMKit.Mcp.Transport;
 using LMKit.Model;
 using LMKit.TextGeneration;
+using LMKit.TextGeneration.Chat;
+using LMKit.TextGeneration.Events;
 using LMKit.TextGeneration.Sampling;
 using System.Text;
 using System.Text.Json;
 
 namespace mcp_stdio_integration
 {
-    /// <summary>
-    /// Demonstrates MCP integration using stdio transport with local MCP servers.
-    /// This example shows how to connect to MCP servers running as subprocesses
-    /// using stdin/stdout communication (the standard transport for local servers).
-    /// </summary>
     internal class Program
     {
-        static readonly string DEFAULT_LLAMA3_1_8B_MODEL_PATH = @"https://huggingface.co/lm-kit/llama-3.1-8b-instruct-gguf/resolve/main/Llama-3.1-8B-Instruct-Q4_K_M.gguf";
-        static readonly string DEFAULT_GEMMA3_12B_MODEL_PATH = @"https://huggingface.co/lm-kit/gemma-3-12b-instruct-lmk/resolve/main/gemma-3-12b-it-Q4_K_M.lmk";
-        static readonly string DEFAULT_PHI4_MINI_3_8B_MODEL_PATH = @"https://huggingface.co/lm-kit/phi-4-mini-3.8b-instruct-gguf/resolve/main/Phi-4-mini-Instruct-Q4_K_M.gguf";
-        static readonly string DEFAULT_QWEN3_8B_MODEL_PATH = @"https://huggingface.co/lm-kit/qwen-3-8b-instruct-gguf/resolve/main/Qwen3-8B-Q4_K_M.gguf";
-        static readonly string DEFAULT_OPENAI_GPT_OSS_20B_MODEL_PATH = @"https://huggingface.co/lm-kit/gpt-oss-20b-gguf/resolve/main/gpt-oss-20b-mxfp4.gguf";
-        static readonly string DEFAULT_GLM_4_7_FLASH_MODEL_PATH = @"https://huggingface.co/lm-kit/glm-4.7-flash-gguf/resolve/main/GLM-4.7-Flash-64x2.6B-Q4_K_M.gguf";
-
         static bool _isDownloading;
 
-        private static bool ModelDownloadingProgress(string path, long? contentLength, long bytesRead)
+        static bool OnDownloadProgress(string path, long? contentLength, long bytesRead)
         {
             _isDownloading = true;
             if (contentLength.HasValue)
-            {
-                double progressPercentage = Math.Round((double)bytesRead / contentLength.Value * 100, 2);
-                Console.Write("\rDownloading model {0:0.00}%", progressPercentage);
-            }
+                Console.Write("\rDownloading model {0:0.00}%", Math.Round((double)bytesRead / contentLength.Value * 100, 2));
             else
-            {
                 Console.Write("\rDownloading model {0} bytes", bytesRead);
-            }
-
             return true;
         }
 
-        private static bool ModelLoadingProgress(float progress)
+        static bool OnLoadProgress(float progress)
         {
-            if (_isDownloading)
-            {
-                Console.Clear();
-                _isDownloading = false;
-            }
-
+            if (_isDownloading) { Console.Clear(); _isDownloading = false; }
             Console.Write("\rLoading model {0}%", Math.Round(progress * 100));
             return true;
         }
 
+        static LM LoadModel(string input)
+        {
+            string? modelId = input?.Trim() switch
+            {
+                "0" => "qwen3:8b",
+                "1" => "gemma3:12b",
+                "2" => "qwen3:14b",
+                "3" => "phi4",
+                "4" => "gptoss:20b",
+                "5" => "glm4.7-flash",
+                _ => null
+            };
+
+            if (modelId != null)
+                return LM.LoadFromModelID(modelId, downloadingProgress: OnDownloadProgress, loadingProgress: OnLoadProgress);
+
+            string uri = !string.IsNullOrWhiteSpace(input) ? input.Trim('"') : "qwen3:8b";
+            if (!uri.Contains("://"))
+                return LM.LoadFromModelID(uri, downloadingProgress: OnDownloadProgress, loadingProgress: OnLoadProgress);
+
+            return new LM(new Uri(uri), downloadingProgress: OnDownloadProgress, loadingProgress: OnLoadProgress);
+        }
+
         private static void Main(string[] args)
         {
-            // Set your license key here if you have one
-            // LMKit.Licensing.LicenseManager.SetLicenseKey("YOUR_LICENSE_KEY");
-
+            LMKit.Licensing.LicenseManager.SetLicenseKey("");
             Console.InputEncoding = Encoding.UTF8;
-            Console.OutputEncoding = UTF8Encoding.UTF8;
+            Console.OutputEncoding = Encoding.UTF8;
 
             Console.Clear();
             Console.WriteLine("=== MCP Stdio Transport Demo ===\n");
@@ -66,42 +66,24 @@ namespace mcp_stdio_integration
             Console.WriteLine("The stdio transport spawns a subprocess and communicates via stdin/stdout.\n");
 
             Console.WriteLine("Please select the model you want to use:\n");
-            Console.WriteLine("0 - Meta Llama 3.1 8B (requires approximately 6 GB of VRAM)");
-            Console.WriteLine("1 - Google Gemma 3 12B Medium (requires approximately 9 GB of VRAM)");
-            Console.WriteLine("2 - Microsoft Phi-4 Mini 3.82B (requires approximately 3.3 GB of VRAM)");
-            Console.WriteLine("3 - Alibaba Qwen-3 8B (requires approximately 5.6 GB of VRAM)");
-            Console.WriteLine("4 - Open AI GPT OSS 20B (requires approximately 16 GB of VRAM)");
-            Console.WriteLine("5 - Z.ai GLM 4.7 Flash 30B (requires approximately 18 GB of VRAM)");
-            Console.Write("Other entry: A custom model URI\n\n> ");
+            Console.WriteLine("0 - Alibaba Qwen-3 8B      (~6 GB VRAM)");
+            Console.WriteLine("1 - Google Gemma 3 12B      (~9 GB VRAM)");
+            Console.WriteLine("2 - Alibaba Qwen-3 14B      (~10 GB VRAM)");
+            Console.WriteLine("3 - Microsoft Phi-4 14.7B    (~11 GB VRAM)");
+            Console.WriteLine("4 - OpenAI GPT OSS 20B       (~16 GB VRAM)");
+            Console.WriteLine("5 - Z.ai GLM 4.7 Flash 30B   (~18 GB VRAM)");
+            Console.Write("Other: Custom model URI or model ID\n\n> ");
 
             string? input = Console.ReadLine();
-            string modelLink;
-
-            switch (input?.Trim())
-            {
-                case "0": modelLink = DEFAULT_LLAMA3_1_8B_MODEL_PATH; break;
-                case "1": modelLink = DEFAULT_GEMMA3_12B_MODEL_PATH; break;
-                case "2": modelLink = DEFAULT_PHI4_MINI_3_8B_MODEL_PATH; break;
-                case "3": modelLink = DEFAULT_QWEN3_8B_MODEL_PATH; break;
-                case "4": modelLink = DEFAULT_OPENAI_GPT_OSS_20B_MODEL_PATH; break;
-                case "5": modelLink = DEFAULT_GLM_4_7_FLASH_MODEL_PATH; break;
-                default: modelLink = input!.Trim().Trim('"'); break;
-            }
-
-            Uri modelUri = new(modelLink);
-            LM model = new(
-                modelUri,
-                downloadingProgress: ModelDownloadingProgress,
-                loadingProgress: ModelLoadingProgress);
+            LM model = LoadModel(input ?? "");
 
             Console.Clear();
 
             MultiTurnConversation chat = new(model);
             chat.MaximumCompletionTokens = 2048;
             chat.SamplingMode = new RandomSampling { Temperature = 0.8f };
-            chat.AfterTextCompletion += Chat_AfterTextCompletion;
+            chat.AfterTextCompletion += OnAfterTextCompletion;
 
-            // Select and connect to a local MCP server via stdio
             McpClient mcpClient = SelectStdioMcpServer(chat);
 
             ShowSpecialPrompts();
@@ -168,18 +150,15 @@ namespace mcp_stdio_integration
                         mcpClient.Dispose();
                     }
 
-                    // Select a new MCP server
                     mcpClient = SelectStdioMcpServer(chat);
-
                     chat.ClearHistory();
                     prompt = FIRST_MESSAGE;
                 }
             }
 
-            // Clean up
             mcpClient?.Dispose();
 
-            Console.WriteLine("The chat ended. Press any key to exit the application.");
+            Console.WriteLine("Demo ended. Press any key to exit.");
             Console.ReadKey();
         }
 
@@ -208,40 +187,19 @@ namespace mcp_stdio_integration
 
             switch (serverInput?.Trim())
             {
-                case "0":
-                    mcpClient = CreateFilesystemServer();
-                    break;
-
-                case "1":
-                    mcpClient = CreateMemoryServer();
-                    break;
-
-                case "2":
-                    mcpClient = CreateFetchServer();
-                    break;
-
-                case "3":
-                    mcpClient = CreateGitServer();
-                    break;
-
-                case "4":
-                    mcpClient = CreateSqliteServer();
-                    break;
-
-                case "5":
-                    mcpClient = CreateCustomServer();
-                    break;
-
+                case "0": mcpClient = CreateFilesystemServer(); break;
+                case "1": mcpClient = CreateMemoryServer(); break;
+                case "2": mcpClient = CreateFetchServer(); break;
+                case "3": mcpClient = CreateGitServer(); break;
+                case "4": mcpClient = CreateSqliteServer(); break;
+                case "5": mcpClient = CreateCustomServer(); break;
                 default:
                     Console.WriteLine("Invalid selection. Using filesystem server with current directory.");
                     mcpClient = CreateFilesystemServer();
                     break;
             }
 
-            // Set up event handlers
             SetupEventHandlers(mcpClient);
-
-            // Register tools with chat
             chat.Tools.Register(mcpClient);
 
             return mcpClient;
@@ -252,9 +210,7 @@ namespace mcp_stdio_integration
             Console.Write("\nEnter the directory path to allow access to (or press Enter for current directory): ");
             string? dirPath = Console.ReadLine();
             if (string.IsNullOrWhiteSpace(dirPath))
-            {
                 dirPath = Environment.CurrentDirectory;
-            }
 
             Console.WriteLine($"\nStarting filesystem MCP server for: {dirPath}");
             Console.WriteLine("Command: npx @modelcontextprotocol/server-filesystem {0}\n", dirPath);
@@ -298,9 +254,7 @@ namespace mcp_stdio_integration
             Console.Write("\nEnter the repository path (or press Enter for current directory): ");
             string? repoPath = Console.ReadLine();
             if (string.IsNullOrWhiteSpace(repoPath))
-            {
                 repoPath = Environment.CurrentDirectory;
-            }
 
             Console.WriteLine($"\nStarting Git MCP server for: {repoPath}");
             Console.WriteLine("Command: uvx mcp-server-git --repository {0}\n", repoPath);
@@ -316,9 +270,7 @@ namespace mcp_stdio_integration
             Console.Write("\nEnter the SQLite database path: ");
             string? dbPath = Console.ReadLine();
             if (string.IsNullOrWhiteSpace(dbPath))
-            {
                 dbPath = "database.db";
-            }
 
             Console.WriteLine($"\nStarting SQLite MCP server for: {dbPath}");
             Console.WriteLine("Command: uvx mcp-server-sqlite --db-path {0}\n", dbPath);
@@ -334,9 +286,7 @@ namespace mcp_stdio_integration
             Console.Write("\nEnter the command to run (e.g., 'python', 'node', 'npx'): ");
             string? command = Console.ReadLine();
             if (string.IsNullOrWhiteSpace(command))
-            {
                 throw new ArgumentException("Command is required.");
-            }
 
             Console.Write("Enter the arguments (e.g., '-m myserver --verbose'): ");
             string? arguments = Console.ReadLine();
@@ -352,16 +302,13 @@ namespace mcp_stdio_integration
                 .WithRequestTimeout(TimeSpan.FromSeconds(60));
 
             if (!string.IsNullOrWhiteSpace(workingDir))
-            {
                 builder.WithWorkingDirectory(workingDir.Trim());
-            }
 
             return builder.Build();
         }
 
         private static void SetupEventHandlers(McpClient mcpClient)
         {
-            // Handle catalog changes
             mcpClient.CatalogChanged += (sender, e) =>
             {
                 Console.ForegroundColor = ConsoleColor.Cyan;
@@ -372,7 +319,6 @@ namespace mcp_stdio_integration
                 Console.ResetColor();
             };
 
-            // Handle transport disconnection (stdio-specific)
             if (mcpClient.Transport is StdioTransport stdioTransport)
             {
                 stdioTransport.Disconnected += (sender, e) =>
@@ -380,14 +326,11 @@ namespace mcp_stdio_integration
                     Console.ForegroundColor = ConsoleColor.Red;
                     Console.WriteLine("\n[MCP] Transport disconnected: {0}", e.Reason);
                     if (e.Exception != null)
-                    {
                         Console.WriteLine("[MCP] Exception: {0}", e.Exception.Message);
-                    }
                     Console.ResetColor();
                 };
             }
 
-            // Log received messages
             mcpClient.Received += (sender, e) =>
             {
                 Console.ForegroundColor = ConsoleColor.DarkGray;
@@ -396,7 +339,6 @@ namespace mcp_stdio_integration
                 Console.ResetColor();
             };
 
-            // Log sent messages
             mcpClient.Sending += (sender, e) =>
             {
                 Console.ForegroundColor = ConsoleColor.DarkGray;
@@ -417,9 +359,7 @@ namespace mcp_stdio_integration
         private static string TruncateMessage(string message)
         {
             if (string.IsNullOrEmpty(message))
-            {
                 return string.Empty;
-            }
 
             const int maxLength = 150;
             return (message.Length <= maxLength) ? message : message.Substring(0, maxLength) + "...";
@@ -434,19 +374,14 @@ namespace mcp_stdio_integration
             Console.WriteLine("Use '/server' to switch to a different MCP server.\n\n");
         }
 
-        private static void Chat_AfterTextCompletion(
-            object? sender,
-            LMKit.TextGeneration.Events.AfterTextCompletionEventArgs e)
+        private static void OnAfterTextCompletion(object? sender, AfterTextCompletionEventArgs e)
         {
-            switch (e.SegmentType)
+            Console.ForegroundColor = e.SegmentType switch
             {
-                case LMKit.TextGeneration.Chat.TextSegmentType.InternalReasoning:
-                    Console.ForegroundColor = ConsoleColor.Blue; break;
-                case LMKit.TextGeneration.Chat.TextSegmentType.ToolInvocation:
-                    Console.ForegroundColor = ConsoleColor.Red; break;
-                case LMKit.TextGeneration.Chat.TextSegmentType.UserVisible:
-                    Console.ForegroundColor = ConsoleColor.White; break;
-            }
+                TextSegmentType.InternalReasoning => ConsoleColor.Blue,
+                TextSegmentType.ToolInvocation => ConsoleColor.Magenta,
+                _ => ConsoleColor.White
+            };
             Console.Write(e.Text);
         }
     }

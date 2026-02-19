@@ -1,4 +1,4 @@
-﻿using LMKit.Data;
+using LMKit.Data;
 using LMKit.Extraction.Ocr;
 using LMKit.Model;
 using System.Diagnostics;
@@ -10,106 +10,27 @@ namespace document_to_markdown
     {
         private static bool _isDownloading;
 
-        private static bool ModelDownloadingProgress(string path, long? contentLength, long bytesRead)
-        {
-            _isDownloading = true;
-
-            if (contentLength.HasValue)
-            {
-                double progressPercentage = Math.Round((double)bytesRead / contentLength.Value * 100, 2);
-                Console.Write($"\rDownloading model {progressPercentage:0.00}%");
-            }
-            else
-            {
-                Console.Write($"\rDownloading model {bytesRead} bytes");
-            }
-
-            return true;
-        }
-
-        private static bool ModelLoadingProgress(float progress)
-        {
-            if (_isDownloading)
-            {
-                Console.Clear();
-                _isDownloading = false;
-            }
-
-            Console.Write($"\rLoading model {Math.Round(progress * 100)}%");
-
-            return true;
-        }
-
         private static void Main(string[] args)
         {
-            // Set an optional license key here if available. 
+            // Set an optional license key here if available.
             // A free community license can be obtained from: https://lm-kit.com/products/community-edition/
             LMKit.Licensing.LicenseManager.SetLicenseKey("");
-
             Console.InputEncoding = Encoding.UTF8;
             Console.OutputEncoding = Encoding.UTF8;
 
             Console.Clear();
             Console.WriteLine("Please select the model you want to use:\n");
-            Console.WriteLine("0 - LightOn LightOnOCR 2 1B (requires approximately 2 GB of VRAM) (recommended)");
-            Console.WriteLine("1 - MiniCPM o 4.5 9B (requires approximately 5.9 GB of VRAM)");
-            Console.WriteLine("2 - Alibaba Qwen 3 2B (requires approximately 2.5 GB of VRAM)");
-            Console.WriteLine("3 - Alibaba Qwen 3 4B (requires approximately 4 GB of VRAM)");
-            Console.WriteLine("4 - Alibaba Qwen 3 8B (requires approximately 6.5 GB of VRAM)");
-            Console.WriteLine("5 - Google Gemma 3 4B (requires approximately 5.7 GB of VRAM)");
-            Console.WriteLine("6 - Google Gemma 3 12B (requires approximately 11 GB of VRAM)");
-            Console.WriteLine("7 - Mistral Ministral 3 3B (requires approximately 3.5 GB of VRAM)");
-            Console.WriteLine("8 - Mistral Ministral 3 8B (requires approximately 6.5 GB of VRAM)");
-            Console.WriteLine("9 - Mistral Ministral 3 14B (requires approximately 12 GB of VRAM)");
+            Console.WriteLine("0 - LightOn LightOnOCR 2 1B   (~2 GB VRAM) (recommended)");
+            Console.WriteLine("1 - MiniCPM o 4.5 9B          (~5.9 GB VRAM)");
+            Console.WriteLine("2 - Alibaba Qwen 3 VL 2B      (~2.5 GB VRAM)");
+            Console.WriteLine("3 - Alibaba Qwen 3 VL 4B      (~4.5 GB VRAM)");
+            Console.WriteLine("4 - Alibaba Qwen 3 VL 8B      (~6.5 GB VRAM)");
+            Console.WriteLine("5 - Google Gemma 3 4B          (~5.7 GB VRAM)");
+            Console.WriteLine("6 - Google Gemma 3 12B         (~11 GB VRAM)");
+            Console.Write("\nOther entry: A custom model URI\n\n> ");
 
-            Console.Write("Other entry: A custom model URI\n\n> ");
-
-            string input = Console.ReadLine() ?? string.Empty;
-            string modelLink;
-
-            switch (input.Trim())
-            {
-                case "0":
-                    modelLink = ModelCard.GetPredefinedModelCardByModelID("lightonocr-2:1b").ModelUri.ToString();
-                    break;
-                case "1":
-                    modelLink = ModelCard.GetPredefinedModelCardByModelID("minicpm-o-45").ModelUri.ToString();
-                    break;
-                case "2":
-                    modelLink = ModelCard.GetPredefinedModelCardByModelID("qwen3-vl:2b").ModelUri.ToString();
-                    break;
-                case "3":
-                    modelLink = ModelCard.GetPredefinedModelCardByModelID("qwen3-vl:4b").ModelUri.ToString();
-                    break;
-                case "4":
-                    modelLink = ModelCard.GetPredefinedModelCardByModelID("qwen3-vl:8b").ModelUri.ToString();
-                    break;
-                case "5":
-                    modelLink = ModelCard.GetPredefinedModelCardByModelID("gemma3:4b").ModelUri.ToString();
-                    break;
-                case "6":
-                    modelLink = ModelCard.GetPredefinedModelCardByModelID("gemma3:12b").ModelUri.ToString();
-                    break;
-                case "7":
-                    modelLink = ModelCard.GetPredefinedModelCardByModelID("ministral3:3b").ModelUri.ToString();
-                    break;
-                case "8":
-                    modelLink = ModelCard.GetPredefinedModelCardByModelID("ministral3:8b").ModelUri.ToString();
-                    break;
-                case "9":
-                    modelLink = ModelCard.GetPredefinedModelCardByModelID("ministral3:14b").ModelUri.ToString();
-                    break;
-                default:
-                    modelLink = input.Trim().Trim('"').Trim('"');
-                    break;
-            }
-
-            // Loading model
-            Uri modelUri = new(modelLink);
-            LM model = new(
-                modelUri,
-                downloadingProgress: ModelDownloadingProgress,
-                loadingProgress: ModelLoadingProgress);
+            string input = Console.ReadLine()?.Trim() ?? "0";
+            LM model = LoadModel(input);
 
             Console.Clear();
 
@@ -123,20 +44,20 @@ namespace document_to_markdown
             {
                 Attachment? attachment = null;
 
-                // Ask for image path (with 'q' to quit and nice error messages)
                 while (true)
                 {
                     Console.ForegroundColor = ConsoleColor.Green;
                     Console.Write("Assistant");
                     Console.ResetColor();
-                    Console.Write(" — enter image path (or 'q' to quit):\n> ");
+                    Console.Write(" - enter image path (or 'q' to quit):\n> ");
 
                     string path = Console.ReadLine() ?? string.Empty;
                     path = path.Trim();
 
                     if (string.Equals(path, "q", StringComparison.OrdinalIgnoreCase))
                     {
-                        Console.WriteLine("\nExiting. Bye 👋");
+                        Console.WriteLine("\nDemo ended. Press any key to exit.");
+                        Console.ReadKey();
                         return;
                     }
 
@@ -156,11 +77,10 @@ namespace document_to_markdown
                     }
                 }
 
-                // Run OCR
                 for (int pageIndex = 0; pageIndex < attachment.PageCount; pageIndex++)
                 {
                     Console.ForegroundColor = ConsoleColor.Blue;
-                    Console.WriteLine($"\n────────── Result page {pageIndex + 1}/{attachment.PageCount} ──────────");
+                    Console.WriteLine($"\n---------- Result page {pageIndex + 1}/{attachment.PageCount} ----------");
                     Console.ResetColor();
 
                     Stopwatch sw = Stopwatch.StartNew();
@@ -171,9 +91,8 @@ namespace document_to_markdown
 
                     double elapsedSeconds = sw.Elapsed.TotalSeconds;
 
-                    // Stats section (includes elapsed time in seconds)
                     Console.ForegroundColor = ConsoleColor.Blue;
-                    Console.WriteLine("\n────────── Stats ──────────");
+                    Console.WriteLine("\n---------- Stats ----------");
                     Console.WriteLine($" elapsed time : {elapsedSeconds:F2} s");
                     Console.WriteLine($" gen. tokens  : {result.TextGeneration.GeneratedTokens.Count}");
                     Console.WriteLine($" stop reason  : {result.TextGeneration.TerminationReason}");
@@ -183,7 +102,7 @@ namespace document_to_markdown
                     Console.ResetColor();
 
                     Console.ForegroundColor = ConsoleColor.DarkGray;
-                    Console.WriteLine("────────────────────────────");
+                    Console.WriteLine("----------------------------");
                     Console.ResetColor();
                 }
 
@@ -192,7 +111,8 @@ namespace document_to_markdown
 
                 if (string.Equals(again.Trim(), "q", StringComparison.OrdinalIgnoreCase))
                 {
-                    Console.WriteLine("\nExiting. Bye 👋");
+                    Console.WriteLine("\nDemo ended. Press any key to exit.");
+                    Console.ReadKey();
                     break;
                 }
 
@@ -202,6 +122,56 @@ namespace document_to_markdown
                 Console.ResetColor();
                 Console.WriteLine("Type the path to an image (or 'q' to quit).\n");
             }
+        }
+
+        private static LM LoadModel(string input)
+        {
+            string? modelId = input switch
+            {
+                "0" => "lightonocr-2:1b",
+                "1" => "minicpm-o-45",
+                "2" => "qwen3-vl:2b",
+                "3" => "qwen3-vl:4b",
+                "4" => "qwen3-vl:8b",
+                "5" => "gemma3:4b",
+                "6" => "gemma3:12b",
+                _ => null
+            };
+
+            if (modelId != null)
+            {
+                return LM.LoadFromModelID(
+                    modelId,
+                    downloadingProgress: OnDownloadProgress,
+                    loadingProgress: OnLoadProgress);
+            }
+
+            return new LM(
+                new Uri(input.Trim('"')),
+                downloadingProgress: OnDownloadProgress,
+                loadingProgress: OnLoadProgress);
+        }
+
+        private static bool OnDownloadProgress(string path, long? contentLength, long bytesRead)
+        {
+            _isDownloading = true;
+            if (contentLength.HasValue)
+            {
+                double percent = (double)bytesRead / contentLength.Value * 100;
+                Console.Write($"\rDownloading: {percent:F1}%   ");
+            }
+            else
+            {
+                Console.Write($"\rDownloading: {bytesRead / 1024.0 / 1024.0:F1} MB   ");
+            }
+            return true;
+        }
+
+        private static bool OnLoadProgress(float progress)
+        {
+            if (_isDownloading) { Console.WriteLine(); _isDownloading = false; }
+            Console.Write($"\rLoading: {progress * 100:F0}%   ");
+            return true;
         }
     }
 }

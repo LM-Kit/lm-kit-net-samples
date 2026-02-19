@@ -1,5 +1,4 @@
-﻿using LMKit.Exceptions;
-using LMKit.Inference;
+using LMKit.Exceptions;
 using LMKit.Model;
 using LMKit.TextGeneration;
 using LMKit.TextGeneration.Sampling;
@@ -9,42 +8,11 @@ namespace multi_turn_chat_with_coding_assistant
 {
     internal class Program
     {
-        static readonly string DEFAULT_SMALL_MODEL_PATH = @"https://huggingface.co/lm-kit/deepseek-coder-1.6-7b-gguf/resolve/main/DeepSeek-Coder-1.6-7B-Instruct-Q4_K_M.gguf";
-        static readonly string DEFAULT_MEDIUM_MODEL_PATH = @"https://huggingface.co/lm-kit/deepseek-coder-2-lite-15.7b-gguf/resolve/main/DeepSeek-Coder-2-Lite-15.7B-Instruct-Q4_K_M.gguf";
         static bool _isDownloading;
 
-        private static bool ModelDownloadingProgress(string path, long? contentLength, long bytesRead)
+        static void Main(string[] args)
         {
-            _isDownloading = true;
-            if (contentLength.HasValue)
-            {
-                double progressPercentage = Math.Round((double)bytesRead / contentLength.Value * 100, 2);
-                Console.Write($"\rDownloading model {progressPercentage:0.00}%");
-            }
-            else
-            {
-                Console.Write($"\rDownloading model {bytesRead} bytes");
-            }
-
-            return true;
-        }
-
-        private static bool ModelLoadingProgress(float progress)
-        {
-            if (_isDownloading)
-            {
-                Console.Clear();
-                _isDownloading = false;
-            }
-
-            Console.Write($"\rLoading model {Math.Round(progress * 100)}%");
-
-            return true;
-        }
-
-        private static void Main(string[] args)
-        {
-            // Set an optional license key here if available. 
+            // Set an optional license key here if available.
             // A free community license can be obtained from: https://lm-kit.com/products/community-edition/
             LMKit.Licensing.LicenseManager.SetLicenseKey("");
             Console.InputEncoding = Encoding.UTF8;
@@ -52,50 +20,34 @@ namespace multi_turn_chat_with_coding_assistant
 
             Console.Clear();
             Console.WriteLine("Please select the model you want to use:\n");
-            Console.WriteLine("1 - DeepSeek V1 Small (requires approximately 6 GB of VRAM)");
-            Console.WriteLine("2 - DeepSeek V2 Medium (requires approximately 12 GB of VRAM)");
-            Console.Write("Other entry: A custom model URI\n\n> ");
+            Console.WriteLine("0 - Gemma 3 4B (requires approximately 5.7 GB of VRAM)");
+            Console.WriteLine("1 - Qwen 3 8B (requires approximately 5.6 GB of VRAM)");
+            Console.WriteLine("2 - Gemma 3 12B (requires approximately 11 GB of VRAM)");
+            Console.WriteLine("3 - Phi-4 14.7B (requires approximately 11 GB of VRAM)");
+            Console.WriteLine("4 - GPT OSS 20B (requires approximately 16 GB of VRAM)");
+            Console.WriteLine("5 - GLM 4.7 Flash (requires approximately 18 GB of VRAM)");
+            Console.Write("Other: A custom model URI\n\n> ");
 
-            string? input = Console.ReadLine();
-            string modelLink;
-
-            switch (input?.Trim())
-            {
-                case "1":
-                    modelLink = DEFAULT_SMALL_MODEL_PATH;
-                    break;
-                case "2":
-                    modelLink = DEFAULT_MEDIUM_MODEL_PATH;
-                    break;
-                default:
-                    modelLink = input!.Trim().Trim('"');
-                    break;
-            }
-
-            //Loading model
-            Uri modelUri = new(modelLink);
-            LM model = new(modelUri,
-                                    downloadingProgress: ModelDownloadingProgress,
-                                    loadingProgress: ModelLoadingProgress);
+            string input = Console.ReadLine()?.Trim() ?? "";
+            LM model = LoadModel(input);
 
             Console.Clear();
             ShowSpecialPrompts();
+
             MultiTurnConversation chat = new(model)
             {
                 MaximumCompletionTokens = int.MaxValue,
                 SamplingMode = new RandomSampling(),
-                SystemPrompt = "",  // I don't believe we need to set special system instructions with this coding model.
+                SystemPrompt = "",
             };
 
-            chat.InferencePolicies.InputLengthOverflowPolicy = InputLengthOverflowPolicy.Throw;
-
-            chat.AfterTextCompletion += Chat_AfterTextCompletion;
+            chat.AfterTextCompletion += OnAfterTextCompletion;
 
             bool regenerateMode = false;
             string prompt = "Hello! 1+1==1, right?";
 
             Console.ForegroundColor = ConsoleColor.Green;
-            Console.Write($"User: ");
+            Console.Write("User: ");
             Console.ResetColor();
             Console.WriteLine(prompt);
 
@@ -104,6 +56,7 @@ namespace multi_turn_chat_with_coding_assistant
                 Console.ForegroundColor = ConsoleColor.Green;
                 Console.Write("Assistant: ");
                 Console.ResetColor();
+
                 try
                 {
                     TextGenerationResult result;
@@ -123,7 +76,7 @@ namespace multi_turn_chat_with_coding_assistant
                 catch (NotEnoughContextSizeException e)
                 {
                     Console.ForegroundColor = ConsoleColor.Red;
-                    Console.WriteLine($"The prompt length of {e.RequiredTokens} exceeds the context size of {e.ContextSize}. Please increase the context size specified around line 52 of this demo to perform this operation.");
+                    Console.WriteLine($"The prompt length of {e.RequiredTokens} exceeds the context size of {e.ContextSize}.");
                     Console.ResetColor();
                 }
 
@@ -145,41 +98,50 @@ namespace multi_turn_chat_with_coding_assistant
                 {
                     chat.ClearHistory();
                     string filePath = prompt.Trim().Substring(8).Trim().Trim('"');
-
                     prompt = "Analyze the code below and provide insights about its purpose:\n";
 
                     if (File.Exists(filePath))
-                    {
                         prompt += File.ReadAllText(filePath);
-                    }
                     else
-                    {
                         throw new FileNotFoundException(filePath);
-                    }
                 }
                 else if (prompt!.Trim().StartsWith("/reviewcomments", StringComparison.OrdinalIgnoreCase))
                 {
                     chat.ClearHistory();
                     string filePath = prompt.Trim().Substring(15).Trim().Trim('"');
-
                     prompt = "Revise all the following code to enhance the comments and documentation for better clarity and understanding:\n";
 
                     if (File.Exists(filePath))
-                    {
                         prompt += File.ReadAllText(filePath);
-                    }
                     else
-                    {
                         throw new FileNotFoundException(filePath);
-                    }
                 }
             }
 
-            Console.WriteLine("The chat ended. Press any key to exit the application.");
+            Console.WriteLine("Demo ended. Press any key to exit.");
             _ = Console.ReadKey();
         }
 
-        private static void ShowSpecialPrompts()
+        static LM LoadModel(string input)
+        {
+            string? modelId = input switch
+            {
+                "0" => "gemma3:4b",
+                "1" => "qwen3:8b",
+                "2" => "gemma3:12b",
+                "3" => "phi4",
+                "4" => "gptoss:20b",
+                "5" => "glm4.7-flash",
+                _ => null
+            };
+
+            if (modelId != null)
+                return LM.LoadFromModelID(modelId, downloadingProgress: OnDownloadProgress, loadingProgress: OnLoadProgress);
+
+            return new LM(new Uri(input.Trim('"')), downloadingProgress: OnDownloadProgress, loadingProgress: OnLoadProgress);
+        }
+
+        static void ShowSpecialPrompts()
         {
             Console.WriteLine("-- Special Prompts --");
             Console.WriteLine("Use '/reset' to start a new session.");
@@ -188,22 +150,31 @@ namespace multi_turn_chat_with_coding_assistant
             Console.WriteLine("Use '/reviewcomments [PATH]' to review and improve code comments from the specified path.\n\n");
         }
 
-        private static void Chat_AfterTextCompletion(object? sender, LMKit.TextGeneration.Events.AfterTextCompletionEventArgs e)
+        static void OnAfterTextCompletion(object? sender, LMKit.TextGeneration.Events.AfterTextCompletionEventArgs e)
         {
-            switch (e.SegmentType)
+            Console.ForegroundColor = e.SegmentType switch
             {
-                case LMKit.TextGeneration.Chat.TextSegmentType.InternalReasoning:
-                    Console.ForegroundColor = ConsoleColor.Blue;
-                    break;
-                case LMKit.TextGeneration.Chat.TextSegmentType.ToolInvocation:
-                    Console.ForegroundColor = ConsoleColor.Red;
-                    break;
-                case LMKit.TextGeneration.Chat.TextSegmentType.UserVisible:
-                    Console.ForegroundColor = ConsoleColor.White;
-                    break;
-            }
-
+                LMKit.TextGeneration.Chat.TextSegmentType.InternalReasoning => ConsoleColor.Blue,
+                LMKit.TextGeneration.Chat.TextSegmentType.ToolInvocation => ConsoleColor.Magenta,
+                _ => ConsoleColor.White
+            };
             Console.Write(e.Text);
+        }
+
+        static bool OnDownloadProgress(string path, long? contentLength, long bytesRead)
+        {
+            _isDownloading = true;
+            Console.Write(contentLength.HasValue
+                ? $"\rDownloading model {Math.Round((double)bytesRead / contentLength.Value * 100, 2):0.00}%"
+                : $"\rDownloading model {bytesRead} bytes");
+            return true;
+        }
+
+        static bool OnLoadProgress(float progress)
+        {
+            if (_isDownloading) { Console.Clear(); _isDownloading = false; }
+            Console.Write($"\rLoading model {Math.Round(progress * 100)}%");
+            return true;
         }
     }
 }

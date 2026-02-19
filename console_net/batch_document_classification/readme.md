@@ -120,7 +120,7 @@ Duplicate filenames are automatically handled with numeric suffixes.
 
 ## Supported Formats
 
-- **Documents**: PDF, DOCX, XLSX, PPTX
+- **Documents**: PDF, DOCX, XLSX, PPTX, EML, MBOX
 - **Images**: PNG, JPG, JPEG, TIFF, BMP, WebP, GIF, TGA, PSD, PNM, HDR, PIC
 - **Text**: TXT, HTML
 

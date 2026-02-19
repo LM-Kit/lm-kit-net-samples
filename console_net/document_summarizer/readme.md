@@ -14,7 +14,7 @@ A demo for summarizing PDF files, images, and documents using LM-Kit.NET vision-
 
 - .NET 8.0 or later
 - LM-Kit.NET SDK
-- Sufficient VRAM for the selected model (2.5–12 GB depending on model choice)
+- Sufficient VRAM for the selected model (2.5ï¿½12 GB depending on model choice)
 
 ## Usage
 
@@ -25,9 +25,9 @@ A demo for summarizing PDF files, images, and documents using LM-Kit.NET vision-
 
 ## Supported Formats
 
-- PDF documents
+- Documents: PDF, DOCX, XLSX, PPTX, EML, MBOX
 - Images: PNG, JPG, TIFF, BMP, WebP
-- Text files and other document formats
+- Text: TXT, HTML
 
 ## Configuration
 

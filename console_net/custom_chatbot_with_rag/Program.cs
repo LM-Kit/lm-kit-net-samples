@@ -1,4 +1,4 @@
-﻿using LMKit.Data;
+using LMKit.Data;
 using LMKit.Global;
 using LMKit.Model;
 using LMKit.Retrieval;
@@ -11,8 +11,6 @@ namespace custom_chatbot_with_rag
 {
     internal class Program
     {
-        static readonly string DEFAULT_EMBEDDINGS_MODEL_PATH = @"https://huggingface.co/lm-kit/embeddinggemma-300m-gguf/resolve/main/embeddinggemma-300M-Q4_K_M.gguf";
-        static readonly string DEFAULT_CHAT_MODEL_PATH = @"https://huggingface.co/lm-kit/gemma-3-4b-instruct-lmk/resolve/main/gemma-3-4b-it-Q4_K_M.lmk";
         static bool _isDownloading;
         static LM _chatModel = null!;
         static LM _embeddingModel = null!;
@@ -22,15 +20,15 @@ namespace custom_chatbot_with_rag
 
         static void Main(string[] args)
         {
-            // Set an optional license key here if available. 
+            // Set an optional license key here if available.
             // A free community license can be obtained from: https://lm-kit.com/products/community-edition/
             LMKit.Licensing.LicenseManager.SetLicenseKey("");
             Console.InputEncoding = Encoding.UTF8;
             Console.OutputEncoding = Encoding.UTF8;
 
-            //Loading models
-            LoadChatModel();
-            LoadEmbeddingModel();
+            // Loading models
+            _embeddingModel = LoadModel("embeddinggemma-300m", "Embedding");
+            _chatModel = LoadModel("gemma3:4b", "Chat");
 
             Console.Clear();
             WriteLineColor("*********************************************************************************************\n" +
@@ -62,7 +60,7 @@ namespace custom_chatbot_with_rag
 
             _ragEngine.AddDataSource(_dataSource);
 
-            //Loading some famous eBooks
+            // Loading some famous eBooks
             WriteLineColor("Loading Romeo and Juliet eBook...", ConsoleColor.Green);
             LoadEbook("romeo_and_juliet.txt", "Romeo and Juliet");
 
@@ -71,7 +69,6 @@ namespace custom_chatbot_with_rag
 
             WriteLineColor("Loading Pride and Prejudice eBook...", ConsoleColor.Green);
             LoadEbook("pride_and_prejudice.txt", "Pride and Prejudice");
-
 
             SingleTurnConversation chat = new(_chatModel)
             {
@@ -108,11 +105,11 @@ namespace custom_chatbot_with_rag
                 }
             }
 
-            Console.WriteLine("The program ended. Press any key to exit the application.");
+            Console.WriteLine("Demo ended. Press any key to exit.");
             _ = Console.ReadKey();
         }
 
-        private static bool ModelDownloadingProgress(string path, long? contentLength, long bytesRead)
+        private static bool OnDownloadProgress(string path, long? contentLength, long bytesRead)
         {
             _isDownloading = true;
             if (contentLength.HasValue)
@@ -128,7 +125,7 @@ namespace custom_chatbot_with_rag
             return true;
         }
 
-        private static bool ModelLoadingProgress(float progress)
+        private static bool OnLoadProgress(float progress)
         {
             if (_isDownloading)
             {
@@ -143,20 +140,23 @@ namespace custom_chatbot_with_rag
 
         private static void AfterTextCompletion(object? sender, LMKit.TextGeneration.Events.AfterTextCompletionEventArgs e)
         {
-            switch (e.SegmentType)
+            Console.ForegroundColor = e.SegmentType switch
             {
-                case LMKit.TextGeneration.Chat.TextSegmentType.InternalReasoning:
-                    Console.ForegroundColor = ConsoleColor.Blue;
-                    break;
-                case LMKit.TextGeneration.Chat.TextSegmentType.ToolInvocation:
-                    Console.ForegroundColor = ConsoleColor.Red;
-                    break;
-                case LMKit.TextGeneration.Chat.TextSegmentType.UserVisible:
-                    Console.ForegroundColor = ConsoleColor.White;
-                    break;
-            }
+                LMKit.TextGeneration.Chat.TextSegmentType.InternalReasoning => ConsoleColor.Blue,
+                LMKit.TextGeneration.Chat.TextSegmentType.ToolInvocation => ConsoleColor.Magenta,
+                _ => ConsoleColor.White
+            };
 
             Console.Write(e.Text);
+        }
+
+        private static LM LoadModel(string modelId, string label)
+        {
+            Console.WriteLine($"Loading {label} model ({modelId})...");
+            return LM.LoadFromModelID(
+                modelId,
+                downloadingProgress: OnDownloadProgress,
+                loadingProgress: OnLoadProgress);
         }
 
         private static void LoadEbook(string fileName, string sectionIdentifier)
@@ -164,10 +164,9 @@ namespace custom_chatbot_with_rag
             if (_dataSource.HasSection(sectionIdentifier))
             {
                 Console.WriteLine($"   > {sectionIdentifier} is already in the collection.");
-                return;  //we already have this ebook in the collection
+                return;
             }
 
-            //importing the ebook into a new section
             string eBookContent = File.ReadAllText(fileName);
             Stopwatch stopwatch = Stopwatch.StartNew();
             _ragEngine.ImportText(
@@ -177,47 +176,6 @@ namespace custom_chatbot_with_rag
                 sectionIdentifier);
             stopwatch.Stop();
             Console.WriteLine($"   > {sectionIdentifier} loaded in {Math.Round(stopwatch.Elapsed.TotalSeconds, 1)} seconds");
-        }
-
-
-        private static void LoadChatModel()
-        {
-            Uri modelUri = new(DEFAULT_CHAT_MODEL_PATH);
-
-            if (modelUri.IsFile && !File.Exists(modelUri.LocalPath))
-            {
-                Console.Write("Please enter full chat model's path: ");
-                modelUri = new Uri((Console.ReadLine() ?? string.Empty).Trim(['"']));
-
-                if (!File.Exists(modelUri.LocalPath))
-                {
-                    throw new FileNotFoundException($"Unable to open {modelUri.LocalPath}");
-                }
-            }
-
-            _chatModel = new LM(
-                modelUri,
-                downloadingProgress: ModelDownloadingProgress,
-                loadingProgress: ModelLoadingProgress);
-        }
-
-        private static void LoadEmbeddingModel()
-        {
-            Uri modelUri = new(DEFAULT_EMBEDDINGS_MODEL_PATH);
-
-            if (modelUri.IsFile && !File.Exists(modelUri.LocalPath))
-            {
-                Console.Write("Please enter full embedding model's path: ");
-                modelUri = new Uri((Console.ReadLine() ?? string.Empty).Trim(['"']));
-
-                if (!File.Exists(modelUri.LocalPath))
-                {
-                    throw new FileNotFoundException($"Unable to open {modelUri.LocalPath}");
-                }
-            }
-
-            _embeddingModel = new LM(modelUri,
-                                   downloadingProgress: ModelDownloadingProgress);
         }
 
         private static void WriteLineColor(string text, ConsoleColor color)

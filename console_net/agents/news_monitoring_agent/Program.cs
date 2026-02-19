@@ -1,8 +1,8 @@
-using LMKit.Agents;
 using LMKit.Agents.Tools.BuiltIn;
-using LMKit.Agents.Tools.BuiltIn.Net;
 using LMKit.Model;
 using LMKit.TextGeneration;
+using LMKit.TextGeneration.Chat;
+using LMKit.TextGeneration.Events;
 using LMKit.TextGeneration.Sampling;
 using System.Text;
 
@@ -10,14 +10,6 @@ namespace news_monitoring_agent
 {
     internal class Program
     {
-        static readonly string DEFAULT_GEMMA3_12B_MODEL_PATH = @"https://huggingface.co/lm-kit/gemma-3-12b-instruct-lmk/resolve/main/gemma-3-12b-it-Q4_K_M.lmk";
-        static readonly string DEFAULT_PHI4_MINI_3_8B_MODEL_PATH = @"https://huggingface.co/lm-kit/phi-4-mini-3.8b-instruct-gguf/resolve/main/Phi-4-mini-Instruct-Q4_K_M.gguf";
-        static readonly string DEFAULT_QWEN3_8B_MODEL_PATH = @"https://huggingface.co/lm-kit/qwen-3-8b-instruct-gguf/resolve/main/Qwen3-8B-Q4_K_M.gguf";
-        static readonly string DEFAULT_PHI4_14_7B_MODEL_PATH = @"https://huggingface.co/lm-kit/phi-4-14.7b-instruct-gguf/resolve/main/Phi-4-14.7B-Instruct-Q4_K_M.gguf";
-        static readonly string DEFAULT_OPENAI_GPT_OSS_20B_MODEL_PATH = @"https://huggingface.co/lm-kit/gpt-oss-20b-gguf/resolve/main/gpt-oss-20b-mxfp4.gguf";
-        static readonly string DEFAULT_GLM_4_7_FLASH_MODEL_PATH = @"https://huggingface.co/lm-kit/glm-4.7-flash-gguf/resolve/main/GLM-4.7-Flash-64x2.6B-Q4_K_M.gguf";
-
-        // Sample RSS feeds for quick selection
         static readonly (string Name, string Url)[] SAMPLE_FEEDS = new[]
         {
             ("Hacker News", "https://hnrss.org/frontpage"),
@@ -30,35 +22,48 @@ namespace news_monitoring_agent
 
         static bool _isDownloading;
 
-        private static bool ModelDownloadingProgress(string path, long? contentLength, long bytesRead)
+        static bool OnDownloadProgress(string path, long? contentLength, long bytesRead)
         {
             _isDownloading = true;
             if (contentLength.HasValue)
-            {
-                double progressPercentage = Math.Round((double)bytesRead / contentLength.Value * 100, 2);
-                Console.Write($"\rDownloading model {progressPercentage:0.00}%");
-            }
+                Console.Write($"\rDownloading model {Math.Round((double)bytesRead / contentLength.Value * 100, 2):0.00}%");
             else
-            {
                 Console.Write($"\rDownloading model {bytesRead} bytes");
-            }
             return true;
         }
 
-        private static bool ModelLoadingProgress(float progress)
+        static bool OnLoadProgress(float progress)
         {
-            if (_isDownloading)
-            {
-                Console.Clear();
-                _isDownloading = false;
-            }
+            if (_isDownloading) { Console.Clear(); _isDownloading = false; }
             Console.Write($"\rLoading model {Math.Round(progress * 100)}%");
             return true;
         }
 
+        static LM LoadModel(string input)
+        {
+            string? modelId = input?.Trim() switch
+            {
+                "0" => "qwen3:8b",
+                "1" => "gemma3:12b",
+                "2" => "qwen3:14b",
+                "3" => "phi4",
+                "4" => "gptoss:20b",
+                "5" => "glm4.7-flash",
+                _ => null
+            };
+
+            if (modelId != null)
+                return LM.LoadFromModelID(modelId, downloadingProgress: OnDownloadProgress, loadingProgress: OnLoadProgress);
+
+            string uri = !string.IsNullOrWhiteSpace(input) ? input.Trim('"') : "qwen3:8b";
+            if (!uri.Contains("://"))
+                return LM.LoadFromModelID(uri, downloadingProgress: OnDownloadProgress, loadingProgress: OnLoadProgress);
+
+            return new LM(new Uri(uri), downloadingProgress: OnDownloadProgress, loadingProgress: OnLoadProgress);
+        }
+
         private static void Main(string[] args)
         {
-            // Set your license key here if you have one
             LMKit.Licensing.LicenseManager.SetLicenseKey("");
             Console.InputEncoding = Encoding.UTF8;
             Console.OutputEncoding = Encoding.UTF8;
@@ -66,35 +71,19 @@ namespace news_monitoring_agent
             Console.Clear();
             Console.WriteLine("=== News Monitoring Agent ===\n");
             Console.WriteLine("An AI agent that fetches, searches, and summarizes RSS/Atom news feeds.");
-            Console.WriteLine("Combines RssFeedTool with WebSearchTool for comprehensive news analysis.\n");
+            Console.WriteLine("Combines RssFetchTool with WebSearchTool for comprehensive news analysis.\n");
 
-            // Model selection
             Console.WriteLine("Please select the model you want to use:\n");
-            Console.WriteLine("0 - Google Gemma 3 12B (requires approximately 9 GB of VRAM)");
-            Console.WriteLine("1 - Microsoft Phi-4 Mini 3.8B (requires approximately 3.3 GB of VRAM)");
-            Console.WriteLine("2 - Alibaba Qwen-3 8B (requires approximately 5.6 GB of VRAM)");
-            Console.WriteLine("3 - Microsoft Phi-4 14.7B (requires approximately 11 GB of VRAM)");
-            Console.WriteLine("4 - Open AI GPT OSS 20B (requires approximately 16 GB of VRAM)");
-            Console.WriteLine("5 - Z.ai GLM 4.7 Flash 30B (requires approximately 18 GB of VRAM)");
-            Console.Write("Other: Custom model URI\n\n> ");
+            Console.WriteLine("0 - Alibaba Qwen-3 8B      (~6 GB VRAM)");
+            Console.WriteLine("1 - Google Gemma 3 12B      (~9 GB VRAM)");
+            Console.WriteLine("2 - Alibaba Qwen-3 14B      (~10 GB VRAM)");
+            Console.WriteLine("3 - Microsoft Phi-4 14.7B    (~11 GB VRAM)");
+            Console.WriteLine("4 - OpenAI GPT OSS 20B       (~16 GB VRAM)");
+            Console.WriteLine("5 - Z.ai GLM 4.7 Flash 30B   (~18 GB VRAM)");
+            Console.Write("Other: Custom model URI or model ID\n\n> ");
 
             string? input = Console.ReadLine();
-            string modelLink = input?.Trim() switch
-            {
-                "0" => DEFAULT_GEMMA3_12B_MODEL_PATH,
-                "1" => DEFAULT_PHI4_MINI_3_8B_MODEL_PATH,
-                "2" => DEFAULT_QWEN3_8B_MODEL_PATH,
-                "3" => DEFAULT_PHI4_14_7B_MODEL_PATH,
-                "4" => DEFAULT_OPENAI_GPT_OSS_20B_MODEL_PATH,
-                "5" => DEFAULT_GLM_4_7_FLASH_MODEL_PATH,
-                _ => !string.IsNullOrWhiteSpace(input) ? input.Trim().Trim('"') : DEFAULT_GEMMA3_12B_MODEL_PATH
-            };
-
-            // Load model
-            Uri modelUri = new(modelLink);
-            LM model = new(modelUri,
-                downloadingProgress: ModelDownloadingProgress,
-                loadingProgress: ModelLoadingProgress);
+            LM model = LoadModel(input ?? "");
 
             Console.Clear();
             Console.WriteLine("=== News Monitoring Agent ===\n");
@@ -114,11 +103,8 @@ namespace news_monitoring_agent
 
             if (string.IsNullOrWhiteSpace(feedSelection))
             {
-                // Use all default feeds
                 foreach (var feed in SAMPLE_FEEDS)
-                {
                     selectedFeeds.Add(feed.Url);
-                }
                 feedListDescription = string.Join(", ", SAMPLE_FEEDS.Select(f => f.Name));
             }
             else
@@ -156,14 +142,12 @@ namespace news_monitoring_agent
             Console.WriteLine("=== News Monitoring Agent ===\n");
             Console.WriteLine("Monitoring feeds: {0}\n", feedListDescription);
 
-            // Build the feed URL list for the system prompt
             string feedUrls = string.Join("\n", selectedFeeds.Select(url =>
             {
                 var match = SAMPLE_FEEDS.FirstOrDefault(f => f.Url == url);
                 return match.Name != null ? $"- {match.Name}: {url}" : $"- {url}";
             }));
 
-            // Create the news monitoring agent with RssFeedTool and WebSearchTool
             MultiTurnConversation chat = new(model);
             chat.MaximumCompletionTokens = 2048;
             chat.SamplingMode = new RandomSampling { Temperature = 0.6f };
@@ -173,37 +157,32 @@ Your monitored feeds:
 {feedUrls}
 
 Your capabilities:
-1. **Fetch feeds**: Use the rss_feed tool with action ""fetch"" to get the latest entries from a feed URL.
-2. **Search feeds**: Use the rss_feed tool with action ""search"" to find entries matching a keyword or published after a date.
-3. **Web search**: Use the web_search tool to find additional context or breaking news beyond the RSS feeds.
+1. **Fetch feeds**: Use the rss_fetch tool to get the latest entries from a feed URL.
+2. **Web search**: Use the web_search tool to find additional context or breaking news beyond the RSS feeds.
+3. **Date/time**: Use the datetime_now tool to get the current date and time.
 
 Guidelines:
 - When asked for a news briefing, fetch the top entries from the monitored feeds and provide a concise summary.
-- When asked about a specific topic, search relevant feeds by keyword and supplement with web search if needed.
+- When asked about a specific topic, fetch relevant feeds and supplement with web search if needed.
 - Always cite the source name and publication date when summarizing articles.
 - Keep summaries concise: 1-2 sentences per article unless asked for more detail.
 - When comparing coverage across sources, fetch from multiple feeds and highlight differences.";
 
-            // Register the RSS feed tool and web search tool
             chat.Tools.Register(BuiltInTools.RssFetch);
             chat.Tools.Register(BuiltInTools.WebSearch);
             chat.Tools.Register(BuiltInTools.DateTimeNow);
 
             chat.AfterTextCompletion += (sender, e) =>
             {
-                switch (e.SegmentType)
+                Console.ForegroundColor = e.SegmentType switch
                 {
-                    case LMKit.TextGeneration.Chat.TextSegmentType.InternalReasoning:
-                        Console.ForegroundColor = ConsoleColor.Blue; break;
-                    case LMKit.TextGeneration.Chat.TextSegmentType.ToolInvocation:
-                        Console.ForegroundColor = ConsoleColor.Red; break;
-                    case LMKit.TextGeneration.Chat.TextSegmentType.UserVisible:
-                        Console.ForegroundColor = ConsoleColor.White; break;
-                }
+                    TextSegmentType.InternalReasoning => ConsoleColor.Blue,
+                    TextSegmentType.ToolInvocation => ConsoleColor.Magenta,
+                    _ => ConsoleColor.White
+                };
                 Console.Write(e.Text);
             };
 
-            // Show available commands
             Console.WriteLine("Commands:");
             Console.WriteLine("  /briefing  - Get a quick news briefing from all monitored feeds");
             Console.WriteLine("  /feeds     - Show monitored feed URLs");
@@ -274,7 +253,7 @@ Guidelines:
                 }
             }
 
-            Console.WriteLine("Goodbye. Press any key to exit.");
+            Console.WriteLine("Demo ended. Press any key to exit.");
             Console.ReadKey();
         }
     }

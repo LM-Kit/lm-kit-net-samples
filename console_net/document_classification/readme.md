@@ -47,7 +47,7 @@ A demo for classifying PDF files, images, and documents into predefined categori
 ## Supported Formats
 
 - Images: PNG, JPG, JPEG, BMP, GIF, TIFF, WebP, TGA, PSD
-- Documents: PDF, DOCX, XLSX, PPTX
+- Documents: PDF, DOCX, XLSX, PPTX, EML, MBOX
 - Text: TXT, HTML
 
 ## Example Output
