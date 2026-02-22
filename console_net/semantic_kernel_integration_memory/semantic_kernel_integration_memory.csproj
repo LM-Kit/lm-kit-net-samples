@@ -8,7 +8,7 @@
 	</PropertyGroup>
 
 	<ItemGroup>
-		<PackageReference Include="LM-Kit.NET" Version="2026.2.8" />
+		<PackageReference Include="LM-Kit.NET" Version="2026.2.9" />
 		<PackageReference Include="LM-Kit.NET.Backend.Cuda13.Windows" Version="2026.2.7" />
 		<PackageReference Include="LM-Kit.NET.SemanticKernel" Version="2026.1.1" />
 		<PackageReference Include="Microsoft.SemanticKernel" Version="1.72.0" />

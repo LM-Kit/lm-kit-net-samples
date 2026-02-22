@@ -12,7 +12,7 @@
   </ItemGroup>
 
   <ItemGroup>
-		<PackageReference Include="LM-Kit.NET" Version="2026.2.8" />
+		<PackageReference Include="LM-Kit.NET" Version="2026.2.9" />
 		<PackageReference Include="LM-Kit.NET.Backend.Cuda13.Windows" Version="2026.2.7" />
   </ItemGroup>
 
