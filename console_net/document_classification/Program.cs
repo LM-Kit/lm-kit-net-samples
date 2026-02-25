@@ -58,7 +58,8 @@ namespace document_classification
                 ("qwen3-vl:4b",  "Alibaba Qwen 3 VL 4B",   "~4.5 GB"),
                 ("qwen3-vl:8b",  "Alibaba Qwen 3 VL 8B",   "~6.5 GB"),
                 ("gemma3:4b",    "Google Gemma 3 4B",       "~5.7 GB"),
-                ("gemma3:12b",   "Google Gemma 3 12B",      "~11 GB")
+                ("gemma3:12b",   "Google Gemma 3 12B",      "~11 GB"),
+                ("qwen3.5:27b",  "Alibaba Qwen 3.5 27B",   "~18 GB")
             };
 
             Console.WriteLine("Available models:\n");

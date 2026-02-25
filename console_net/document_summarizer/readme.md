@@ -7,14 +7,14 @@ A demo for summarizing PDF files, images, and documents using LM-Kit.NET vision-
 - Summarize PDF documents, images, and text files
 - Automatic title generation
 - Configurable summary length
-- Support for multiple VLMs: MiniCPM, Qwen 3, Gemma 3, Ministral
+- Support for multiple VLMs: MiniCPM, Qwen 3, Qwen 3.5, Gemma 3, Ministral
 - Custom guidance for summary style or language
 
 ## Prerequisites
 
 - .NET 8.0 or later
 - LM-Kit.NET SDK
-- Sufficient VRAM for the selected model (2.5�12 GB depending on model choice)
+- Sufficient VRAM for the selected model (2.5~18 GB depending on model choice)
 
 ## Usage
 

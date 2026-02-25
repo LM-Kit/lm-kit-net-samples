@@ -6,7 +6,7 @@
     <Nullable>enable</Nullable>
   </PropertyGroup>
   <ItemGroup>
-		<PackageReference Include="LM-Kit.NET" Version="2026.2.9" />
-		<PackageReference Include="LM-Kit.NET.Backend.Cuda13.Windows" Version="2026.2.7" />
+		<PackageReference Include="LM-Kit.NET" Version="2026.2.10" />
+		<PackageReference Include="LM-Kit.NET.Backend.Cuda13.Windows" Version="2026.2.8" />
   </ItemGroup>
 </Project>

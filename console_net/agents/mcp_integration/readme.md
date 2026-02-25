@@ -5,7 +5,7 @@ A demo for multi-turn conversations with Model Context Protocol (MCP) server int
 ## Features
 
 - Multi-turn chat with tool calling via MCP
-- Support for multiple LLMs: Ministral, Llama, Gemma, Phi, Qwen, Granite, GPT OSS, GLM
+- Support for multiple LLMs: Ministral, Llama, Gemma, Phi, Qwen, Qwen 3.5, Granite, GPT OSS, GLM
 - Pre-configured public MCP servers:
   - DeepWiki (query GitHub repos)
   - Microsoft Learn Docs

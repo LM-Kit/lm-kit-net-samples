@@ -5,7 +5,7 @@ A demo for conversational Q&A over PDF documents using LM-Kit.NET. Load one or m
 ## Features
 
 - Chat with PDF documents using local vision-language models
-- Support for multiple VLMs: MiniCPM, Qwen 3, Gemma 3, Ministral
+- Support for multiple VLMs: MiniCPM, Qwen 3, Qwen 3.5, Gemma 3, Ministral
 - Two processing modes:
   - **Standard extraction**: Fast text-based processing with optional OCR fallback
   - **Vision-based understanding**: Better accuracy for complex layouts and scanned documents
@@ -17,7 +17,7 @@ A demo for conversational Q&A over PDF documents using LM-Kit.NET. Load one or m
 
 - .NET 8.0 or later
 - LM-Kit.NET SDK
-- Sufficient VRAM for the selected model (2.5–12 GB depending on model choice)
+- Sufficient VRAM for the selected model (2.5~18 GB depending on model choice)
 
 ## Usage
 

@@ -17,7 +17,7 @@ A demo showcasing sequential multi-agent orchestration using LM-Kit.NET's Pipeli
 
 - .NET 8.0 or later
 - LM-Kit.NET SDK
-- Sufficient VRAM for the selected model (4-16 GB depending on model choice)
+- Sufficient VRAM for the selected model (4-18 GB depending on model choice)
 
 ## How It Works
 

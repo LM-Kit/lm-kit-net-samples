@@ -8,14 +8,14 @@ A demo for classifying PDF files, images, and documents into predefined categori
 - Batch processing of entire directories
 - Support for PDF, images, Office documents, and text files
 - Confidence scoring for classification results
-- Support for multiple VLMs: MiniCPM, Qwen 3, Gemma 3, Ministral
+- Support for multiple VLMs: MiniCPM, Qwen 3, Qwen 3.5, Gemma 3, Ministral
 - Unknown category detection
 
 ## Prerequisites
 
 - .NET 8.0 or later
 - LM-Kit.NET SDK
-- Sufficient VRAM for the selected model (2.5–12 GB depending on model choice)
+- Sufficient VRAM for the selected model (2.5–18 GB depending on model choice)
 
 ## Usage
 

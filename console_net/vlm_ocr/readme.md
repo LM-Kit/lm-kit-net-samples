@@ -6,7 +6,7 @@ A demo for extracting plain text from images and documents using LM-Kit.NET visi
 
 - Extract plain text from images, PDFs, and scanned documents using vision-language models
 - Dedicated PaddleOCR VL mode selection: general OCR, table recognition, formula recognition, chart recognition, text spotting, seal recognition
-- Support for multiple VLMs: PaddleOCR VL, LightOnOCR, MiniCPM, Qwen 3 VL, Gemma 3
+- Support for multiple VLMs: PaddleOCR VL, LightOnOCR, MiniCPM, Qwen 3 VL, Qwen 3.5, Gemma 3
 - Multi-page document processing
 - Real-time performance statistics (speed, token usage, quality score)
 

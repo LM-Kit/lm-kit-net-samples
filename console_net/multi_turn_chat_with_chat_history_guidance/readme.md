@@ -14,7 +14,7 @@ A demo for guiding LLM behavior using pre-populated chat history with LM-Kit.NET
 
 - .NET 8.0 or later
 - LM-Kit.NET SDK
-- Sufficient VRAM for the selected model (3–16 GB depending on model choice)
+- Sufficient VRAM for the selected model (3–18 GB depending on model choice)
 
 ## Usage
 

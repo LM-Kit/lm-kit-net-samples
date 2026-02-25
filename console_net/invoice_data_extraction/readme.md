@@ -5,7 +5,7 @@ A demo showcasing structured data extraction from invoice documents using LM-Kit
 ## Features
 
 - Extract invoice fields (vendor, date, totals, line items, etc.) from PDF and image documents
-- Support for multiple VLMs: MiniCPM, Qwen 3, Gemma 3, Pixtral
+- Support for multiple VLMs: MiniCPM, Qwen 3, Qwen 3.5, Gemma 3, Pixtral
 - Optional OCR engine integration for improved accuracy on scanned documents
 - Automatic language and orientation detection
 - JSON output for easy integration
@@ -14,7 +14,7 @@ A demo showcasing structured data extraction from invoice documents using LM-Kit
 
 - .NET 8.0 or later
 - LM-Kit.NET SDK
-- Sufficient VRAM for the selected model (2.5–12 GB depending on model choice)
+- Sufficient VRAM for the selected model (2.5~18 GB depending on model choice)
 
 ## Usage
 

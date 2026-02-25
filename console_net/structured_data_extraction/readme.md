@@ -15,7 +15,7 @@ A demo for extracting structured data from text documents using LM-Kit.NET. Defi
 
 - .NET 8.0 or later
 - LM-Kit.NET SDK
-- Sufficient VRAM for the selected model (0.8–16 GB depending on model choice)
+- Sufficient VRAM for the selected model (0.8–18 GB depending on model choice)
 
 ## Usage
 

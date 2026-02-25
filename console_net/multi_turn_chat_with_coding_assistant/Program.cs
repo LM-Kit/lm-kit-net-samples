@@ -26,6 +26,7 @@ namespace multi_turn_chat_with_coding_assistant
             Console.WriteLine("3 - Phi-4 14.7B (requires approximately 11 GB of VRAM)");
             Console.WriteLine("4 - GPT OSS 20B (requires approximately 16 GB of VRAM)");
             Console.WriteLine("5 - GLM 4.7 Flash (requires approximately 18 GB of VRAM)");
+            Console.WriteLine("6 - Qwen 3.5 27B (requires approximately 18 GB of VRAM)");
             Console.Write("Other: A custom model URI\n\n> ");
 
             string input = Console.ReadLine()?.Trim() ?? "";
@@ -132,6 +133,7 @@ namespace multi_turn_chat_with_coding_assistant
                 "3" => "phi4",
                 "4" => "gptoss:20b",
                 "5" => "glm4.7-flash",
+                "6" => "qwen3.5:27b",
                 _ => null
             };
 

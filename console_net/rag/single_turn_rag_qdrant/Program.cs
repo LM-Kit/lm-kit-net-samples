@@ -9,7 +9,7 @@ using LMKit.TextGeneration.Sampling;
 using System.Diagnostics;
 using System.Text;
 
-namespace custom_chatbot_with_rag_qdrant_vector_store
+namespace single_turn_rag_qdrant
 {
     internal class Program
     {

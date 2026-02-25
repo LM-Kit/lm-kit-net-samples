@@ -14,7 +14,7 @@ A demo for summarizing text files using LM-Kit.NET language models. Generate tit
 
 - .NET 8.0 or later
 - LM-Kit.NET SDK
-- Sufficient VRAM for the selected model (0.8–16 GB depending on model choice)
+- Sufficient VRAM for the selected model (0.8–18 GB depending on model choice)
 
 ## Usage
 

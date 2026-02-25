@@ -27,6 +27,7 @@ namespace invoice_data_extraction
             Console.WriteLine("3 - Alibaba Qwen 3 VL 8B   (~6.5 GB VRAM)");
             Console.WriteLine("4 - Google Gemma 3 4B       (~5.7 GB VRAM)");
             Console.WriteLine("5 - Google Gemma 3 12B      (~11 GB VRAM)");
+            Console.WriteLine("6 - Alibaba Qwen 3.5 27B   (~18 GB VRAM)");
             Console.Write("\nOther entry: A custom model URI\n\n> ");
 
             string input = Console.ReadLine()?.Trim() ?? "0";
@@ -102,6 +103,7 @@ namespace invoice_data_extraction
                 "3" => "qwen3-vl:8b",
                 "4" => "gemma3:4b",
                 "5" => "gemma3:12b",
+                "6" => "qwen3.5:27b",
                 _ => null
             };
 

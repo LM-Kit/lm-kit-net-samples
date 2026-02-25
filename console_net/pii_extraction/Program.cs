@@ -26,6 +26,7 @@ namespace pii_extraction
             Console.WriteLine("3 - Qwen 3 VL 8B (requires approximately 6.5 GB of VRAM)");
             Console.WriteLine("4 - Gemma 3 4B (requires approximately 5.7 GB of VRAM)");
             Console.WriteLine("5 - Gemma 3 12B (requires approximately 11 GB of VRAM)");
+            Console.WriteLine("6 - Alibaba Qwen 3.5 27B (requires approximately 18 GB of VRAM)");
             Console.Write("Other: A custom model URI\n\n> ");
 
             string input = Console.ReadLine()?.Trim() ?? "";
@@ -82,6 +83,7 @@ namespace pii_extraction
                 "3" => "qwen3-vl:8b",
                 "4" => "gemma3:4b",
                 "5" => "gemma3:12b",
+                "6" => "qwen3.5:27b",
                 _ => null
             };
 

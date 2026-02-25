@@ -5,7 +5,7 @@ A demo for detecting the language of PDF files and images using LM-Kit.NET visio
 ## Features
 
 - Detect language from PDF documents and image files
-- Support for multiple VLMs: MiniCPM, Qwen 3, Gemma 3, Ministral
+- Support for multiple VLMs: MiniCPM, Qwen 3, Qwen 3.5, Gemma 3, Ministral
 - Fast processing with performance metrics
 - Multilingual support for a wide range of languages
 
@@ -13,7 +13,7 @@ A demo for detecting the language of PDF files and images using LM-Kit.NET visio
 
 - .NET 8.0 or later
 - LM-Kit.NET SDK
-- Sufficient VRAM for the selected model (2.5�12 GB depending on model choice)
+- Sufficient VRAM for the selected model (2.5~18 GB depending on model choice)
 
 ## Usage
 

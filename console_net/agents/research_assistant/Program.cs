@@ -39,6 +39,7 @@ namespace research_assistant
                 "3" => "phi4",
                 "4" => "gptoss:20b",
                 "5" => "glm4.7-flash",
+                "6" => "qwen3.5:27b",
                 _ => null
             };
 
@@ -70,6 +71,7 @@ namespace research_assistant
             Console.WriteLine("3 - Microsoft Phi-4 14.7B    (~11 GB VRAM)");
             Console.WriteLine("4 - OpenAI GPT OSS 20B       (~16 GB VRAM)");
             Console.WriteLine("5 - Z.ai GLM 4.7 Flash 30B   (~18 GB VRAM)");
+            Console.WriteLine("6 - Alibaba Qwen-3.5 27B     (~18 GB VRAM)");
             Console.Write("Other: Custom model URI or model ID\n\n> ");
 
             string? input = Console.ReadLine();

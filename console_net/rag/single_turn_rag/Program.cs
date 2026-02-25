@@ -7,7 +7,7 @@ using LMKit.TextGeneration.Sampling;
 using System.Diagnostics;
 using System.Text;
 
-namespace custom_chatbot_with_rag
+namespace single_turn_rag
 {
     internal class Program
     {

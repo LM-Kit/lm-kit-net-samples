@@ -47,6 +47,7 @@ namespace keyword_extraction
                 "5" => "glm4.7-flash",
                 "6" => "qwen3:0.6b",
                 "7" => "llama3.2:1b",
+                "8" => "qwen3.5:27b",
                 _ => null
             };
 
@@ -80,6 +81,7 @@ namespace keyword_extraction
             Console.WriteLine("5 - Z.ai GLM 4.7 Flash 30B (requires approximately 18 GB of VRAM)");
             Console.WriteLine("6 - Alibaba Qwen-3 0.6B (requires approximately 0.8 GB of VRAM)");
             Console.WriteLine("7 - Meta Llama 3.2 1B (requires approximately 1 GB of VRAM)");
+            Console.WriteLine("8 - Alibaba Qwen 3.5 27B (requires approximately 18 GB of VRAM)");
             Console.Write("Other: Custom model URI\n\n> ");
 
             string? input = Console.ReadLine();

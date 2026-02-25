@@ -1,6 +1,6 @@
-# Custom Chatbot with RAG
+# Single-Turn RAG
 
-A demo for building a Retrieval-Augmented Generation (RAG) chatbot using LM-Kit.NET. Load text documents and eBooks, then ask questions answered from the indexed content.
+A demo for building a single-turn Retrieval-Augmented Generation (RAG) Q&A system using LM-Kit.NET. Load text documents and eBooks, then ask questions answered from the indexed content.
 
 ## Features
 

@@ -37,6 +37,7 @@ namespace document_processing_agent
                 "2" => "qwen3:14b",
                 "3" => "gptoss:20b",
                 "4" => "glm4.7-flash",
+                "5" => "qwen3.5:27b",
                 _ => null
             };
 
@@ -63,6 +64,7 @@ namespace document_processing_agent
             Console.WriteLine("2 - Alibaba Qwen 3 14B     (~11 GB VRAM)");
             Console.WriteLine("3 - OpenAI GPT OSS 20B      (~15 GB VRAM)");
             Console.WriteLine("4 - Z.ai GLM 4.7 Flash      (~18 GB VRAM)");
+            Console.WriteLine("5 - Alibaba Qwen 3.5 27B    (~18 GB VRAM)");
             Console.Write("Other: Custom model URI or model ID\n\n> ");
 
             string inputStr = Console.ReadLine() ?? string.Empty;

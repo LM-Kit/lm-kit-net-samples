@@ -186,7 +186,7 @@ In **model-driven mode**, a `SkillTool` exposes an `activate_skill` function to 
 ## Prerequisites
 
 - .NET 8.0 or later
-- 4 to 16 GB VRAM depending on the model
+- 4 to 18 GB VRAM depending on the model
 
 
 ## Learn More

@@ -7,14 +7,14 @@ A demo for extracting named entities from PDF files, images, and documents using
 - Detect and extract named entities from documents
 - Support for PDF files, images, and text documents
 - Confidence scoring for each detected entity
-- Support for multiple VLMs: MiniCPM, Qwen 3, Gemma 3, Ministral
+- Support for multiple VLMs: MiniCPM, Qwen 3, Qwen 3.5, Gemma 3, Ministral
 - Processing time metrics
 
 ## Prerequisites
 
 - .NET 8.0 or later
 - LM-Kit.NET SDK
-- Sufficient VRAM for the selected model (2.5�12 GB depending on model choice)
+- Sufficient VRAM for the selected model (2.5~18 GB depending on model choice)
 
 ## Usage
 

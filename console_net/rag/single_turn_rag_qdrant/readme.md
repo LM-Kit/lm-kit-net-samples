@@ -1,6 +1,6 @@
-# Custom Chatbot with RAG (Qdrant Vector Store)
+# Single-Turn RAG with Qdrant
 
-A demo for building a Retrieval-Augmented Generation (RAG) chatbot using LM-Kit.NET with Qdrant as the vector database. Load documents from URLs, index them, and ask questions answered from the content.
+A demo for building a single-turn Retrieval-Augmented Generation (RAG) Q&A system using LM-Kit.NET with Qdrant as the vector database. Load documents from URLs, index them, and ask questions answered from the content.
 
 ## Features
 
