@@ -6,7 +6,7 @@ A demo for multi-turn conversations about images using LM-Kit.NET vision-languag
 
 - Chat about images with vision-language models
 - Multi-turn conversation with context retention
-- Support for multiple VLMs: MiniCPM, Qwen 3, Qwen 3.5, Gemma 3, Ministral
+- Support for multiple VLMs: GLM-V 4.6, MiniCPM, Qwen 3, Qwen 3.5, Gemma 3, Ministral
 - Real-time streaming responses
 - Follow-up questions about the same image
 

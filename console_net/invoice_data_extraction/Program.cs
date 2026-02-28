@@ -21,13 +21,14 @@ namespace invoice_data_extraction
 
             Console.Clear();
             Console.WriteLine("Select a vision-language model to use for extraction:\n");
-            Console.WriteLine("0 - MiniCPM o 4.5 9B       (~5.9 GB VRAM)");
-            Console.WriteLine("1 - Alibaba Qwen 3 VL 2B   (~2.5 GB VRAM)");
-            Console.WriteLine("2 - Alibaba Qwen 3 VL 4B   (~4.5 GB VRAM)");
-            Console.WriteLine("3 - Alibaba Qwen 3 VL 8B   (~6.5 GB VRAM)");
-            Console.WriteLine("4 - Google Gemma 3 4B       (~5.7 GB VRAM)");
-            Console.WriteLine("5 - Google Gemma 3 12B      (~11 GB VRAM)");
-            Console.WriteLine("6 - Alibaba Qwen 3.5 27B   (~18 GB VRAM)");
+            Console.WriteLine("0 - Z.ai GLM-V 4.6 Flash 10B  (~7 GB VRAM)");
+            Console.WriteLine("1 - MiniCPM o 4.5 9B          (~5.9 GB VRAM)");
+            Console.WriteLine("2 - Alibaba Qwen 3 VL 2B      (~2.5 GB VRAM)");
+            Console.WriteLine("3 - Alibaba Qwen 3 VL 4B      (~4.5 GB VRAM)");
+            Console.WriteLine("4 - Alibaba Qwen 3 VL 8B      (~6.5 GB VRAM)");
+            Console.WriteLine("5 - Google Gemma 3 4B          (~5.7 GB VRAM)");
+            Console.WriteLine("6 - Google Gemma 3 12B         (~11 GB VRAM)");
+            Console.WriteLine("7 - Alibaba Qwen 3.5 27B      (~18 GB VRAM)");
             Console.Write("\nOther entry: A custom model URI\n\n> ");
 
             string input = Console.ReadLine()?.Trim() ?? "0";
@@ -97,13 +98,14 @@ namespace invoice_data_extraction
         {
             string? modelId = input switch
             {
-                "0" => "minicpm-o-45",
-                "1" => "qwen3-vl:2b",
-                "2" => "qwen3-vl:4b",
-                "3" => "qwen3-vl:8b",
-                "4" => "gemma3:4b",
-                "5" => "gemma3:12b",
-                "6" => "qwen3.5:27b",
+                "0" => "glm-4.6v-flash",
+                "1" => "minicpm-o-45",
+                "2" => "qwen3-vl:2b",
+                "3" => "qwen3-vl:4b",
+                "4" => "qwen3-vl:8b",
+                "5" => "gemma3:4b",
+                "6" => "gemma3:12b",
+                "7" => "qwen3.5:27b",
                 _ => null
             };
 

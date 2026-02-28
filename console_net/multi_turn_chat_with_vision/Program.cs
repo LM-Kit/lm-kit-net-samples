@@ -64,17 +64,18 @@ namespace multi_turn_chat_with_vision
             Console.Clear();
             PrintHeader("Multi-Turn Chat with Vision Demo");
             Console.WriteLine("Select a vision-language model:\n");
-            Console.WriteLine("  0 - MiniCPM o 4.5 9B           (~5.9 GB VRAM)");
-            Console.WriteLine("  1 - Alibaba Qwen 3 VL 2B       (~2.5 GB VRAM)");
-            Console.WriteLine("  2 - Alibaba Qwen 3 VL 4B       (~4 GB VRAM)");
-            Console.WriteLine("  3 - Alibaba Qwen 3 VL 8B       (~6.5 GB VRAM)");
-            Console.WriteLine("  4 - Google Gemma 3 4B          (~5.7 GB VRAM)");
-            Console.WriteLine("  5 - Google Gemma 3 12B         (~11 GB VRAM)");
-            Console.WriteLine("  6 - Mistral Ministral 3 3B     (~3.5 GB VRAM)");
-            Console.WriteLine("  7 - Mistral Ministral 3 8B     (~6.5 GB VRAM)");
-            Console.WriteLine("  8 - Mistral Ministral 3 14B    (~12 GB VRAM)");
-            Console.WriteLine("  9 - Mistral Devstral Small 2   (~16 GB VRAM)");
-            Console.WriteLine(" 10 - Alibaba Qwen 3.5 27B       (~18 GB VRAM)");
+            Console.WriteLine("  0 - Z.ai GLM-V 4.6 Flash 10B   (~7 GB VRAM)");
+            Console.WriteLine("  1 - MiniCPM o 4.5 9B           (~5.9 GB VRAM)");
+            Console.WriteLine("  2 - Alibaba Qwen 3 VL 2B       (~2.5 GB VRAM)");
+            Console.WriteLine("  3 - Alibaba Qwen 3 VL 4B       (~4 GB VRAM)");
+            Console.WriteLine("  4 - Alibaba Qwen 3 VL 8B       (~6.5 GB VRAM)");
+            Console.WriteLine("  5 - Google Gemma 3 4B          (~5.7 GB VRAM)");
+            Console.WriteLine("  6 - Google Gemma 3 12B         (~11 GB VRAM)");
+            Console.WriteLine("  7 - Mistral Ministral 3 3B     (~3.5 GB VRAM)");
+            Console.WriteLine("  8 - Mistral Ministral 3 8B     (~6.5 GB VRAM)");
+            Console.WriteLine("  9 - Mistral Ministral 3 14B    (~12 GB VRAM)");
+            Console.WriteLine(" 10 - Mistral Devstral Small 2   (~16 GB VRAM)");
+            Console.WriteLine(" 11 - Alibaba Qwen 3.5 27B       (~18 GB VRAM)");
             Console.WriteLine("\n  Or enter a custom model URI\n");
             Console.Write("> ");
 
@@ -193,17 +194,18 @@ namespace multi_turn_chat_with_vision
         {
             string? modelId = input switch
             {
-                "0" => "minicpm-o-45",
-                "1" => "qwen3-vl:2b",
-                "2" => "qwen3-vl:4b",
-                "3" => "qwen3-vl:8b",
-                "4" => "gemma3:4b",
-                "5" => "gemma3:12b",
-                "6" => "ministral3:3b",
-                "7" => "ministral3:8b",
-                "8" => "ministral3:14b",
-                "9" => "devstral-small2",
-                "10" => "qwen3.5:27b",
+                "0" => "glm-4.6v-flash",
+                "1" => "minicpm-o-45",
+                "2" => "qwen3-vl:2b",
+                "3" => "qwen3-vl:4b",
+                "4" => "qwen3-vl:8b",
+                "5" => "gemma3:4b",
+                "6" => "gemma3:12b",
+                "7" => "ministral3:3b",
+                "8" => "ministral3:8b",
+                "9" => "ministral3:14b",
+                "10" => "devstral-small2",
+                "11" => "qwen3.5:27b",
                 _ => null
             };
 

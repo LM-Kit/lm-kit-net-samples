@@ -5,7 +5,7 @@ A demo showcasing structured data extraction from invoice documents using LM-Kit
 ## Features
 
 - Extract invoice fields (vendor, date, totals, line items, etc.) from PDF and image documents
-- Support for multiple VLMs: MiniCPM, Qwen 3, Qwen 3.5, Gemma 3, Pixtral
+- Support for multiple VLMs: GLM-V 4.6, MiniCPM, Qwen 3, Qwen 3.5, Gemma 3
 - Optional OCR engine integration for improved accuracy on scanned documents
 - Automatic language and orientation detection
 - JSON output for easy integration

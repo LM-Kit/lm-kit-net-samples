@@ -5,7 +5,7 @@ A demo for converting PDF files, images, and scanned documents to Markdown using
 ## Features
 
 - Convert documents and images to structured Markdown text
-- Support for multiple VLMs: LightOnOCR, MiniCPM, Qwen 3, Qwen 3.5, Gemma 3, Ministral
+- Support for multiple VLMs: LightOnOCR, GLM-OCR, GLM-V 4.6, MiniCPM, Qwen 3, Qwen 3.5, Gemma 3
 - Multi-page document processing
 - Preserves document structure, tables, and formatting
 - Real-time performance statistics (speed, token usage, quality score)
