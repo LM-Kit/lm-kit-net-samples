@@ -220,7 +220,7 @@ Format the email with Subject:, To:, and Body: sections.")
                     var transcriptBuilder = new StringBuilder();
 
                     sttEngine.OnNewSegment += SegmentHandler;
-                    void SegmentHandler(object? sender, SpeechToText.NewSegmentEventArgs e)
+                    void SegmentHandler(object? sender, SpeechToText.OnNewSegmentEventArgs e)
                     {
                         string text = e.Segment.ToString();
                         transcriptBuilder.AppendLine(text);

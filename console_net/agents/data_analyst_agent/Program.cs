@@ -108,8 +108,8 @@ namespace data_analyst_agent
                     tools.Register(BuiltInTools.CsvParse);
                     tools.Register(BuiltInTools.JsonParse);
                     tools.Register(BuiltInTools.XmlParse);
-                    tools.Register(BuiltInTools.Calculator);
-                    tools.Register(BuiltInTools.Statistics);
+                    tools.Register(BuiltInTools.CalcArithmetic);
+                    tools.Register(BuiltInTools.StatsAnalysis);
                 })
                 .WithMaxIterations(15)
                 .Build();

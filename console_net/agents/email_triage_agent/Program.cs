@@ -1,5 +1,6 @@
 using LMKit.Agents;
 using LMKit.Agents.Orchestration;
+using LMKit.Agents.Orchestration.Streaming;
 using LMKit.Model;
 using System.Text;
 
@@ -208,7 +209,7 @@ After all workers complete, provide a brief triage summary combining all results
                     var result = await supervisor.RunStreamingAsync(
                         $"Process the following email and provide classification, extraction, and a draft response:\n\n{emailContent}",
                         new DelegateOrchestrationStreamHandler(
-                            onStart: () =>
+                            onStart: (orchestrator, input) =>
                             {
                                 Console.ForegroundColor = ConsoleColor.DarkGray;
                                 Console.WriteLine("Starting email triage...\n");
@@ -247,7 +248,7 @@ After all workers complete, provide a brief triage summary combining all results
 
                                 Console.ResetColor();
                             },
-                            onComplete: () =>
+                            onComplete: result =>
                             {
                                 Console.WriteLine();
                             },

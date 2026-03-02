@@ -1,13 +1,14 @@
 # AI Receipt & Expense Scanner
 
-A demo that extracts structured expense data from receipts using **LM-Kit.NET's TextExtraction API**. Feed it any receipt and get back structured data: store info, line items, totals, tax, payment method, and automatic expense categorization.
+A demo that extracts structured expense data from receipts using **LM-Kit.NET's TextExtraction API** with **vision-language models**. Feed it any receipt (text, PDF, or scanned photo) and get back structured data: store info, line items, totals, tax, payment method, and automatic expense categorization.
 
 ## Features
 
+- **Vision-Language Models**: Uses VLM models to process both text and image-based receipts
 - **Complete Receipt Parsing**: Store name, address, date, time, items, totals, tax, payment method
 - **Line Item Extraction**: Each purchased item extracted with description, quantity, unit price, and total
 - **Automatic Categorization**: AI suggests an expense category (Meals, Office Supplies, Travel, etc.)
-- **Multiple Formats**: Parse `.txt` files directly or `.pdf`/`.png`/`.jpg` via document attachment
+- **Multiple Formats**: Parse `.txt` files directly or `.pdf`/`.png`/`.jpg`/`.bmp`/`.tiff` via document attachment
 - **Built-In Sample**: Type `sample` to instantly see extraction with a realistic grocery receipt
 - **JSON Output**: Get machine-readable JSON for accounting system integration
 - **Fully Local**: All processing on your hardware, financial data never leaves your machine
@@ -16,21 +17,22 @@ A demo that extracts structured expense data from receipts using **LM-Kit.NET's 
 
 - .NET 8.0 or later
 - LM-Kit.NET SDK
-- Sufficient VRAM for the selected model (6-18 GB depending on model choice)
+- Sufficient VRAM for the selected model (2.5 to 18 GB depending on model choice)
 
 ## How It Works
 
-The demo uses LM-Kit.NET's `TextExtraction` class with a schema designed for receipt data. The extraction engine parses receipt content and populates store info, line items, totals, and payment details.
+The demo uses LM-Kit.NET's `TextExtraction` class with a schema designed for receipt data and a vision-language model. The VLM can process both text documents and scanned receipt photos, extracting store info, line items, totals, and payment details from any format.
 
-1. Define extraction schema (store, items, totals, tax, payment)
-2. Feed receipt content (text string or document/image attachment)
-3. Call `Parse()` to extract structured expense data
-4. Display results and JSON output
+1. Select a vision-language model from the menu
+2. Define extraction schema (store, items, totals, tax, payment)
+3. Feed receipt content (text string or document/image attachment)
+4. Call `Parse()` to extract structured expense data
+5. Display results and JSON output
 
 ## Usage
 
 1. Run the application
-2. Select a model from the menu
+2. Select a VLM model from the menu
 3. Type `sample` for the built-in receipt or enter a file path
 4. View the extracted expense data and JSON output
 5. Type `q` to quit
@@ -61,14 +63,11 @@ The demo uses LM-Kit.NET's `TextExtraction` class with a schema designed for rec
 
 | Option | Model | Approx. VRAM |
 |--------|-------|-------------|
-| 0 | Qwen-3 8B (Recommended) | ~6 GB |
-| 1 | Gemma 3 12B | ~9 GB |
-| 2 | Qwen-3 14B | ~10 GB |
-| 3 | Phi-4 14.7B | ~11 GB |
-| 4 | GPT OSS 20B | ~16 GB |
-| 5 | GLM 4.7 Flash 30B | ~18 GB |
-| 6 | Qwen-3.5 27B | ~18 GB |
-
-## Tip: Scanning Receipt Images
-
-For receipt images (photos, scans), use a vision-capable model or combine with OCR. See the `invoice_data_extraction` demo for image-based extraction with vision models and Tesseract OCR.
+| 0 | Z.ai GLM-V 4.6 Flash 10B | ~7 GB |
+| 1 | MiniCPM o 4.5 9B | ~5.9 GB |
+| 2 | Alibaba Qwen 3 VL 2B | ~2.5 GB |
+| 3 | Alibaba Qwen 3 VL 4B | ~4.5 GB |
+| 4 | Alibaba Qwen 3 VL 8B (Recommended) | ~6.5 GB |
+| 5 | Google Gemma 3 4B | ~5.7 GB |
+| 6 | Google Gemma 3 12B | ~11 GB |
+| 7 | Alibaba Qwen 3.5 27B | ~18 GB |
