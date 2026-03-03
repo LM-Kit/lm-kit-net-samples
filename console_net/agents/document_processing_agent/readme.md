@@ -22,7 +22,7 @@ An AI agent equipped with 11 built-in Document tools for processing PDFs and ima
 
 - .NET 8.0 or later
 - LM-Kit.NET SDK
-- A tool-calling capable model (~6.5 GB VRAM for Qwen 3 8B recommended)
+- A tool-calling capable model (~7 GB VRAM for Qwen 3.5 9B recommended)
 
 ## How It Works
 
@@ -76,7 +76,7 @@ var agent = Agent.CreateBuilder(model)
 ## Usage
 
 1. Run the application
-2. Select a tool-calling model from the menu (Qwen 3 8B recommended)
+2. Select a tool-calling model from the menu (Qwen 3.5 9B recommended)
 3. Type document processing tasks in natural language
 4. Watch the agent call tools and produce results
 5. Type 'q' to quit

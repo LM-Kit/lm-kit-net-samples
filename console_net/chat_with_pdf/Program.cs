@@ -51,13 +51,15 @@ namespace chat_with_pdf
 
             // Model selection
             PrintSection("Model Selection");
-            Console.WriteLine("  0 - Google Gemma 3 4B          (~4 GB VRAM)");
-            Console.WriteLine("  1 - Alibaba Qwen-3 8B          (~5.6 GB VRAM)");
-            Console.WriteLine("  2 - Google Gemma 3 12B          (~9 GB VRAM)");
-            Console.WriteLine("  3 - Microsoft Phi-4 14.7B       (~11 GB VRAM)");
-            Console.WriteLine("  4 - OpenAI GPT OSS 20B          (~16 GB VRAM)");
-            Console.WriteLine("  5 - Z.ai GLM 4.7 Flash 30B      (~18 GB VRAM)");
-            Console.WriteLine("  6 - Alibaba Qwen 3.5 27B         (~18 GB VRAM)");
+            Console.WriteLine("0 - Z.ai GLM-V 4.6 Flash 10B  (~7 GB VRAM)");
+            Console.WriteLine("1 - MiniCPM o 4.5 9B          (~5.9 GB VRAM)");
+            Console.WriteLine("2 - Alibaba Qwen 3.5 2B       (~2 GB VRAM)");
+            Console.WriteLine("3 - Alibaba Qwen 3.5 4B       (~3.5 GB VRAM)");
+            Console.WriteLine("4 - Alibaba Qwen 3.5 9B       (~7 GB VRAM)");
+            Console.WriteLine("5 - Google Gemma 3 4B          (~5.7 GB VRAM)");
+            Console.WriteLine("6 - Google Gemma 3 12B         (~11 GB VRAM)");
+            Console.WriteLine("7 - Alibaba Qwen 3.5 27B      (~18 GB VRAM)");
+            Console.WriteLine("8 - Mistral Ministral 3 8B     (~6.5 GB VRAM)");
             Console.WriteLine("  *   Or enter a custom model URI");
             Console.WriteLine();
 
@@ -95,7 +97,7 @@ namespace chat_with_pdf
                 embeddingModel,
                 vectorStore);
 
-            //chat.IncludePageRenderingsInContext = true; // uncomment to snapshot document pages in the context
+            chat.IncludePageRenderingsInContext = true; // snapshot document pages in the context
 
             if (useDocumentUnderstanding)
             {
@@ -617,13 +619,15 @@ namespace chat_with_pdf
 
                 string? modelId = input switch
                 {
-                    "0" => "gemma3:4b",
-                    "1" => "qwen3:8b",
-                    "2" => "gemma3:12b",
-                    "3" => "phi4",
-                    "4" => "gptoss:20b",
-                    "5" => "glm4.7-flash",
-                    "6" => "qwen3.5:27b",
+                    "0" => "glm-4.6v-flash",
+                    "1" => "minicpm-o-45",
+                    "2" => "qwen3.5:2b",
+                    "3" => "qwen3.5:4b",
+                    "4" => "qwen3.5:9b",
+                    "5" => "gemma3:4b",
+                    "6" => "gemma3:12b",
+                    "7" => "qwen3.5:27b",
+                    "8" => "ministral3:8b",
                     _ => null
                 };
 
@@ -649,7 +653,7 @@ namespace chat_with_pdf
                     }
                 }
 
-                PrintStatus("  Invalid selection. Enter 0-6 or a valid model URI.", ConsoleColor.Red);
+                PrintStatus("  Invalid selection. Enter 0-8 or a valid model URI.", ConsoleColor.Red);
                 Console.WriteLine();
             }
         }

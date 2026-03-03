@@ -10,6 +10,11 @@ namespace contract_key_terms_extractor
     {
         private static bool _isDownloading;
 
+        private static readonly HashSet<string> ImageExtensions = new(StringComparer.OrdinalIgnoreCase)
+        {
+            ".png", ".jpg", ".jpeg", ".bmp", ".tiff", ".tif", ".webp"
+        };
+
         private static void Main(string[] args)
         {
             LMKit.Licensing.LicenseManager.SetLicenseKey("");
@@ -19,17 +24,20 @@ namespace contract_key_terms_extractor
             Console.Clear();
             Console.WriteLine("=== AI Contract Key Terms Extractor ===\n");
             Console.WriteLine("Extract key clauses and terms from any contract or agreement.");
+            Console.WriteLine("Supports text, PDF, DOCX, and scanned contract images.");
             Console.WriteLine("All processing runs locally on your hardware.\n");
 
-            Console.WriteLine("Please select the model you want to use:\n");
-            Console.WriteLine("0 - Alibaba Qwen-3 8B      (~6 GB VRAM) [Recommended]");
-            Console.WriteLine("1 - Google Gemma 3 12B      (~9 GB VRAM)");
-            Console.WriteLine("2 - Alibaba Qwen-3 14B      (~10 GB VRAM)");
-            Console.WriteLine("3 - Microsoft Phi-4 14.7B    (~11 GB VRAM)");
-            Console.WriteLine("4 - OpenAI GPT OSS 20B       (~16 GB VRAM)");
-            Console.WriteLine("5 - Z.ai GLM 4.7 Flash 30B   (~18 GB VRAM)");
-            Console.WriteLine("6 - Alibaba Qwen-3.5 27B     (~18 GB VRAM)");
-            Console.Write("Other: Custom model URI or model ID\n\n> ");
+            Console.WriteLine("Select a vision-language model to use for extraction:\n");
+            Console.WriteLine("0 - Z.ai GLM-V 4.6 Flash 10B  (~7 GB VRAM)");
+            Console.WriteLine("1 - MiniCPM o 4.5 9B          (~5.9 GB VRAM)");
+            Console.WriteLine("2 - Alibaba Qwen 3.5 2B       (~2 GB VRAM)");
+            Console.WriteLine("3 - Alibaba Qwen 3.5 4B       (~3.5 GB VRAM)");
+            Console.WriteLine("4 - Alibaba Qwen 3.5 9B       (~7 GB VRAM) [Recommended]");
+            Console.WriteLine("5 - Google Gemma 3 4B          (~5.7 GB VRAM)");
+            Console.WriteLine("6 - Google Gemma 3 12B         (~11 GB VRAM)");
+            Console.WriteLine("7 - Alibaba Qwen 3.5 27B      (~18 GB VRAM)");
+            Console.WriteLine("8 - Mistral Ministral 3 8B     (~6.5 GB VRAM)");
+            Console.Write("\nOther: Custom model URI or model ID\n\n> ");
 
             string inputStr = Console.ReadLine() ?? string.Empty;
             LM model = LoadModel(inputStr);
@@ -46,7 +54,7 @@ namespace contract_key_terms_extractor
             Console.WriteLine("Extract key terms from any contract, NDA, or legal agreement.");
             Console.WriteLine();
             Console.WriteLine("  sample  - Try with a built-in sample contract");
-            Console.WriteLine("  <path>  - Analyze a contract file (.txt, .pdf, .docx)");
+            Console.WriteLine("  <path>  - Analyze a contract file (.txt, .pdf, .docx, .png, .jpg)");
             Console.WriteLine("  q       - Quit");
             Console.WriteLine();
 
@@ -78,8 +86,12 @@ namespace contract_key_terms_extractor
                         continue;
                     }
 
-                    WriteColor($"\nLoading: {Path.GetFileName(filePath)}", ConsoleColor.DarkGray);
                     string ext = Path.GetExtension(filePath).ToLowerInvariant();
+                    bool isImage = ImageExtensions.Contains(ext);
+
+                    WriteColor($"\nLoading: {Path.GetFileName(filePath)}" +
+                               (isImage ? " (image, using vision model)" : ""),
+                               ConsoleColor.DarkGray);
 
                     if (ext == ".txt")
                         textExtraction.SetContent(File.ReadAllText(filePath));
@@ -173,20 +185,22 @@ namespace contract_key_terms_extractor
         {
             string? modelId = input?.Trim() switch
             {
-                "0" => "qwen3:8b",
-                "1" => "gemma3:12b",
-                "2" => "qwen3:14b",
-                "3" => "phi4",
-                "4" => "gptoss:20b",
-                "5" => "glm4.7-flash",
-                "6" => "qwen3.5:27b",
+                "0" => "glm-4.6v-flash",
+                "1" => "minicpm-o-45",
+                "2" => "qwen3.5:2b",
+                "3" => "qwen3.5:4b",
+                "4" => "qwen3.5:9b",
+                "5" => "gemma3:4b",
+                "6" => "gemma3:12b",
+                "7" => "qwen3.5:27b",
+                "8" => "ministral3:8b",
                 _ => null
             };
 
             if (modelId != null)
                 return LM.LoadFromModelID(modelId, downloadingProgress: OnDownloadProgress, loadingProgress: OnLoadProgress);
 
-            string uri = !string.IsNullOrWhiteSpace(input) ? input.Trim('"') : "qwen3:8b";
+            string uri = !string.IsNullOrWhiteSpace(input) ? input.Trim('"') : "qwen3.5:9b";
             if (!uri.Contains("://"))
                 return LM.LoadFromModelID(uri, downloadingProgress: OnDownloadProgress, loadingProgress: OnLoadProgress);
 

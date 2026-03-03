@@ -16,7 +16,7 @@ The knowledge base contains **fictional documentation** for a made-up SaaS produ
 ## Prerequisites
 
 - .NET 8.0 or later
-- Minimum 6 GB VRAM (Qwen-3 8B) or 4 GB VRAM (Gemma 3 4B)
+- Minimum 7 GB VRAM (Qwen 3.5 9B) or 4 GB VRAM (Gemma 3 4B)
 - Models are downloaded automatically on first run
 
 ## How It Works

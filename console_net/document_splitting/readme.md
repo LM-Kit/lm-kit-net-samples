@@ -17,12 +17,12 @@ Automatically detect logical document boundaries within multi-page PDFs using a 
 
 - .NET 8.0 or later
 - LM-Kit.NET SDK
-- A vision-capable model (8B or larger recommended for best accuracy, ~6.5 GB VRAM)
+- A vision-capable model (9B or larger recommended for best accuracy, ~7 GB VRAM)
 
 ## Usage
 
 1. Run the application
-2. Select a vision model from the menu (Qwen 3 8B recommended)
+2. Select a vision model from the menu (Qwen 3.5 9B recommended)
 3. Enter the path to a multi-page PDF file
 4. View the detected document segments with page ranges and labels
 5. If multiple documents are detected, choose whether to split the PDF into separate files

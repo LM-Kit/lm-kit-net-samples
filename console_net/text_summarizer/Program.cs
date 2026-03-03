@@ -19,13 +19,13 @@ namespace text_summarizer
             Console.WriteLine("=== Text Summarizer Demo ===\n");
             Console.WriteLine("Select a model:\n");
             Console.WriteLine("  0 - Google Gemma 3 4B           (~4 GB VRAM)");
-            Console.WriteLine("  1 - Alibaba Qwen 3 8B           (~6 GB VRAM)");
+            Console.WriteLine("  1 - Alibaba Qwen 3.5 9B          (~7 GB VRAM)");
             Console.WriteLine("  2 - Google Gemma 3 12B           (~9 GB VRAM)");
             Console.WriteLine("  3 - Microsoft Phi-4 14.7B        (~11 GB VRAM)");
             Console.WriteLine("  4 - OpenAI GPT OSS 20B           (~16 GB VRAM)");
             Console.WriteLine("  5 - Z.ai GLM 4.7 Flash 30B      (~18 GB VRAM)");
             Console.WriteLine("  6 - Alibaba Qwen 3.5 27B         (~18 GB VRAM)");
-            Console.WriteLine("  7 - Alibaba Qwen 3 0.6B          (~0.8 GB VRAM)");
+            Console.WriteLine("  7 - Alibaba Qwen 3.5 0.8B         (~1 GB VRAM)");
             Console.WriteLine("  8 - Meta Llama 3.2 1B            (~1 GB VRAM)");
             Console.Write("\n  Or enter a custom model URI\n\n> ");
 
@@ -87,13 +87,13 @@ namespace text_summarizer
             string? modelId = input switch
             {
                 "0" => "gemma3:4b",
-                "1" => "qwen3:8b",
+                "1" => "qwen3.5:9b",
                 "2" => "gemma3:12b",
                 "3" => "phi4",
                 "4" => "gptoss:20b",
                 "5" => "glm4.7-flash",
                 "6" => "qwen3.5:27b",
-                "7" => "qwen3:0.6b",
+                "7" => "qwen3.5:0.8b",
                 "8" => "llama3.2:1b",
                 _ => null
             };

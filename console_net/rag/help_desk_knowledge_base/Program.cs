@@ -37,11 +37,10 @@ namespace help_desk_knowledge_base
             // ── Step 1: Model selection ─────────────────────────────────────────
 
             PrintSection("Chat Model Selection");
-            Console.WriteLine("  0 - Alibaba Qwen-3 8B       (~6 GB VRAM) [Recommended]");
+            Console.WriteLine("  0 - Alibaba Qwen 3.5 9B      (~7 GB VRAM) [Recommended]");
             Console.WriteLine("  1 - Google Gemma 3 4B        (~4 GB VRAM)");
             Console.WriteLine("  2 - Google Gemma 3 12B       (~9 GB VRAM)");
-            Console.WriteLine("  3 - Alibaba Qwen-3 14B       (~10 GB VRAM)");
-            Console.WriteLine("  4 - Alibaba Qwen 3.5 27B      (~18 GB VRAM)");
+            Console.WriteLine("  3 - Alibaba Qwen 3.5 27B      (~18 GB VRAM)");
             Console.WriteLine("  *   Or enter a custom model URI or model ID");
             Console.WriteLine();
 
@@ -1204,11 +1203,10 @@ namespace help_desk_knowledge_base
 
             string? modelId = input?.Trim() switch
             {
-                "0" or "" or null => "qwen3:8b",
+                "0" or "" or null => "qwen3.5:9b",
                 "1" => "gemma3:4b",
                 "2" => "gemma3:12b",
-                "3" => "qwen3:14b",
-                "4" => "qwen3.5:27b",
+                "3" => "qwen3.5:27b",
                 _ => null
             };
 

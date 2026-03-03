@@ -20,7 +20,7 @@ namespace multi_turn_chat_with_yes_no_assistant
             Console.Clear();
             Console.WriteLine("Please select the model you want to use:\n");
             Console.WriteLine("0 - Gemma 3 4B (requires approximately 5.7 GB of VRAM)");
-            Console.WriteLine("1 - Qwen 3 8B (requires approximately 5.6 GB of VRAM)");
+            Console.WriteLine("1 - Qwen 3.5 9B (requires approximately 7 GB of VRAM)");
             Console.WriteLine("2 - Gemma 3 12B (requires approximately 11 GB of VRAM)");
             Console.WriteLine("3 - Phi-4 14.7B (requires approximately 11 GB of VRAM)");
             Console.WriteLine("4 - GPT OSS 20B (requires approximately 16 GB of VRAM)");
@@ -90,7 +90,7 @@ namespace multi_turn_chat_with_yes_no_assistant
             string? modelId = input switch
             {
                 "0" => "gemma3:4b",
-                "1" => "qwen3:8b",
+                "1" => "qwen3.5:9b",
                 "2" => "gemma3:12b",
                 "3" => "phi4",
                 "4" => "gptoss:20b",

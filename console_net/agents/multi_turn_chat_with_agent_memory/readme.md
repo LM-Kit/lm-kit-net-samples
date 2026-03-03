@@ -14,7 +14,7 @@ A demo for building AI assistants with long-term memory using LM-Kit.NET. Store 
 
 - .NET 8.0 or later
 - LM-Kit.NET SDK
-- Minimal VRAM (uses Qwen 3 0.6B + embedding model)
+- Minimal VRAM (uses Qwen 3.5 0.8B + embedding model)
 
 ## Usage
 

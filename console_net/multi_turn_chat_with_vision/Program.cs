@@ -66,9 +66,9 @@ namespace multi_turn_chat_with_vision
             Console.WriteLine("Select a vision-language model:\n");
             Console.WriteLine("  0 - Z.ai GLM-V 4.6 Flash 10B   (~7 GB VRAM)");
             Console.WriteLine("  1 - MiniCPM o 4.5 9B           (~5.9 GB VRAM)");
-            Console.WriteLine("  2 - Alibaba Qwen 3 VL 2B       (~2.5 GB VRAM)");
-            Console.WriteLine("  3 - Alibaba Qwen 3 VL 4B       (~4 GB VRAM)");
-            Console.WriteLine("  4 - Alibaba Qwen 3 VL 8B       (~6.5 GB VRAM)");
+            Console.WriteLine("  2 - Alibaba Qwen 3.5 2B        (~2 GB VRAM)");
+            Console.WriteLine("  3 - Alibaba Qwen 3.5 4B        (~3.5 GB VRAM)");
+            Console.WriteLine("  4 - Alibaba Qwen 3.5 9B        (~7 GB VRAM)");
             Console.WriteLine("  5 - Google Gemma 3 4B          (~5.7 GB VRAM)");
             Console.WriteLine("  6 - Google Gemma 3 12B         (~11 GB VRAM)");
             Console.WriteLine("  7 - Mistral Ministral 3 3B     (~3.5 GB VRAM)");
@@ -196,9 +196,9 @@ namespace multi_turn_chat_with_vision
             {
                 "0" => "glm-4.6v-flash",
                 "1" => "minicpm-o-45",
-                "2" => "qwen3-vl:2b",
-                "3" => "qwen3-vl:4b",
-                "4" => "qwen3-vl:8b",
+                "2" => "qwen3.5:2b",
+                "3" => "qwen3.5:4b",
+                "4" => "qwen3.5:9b",
                 "5" => "gemma3:4b",
                 "6" => "gemma3:12b",
                 "7" => "ministral3:3b",

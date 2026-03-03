@@ -48,26 +48,30 @@ namespace language_detection_from_document
             Console.OutputEncoding = Encoding.UTF8;
 
             Console.Clear();
-            Console.WriteLine("Please select the model you want to use:\n");
-            Console.WriteLine("0 - Google Gemma 3 4B (requires approximately 4 GB of VRAM)");
-            Console.WriteLine("1 - Alibaba Qwen-3 8B (requires approximately 5.6 GB of VRAM)");
-            Console.WriteLine("2 - Google Gemma 3 12B (requires approximately 9 GB of VRAM)");
-            Console.WriteLine("3 - Microsoft Phi-4 14.7B (requires approximately 11 GB of VRAM)");
-            Console.WriteLine("4 - OpenAI GPT OSS 20B (requires approximately 16 GB of VRAM)");
-            Console.WriteLine("5 - Z.ai GLM 4.7 Flash 30B (requires approximately 18 GB of VRAM)");
-            Console.WriteLine("6 - Alibaba Qwen 3.5 27B (requires approximately 18 GB of VRAM)");
-            Console.Write("Other: A custom model URI\n\n> ");
+            Console.WriteLine("Select a vision-language model to use for language detection:\n");
+            Console.WriteLine("0 - Z.ai GLM-V 4.6 Flash 10B  (~7 GB VRAM)");
+            Console.WriteLine("1 - MiniCPM o 4.5 9B          (~5.9 GB VRAM)");
+            Console.WriteLine("2 - Alibaba Qwen 3.5 2B       (~2 GB VRAM)");
+            Console.WriteLine("3 - Alibaba Qwen 3.5 4B       (~3.5 GB VRAM)");
+            Console.WriteLine("4 - Alibaba Qwen 3.5 9B       (~7 GB VRAM) [Recommended]");
+            Console.WriteLine("5 - Google Gemma 3 4B          (~5.7 GB VRAM)");
+            Console.WriteLine("6 - Google Gemma 3 12B         (~11 GB VRAM)");
+            Console.WriteLine("7 - Alibaba Qwen 3.5 27B      (~18 GB VRAM)");
+            Console.WriteLine("8 - Mistral Ministral 3 8B     (~6.5 GB VRAM)");
+            Console.Write("\nOther: Custom model URI or model ID\n\n> ");
 
             string? input = Console.ReadLine();
             string? modelId = input?.Trim() switch
             {
-                "0" => "gemma3:4b",
-                "1" => "qwen3:8b",
-                "2" => "gemma3:12b",
-                "3" => "phi4",
-                "4" => "gptoss:20b",
-                "5" => "glm4.7-flash",
-                "6" => "qwen3.5:27b",
+                "0" => "glm-4.6v-flash",
+                "1" => "minicpm-o-45",
+                "2" => "qwen3.5:2b",
+                "3" => "qwen3.5:4b",
+                "4" => "qwen3.5:9b",
+                "5" => "gemma3:4b",
+                "6" => "gemma3:12b",
+                "7" => "qwen3.5:27b",
+                "8" => "ministral3:8b",
                 _ => null
             };
 
@@ -83,15 +87,16 @@ namespace language_detection_from_document
             }
             else if (!string.IsNullOrWhiteSpace(input))
             {
-                model = new LM(
-                    new Uri(input.Trim('"')),
-                    downloadingProgress: OnDownloadProgress,
-                    loadingProgress: OnLoadProgress);
+                string uri = input.Trim('"');
+                if (!uri.Contains("://"))
+                    model = LM.LoadFromModelID(uri, downloadingProgress: OnDownloadProgress, loadingProgress: OnLoadProgress);
+                else
+                    model = new LM(new Uri(uri), downloadingProgress: OnDownloadProgress, loadingProgress: OnLoadProgress);
             }
             else
             {
                 model = LM.LoadFromModelID(
-                    "gemma3:4b",
+                    "qwen3.5:9b",
                     downloadingProgress: OnDownloadProgress,
                     loadingProgress: OnLoadProgress);
             }

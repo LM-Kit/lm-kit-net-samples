@@ -33,20 +33,19 @@ namespace research_assistant
         {
             string? modelId = input?.Trim() switch
             {
-                "0" => "qwen3:8b",
+                "0" => "qwen3.5:9b",
                 "1" => "gemma3:12b",
-                "2" => "qwen3:14b",
-                "3" => "phi4",
-                "4" => "gptoss:20b",
-                "5" => "glm4.7-flash",
-                "6" => "qwen3.5:27b",
+                "2" => "phi4",
+                "3" => "gptoss:20b",
+                "4" => "glm4.7-flash",
+                "5" => "qwen3.5:27b",
                 _ => null
             };
 
             if (modelId != null)
                 return LM.LoadFromModelID(modelId, downloadingProgress: OnDownloadProgress, loadingProgress: OnLoadProgress);
 
-            string uri = !string.IsNullOrWhiteSpace(input) ? input.Trim('"') : "qwen3:8b";
+            string uri = !string.IsNullOrWhiteSpace(input) ? input.Trim('"') : "qwen3.5:9b";
             if (!uri.Contains("://"))
                 return LM.LoadFromModelID(uri, downloadingProgress: OnDownloadProgress, loadingProgress: OnLoadProgress);
 
@@ -65,13 +64,12 @@ namespace research_assistant
             Console.WriteLine("Watch the agent think, search, take notes, and synthesize findings.\n");
 
             Console.WriteLine("Please select the model you want to use:\n");
-            Console.WriteLine("0 - Alibaba Qwen-3 8B      (~6 GB VRAM) [Recommended]");
+            Console.WriteLine("0 - Alibaba Qwen 3.5 9B     (~7 GB VRAM) [Recommended]");
             Console.WriteLine("1 - Google Gemma 3 12B      (~9 GB VRAM)");
-            Console.WriteLine("2 - Alibaba Qwen-3 14B      (~10 GB VRAM)");
-            Console.WriteLine("3 - Microsoft Phi-4 14.7B    (~11 GB VRAM)");
-            Console.WriteLine("4 - OpenAI GPT OSS 20B       (~16 GB VRAM)");
-            Console.WriteLine("5 - Z.ai GLM 4.7 Flash 30B   (~18 GB VRAM)");
-            Console.WriteLine("6 - Alibaba Qwen-3.5 27B     (~18 GB VRAM)");
+            Console.WriteLine("2 - Microsoft Phi-4 14.7B    (~11 GB VRAM)");
+            Console.WriteLine("3 - OpenAI GPT OSS 20B       (~16 GB VRAM)");
+            Console.WriteLine("4 - Z.ai GLM 4.7 Flash 30B   (~18 GB VRAM)");
+            Console.WriteLine("5 - Alibaba Qwen 3.5 27B     (~18 GB VRAM)");
             Console.Write("Other: Custom model URI or model ID\n\n> ");
 
             string? input = Console.ReadLine();

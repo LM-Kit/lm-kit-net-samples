@@ -16,7 +16,7 @@ A demo showcasing an end-to-end meeting processing pipeline that combines **spee
 
 - .NET 8.0 or later
 - LM-Kit.NET SDK
-- Sufficient VRAM for both models (Whisper: 0.05-0.87 GB + Chat: 6-18 GB)
+- Sufficient VRAM for both models (Whisper: 0.05-0.87 GB + Chat: 7-18 GB)
 
 ## How It Works
 
@@ -79,13 +79,12 @@ Stage 4: EMAIL DRAFTER
 
 | Option | Model | Approx. VRAM |
 |--------|-------|-------------|
-| 0 | Qwen-3 8B (Recommended) | ~6 GB |
+| 0 | Qwen 3.5 9B (Recommended) | ~7 GB |
 | 1 | Gemma 3 12B | ~9 GB |
-| 2 | Qwen-3 14B | ~10 GB |
-| 3 | Phi-4 14.7B | ~11 GB |
-| 4 | GPT OSS 20B | ~16 GB |
-| 5 | GLM 4.7 Flash 30B | ~18 GB |
-| 6 | Qwen-3.5 27B | ~18 GB |
+| 2 | Phi-4 14.7B | ~11 GB |
+| 3 | GPT OSS 20B | ~16 GB |
+| 4 | GLM 4.7 Flash 30B | ~18 GB |
+| 5 | Qwen 3.5 27B | ~18 GB |
 
 ## Configuration
 

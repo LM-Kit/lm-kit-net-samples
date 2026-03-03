@@ -30,7 +30,7 @@ namespace web_content_info_extractor_to_json
 
             Console.WriteLine("Please select the model you want to use:\n");
             Console.WriteLine("0 - Google Gemma 3 4B          (~5.7 GB VRAM)");
-            Console.WriteLine("1 - Alibaba Qwen 3 8B         (~6.5 GB VRAM)");
+            Console.WriteLine("1 - Alibaba Qwen 3.5 9B        (~7 GB VRAM)");
             Console.WriteLine("2 - Google Gemma 3 12B         (~11 GB VRAM)");
             Console.WriteLine("3 - Microsoft Phi-4 14.7B      (~11 GB VRAM)");
             Console.WriteLine("4 - OpenAI GPT OSS 20B         (~16 GB VRAM)");
@@ -114,7 +114,7 @@ namespace web_content_info_extractor_to_json
             string? modelId = input switch
             {
                 "0" => "gemma3:4b",
-                "1" => "qwen3:8b",
+                "1" => "qwen3.5:9b",
                 "2" => "gemma3:12b",
                 "3" => "phi4",
                 "4" => "gptoss:20b",

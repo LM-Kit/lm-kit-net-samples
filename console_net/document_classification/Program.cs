@@ -54,9 +54,9 @@ namespace document_classification
             var models = new (string Id, string Name, string Vram)[]
             {
                 ("minicpm-o-45",  "MiniCPM o 4.5 9B",       "~5.9 GB"),
-                ("qwen3-vl:2b",  "Alibaba Qwen 3 VL 2B",   "~2.5 GB"),
-                ("qwen3-vl:4b",  "Alibaba Qwen 3 VL 4B",   "~4.5 GB"),
-                ("qwen3-vl:8b",  "Alibaba Qwen 3 VL 8B",   "~6.5 GB"),
+                ("qwen3.5:2b",   "Alibaba Qwen 3.5 2B",    "~2 GB"),
+                ("qwen3.5:4b",   "Alibaba Qwen 3.5 4B",    "~3.5 GB"),
+                ("qwen3.5:9b",   "Alibaba Qwen 3.5 9B",    "~7 GB"),
                 ("gemma3:4b",    "Google Gemma 3 4B",       "~5.7 GB"),
                 ("gemma3:12b",   "Google Gemma 3 12B",      "~11 GB"),
                 ("qwen3.5:27b",  "Alibaba Qwen 3.5 27B",   "~18 GB")

@@ -16,7 +16,7 @@ The knowledge base contains **entirely fictional data** about a made-up company 
 ## Prerequisites
 
 - .NET 8.0 or later
-- Minimum 6 GB VRAM (Qwen-3 8B) or 4 GB VRAM (Gemma 3 4B with custom selection)
+- Minimum 7 GB VRAM (Qwen 3.5 9B) or 4 GB VRAM (Gemma 3 4B with custom selection)
 - Models are downloaded automatically on first run
 
 ## How It Works

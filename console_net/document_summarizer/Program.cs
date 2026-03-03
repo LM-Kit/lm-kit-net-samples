@@ -21,9 +21,9 @@ namespace text_summarizer_from_document
             Console.Clear();
             Console.WriteLine("Please select the model you want to use:\n");
             Console.WriteLine("0 - MiniCPM o 4.5 9B       (~5.9 GB VRAM)");
-            Console.WriteLine("1 - Alibaba Qwen 3 VL 2B   (~2.5 GB VRAM)");
-            Console.WriteLine("2 - Alibaba Qwen 3 VL 4B   (~4.5 GB VRAM)");
-            Console.WriteLine("3 - Alibaba Qwen 3 VL 8B   (~6.5 GB VRAM)");
+            Console.WriteLine("1 - Alibaba Qwen 3.5 2B    (~2 GB VRAM)");
+            Console.WriteLine("2 - Alibaba Qwen 3.5 4B    (~3.5 GB VRAM)");
+            Console.WriteLine("3 - Alibaba Qwen 3.5 9B    (~7 GB VRAM)");
             Console.WriteLine("4 - Google Gemma 3 4B       (~5.7 GB VRAM)");
             Console.WriteLine("5 - Google Gemma 3 12B      (~11 GB VRAM)");
             Console.WriteLine("6 - Alibaba Qwen 3.5 27B   (~18 GB VRAM)");
@@ -79,9 +79,9 @@ namespace text_summarizer_from_document
             string? modelId = input switch
             {
                 "0" => "minicpm-o-45",
-                "1" => "qwen3-vl:2b",
-                "2" => "qwen3-vl:4b",
-                "3" => "qwen3-vl:8b",
+                "1" => "qwen3.5:2b",
+                "2" => "qwen3.5:4b",
+                "3" => "qwen3.5:9b",
                 "4" => "gemma3:4b",
                 "5" => "gemma3:12b",
                 "6" => "qwen3.5:27b",
