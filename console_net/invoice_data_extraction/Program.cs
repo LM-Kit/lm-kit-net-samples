@@ -1,5 +1,5 @@
 using LMKit.Extraction;
-using LMKit.Integrations.Tesseract;
+using LMKit.Extraction.Ocr;
 using LMKit.Model;
 using System.Diagnostics;
 using System.Runtime.InteropServices;
@@ -40,17 +40,22 @@ namespace invoice_data_extraction
             string schemaJson = File.ReadAllText("schema.json");
             textExtraction.SetElementsFromJsonSchema(schemaJson);
 
-            var ocrEngine = new TesseractOcr
+            /*var ocrEngine = new TesseractOcr
             {
                 EnableLanguageDetection = true,
                 EnableModelDownload = true,
-                EnableOrientationDetection = true
+                EnableOrientationDetection = true,
+                 VisionModel = model,
             };
 
             ocrEngine.LanguageDetected += lang =>
                 Console.WriteLine($"Detected language: {lang}");
             ocrEngine.OrientationDetected += angle =>
                 Console.WriteLine($"Detected orientation: {angle} degrees");
+            
+             */
+
+            var ocrEngine = new VlmOcr(LM.LoadFromModelID("lightonocr-2:1b"));
 
             textExtraction.OcrEngine = ocrEngine;
 

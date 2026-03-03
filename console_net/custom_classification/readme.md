@@ -5,7 +5,7 @@ A demo for classifying text into custom categories using LM-Kit.NET. Define your
 ## Features
 
 - Text classification with customizable categories
-- Support for multiple LLMs: Ministral, Llama, Gemma, Phi, Qwen, Granite, GPT OSS, GLM
+- Support for multiple LLMs: Qwen 3.5, Gemma, Ministral
 - Confidence scoring for classification results
 - Fast inference with performance metrics
 
@@ -13,7 +13,7 @@ A demo for classifying text into custom categories using LM-Kit.NET. Define your
 
 - .NET 8.0 or later
 - LM-Kit.NET SDK
-- Sufficient VRAM for the selected model (3–18 GB depending on model choice)
+- Sufficient VRAM for the selected model (1 to 7 GB depending on model choice)
 
 ## Usage
 

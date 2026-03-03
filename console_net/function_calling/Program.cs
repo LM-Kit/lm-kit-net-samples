@@ -41,7 +41,7 @@ namespace function_calling
                 "0" => "gemma3:4b",
                 "1" => "qwen3.5:9b",
                 "2" => "gemma3:12b",
-                "3" => "phi4:14.7b",
+                "3" => "phi4",
                 "4" => "gptoss:20b",
                 "5" => "glm4.7-flash",
                 "6" => "qwen3.5:27b",
