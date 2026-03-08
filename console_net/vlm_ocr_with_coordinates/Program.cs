@@ -140,16 +140,19 @@ namespace vlm_ocr_with_coordinates
                             ImageBuffer image;
                             bool ownImage;
 
-                            if (attachment.PageCount > 1)
+                            string ext = Path.GetExtension(inputPath);
+                            bool isRawImage = IsImageExtension(ext);
+
+                            if (isRawImage && attachment.PageCount == 1)
                             {
-                                // Multi-page document (e.g. PDF): render the specific page.
-                                image = PdfToImage.RenderPage(attachment, pageIndex);
+                                // Single image file: load directly.
+                                image = ImageBuffer.LoadAsRGB(inputPath);
                                 ownImage = true;
                             }
                             else
                             {
-                                // Single image file: load directly.
-                                image = ImageBuffer.LoadAsRGB(inputPath);
+                                // Document (PDF, etc.): render the specific page.
+                                image = PdfToImage.RenderPage(attachment, pageIndex);
                                 ownImage = true;
                             }
 
@@ -158,13 +161,17 @@ namespace vlm_ocr_with_coordinates
                                 var canvas = new Canvas(image) { Antialiasing = true };
                                 var pen = new Pen(new Color32(255, 0, 0), 2) { LineJoin = LineJoin.Miter };
 
+                                // Scale OCR coordinates to the rendered image dimensions.
+                                double scaleX = page.Width > 0 ? image.Width / page.Width : 1;
+                                double scaleY = page.Height > 0 ? image.Height / page.Height : 1;
+
                                 foreach (TextElement element in page.TextElements)
                                 {
                                     var rect = Rectangle.FromSize(
-                                        element.Left,
-                                        element.Top,
-                                        element.Width,
-                                        element.Height);
+                                        element.Left * scaleX,
+                                        element.Top * scaleY,
+                                        element.Width * scaleX,
+                                        element.Height * scaleY);
 
                                     canvas.DrawRectangle(rect, pen);
                                 }
@@ -174,6 +181,17 @@ namespace vlm_ocr_with_coordinates
                                 Console.ForegroundColor = ConsoleColor.Green;
                                 Console.WriteLine($"\n  Annotated image saved to: {annotatedPath}");
                                 Console.ResetColor();
+
+                                try
+                                {
+                                    Process.Start(new ProcessStartInfo(annotatedPath) { UseShellExecute = true });
+                                }
+                                catch (Exception ex)
+                                {
+                                    Console.ForegroundColor = ConsoleColor.Yellow;
+                                    Console.WriteLine($"  Could not auto-open file: {ex.Message}");
+                                    Console.ResetColor();
+                                }
                             }
                             finally
                             {
@@ -225,6 +243,18 @@ namespace vlm_ocr_with_coordinates
                 Console.ResetColor();
                 Console.WriteLine("Detects text regions with bounding boxes and draws them on the image.\n");
             }
+        }
+
+        private static bool IsImageExtension(string extension)
+        {
+            return extension.Equals(".png", StringComparison.OrdinalIgnoreCase)
+                || extension.Equals(".jpg", StringComparison.OrdinalIgnoreCase)
+                || extension.Equals(".jpeg", StringComparison.OrdinalIgnoreCase)
+                || extension.Equals(".bmp", StringComparison.OrdinalIgnoreCase)
+                || extension.Equals(".gif", StringComparison.OrdinalIgnoreCase)
+                || extension.Equals(".tiff", StringComparison.OrdinalIgnoreCase)
+                || extension.Equals(".tif", StringComparison.OrdinalIgnoreCase)
+                || extension.Equals(".webp", StringComparison.OrdinalIgnoreCase);
         }
 
         /// <summary>
