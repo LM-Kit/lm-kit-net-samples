@@ -418,6 +418,7 @@ namespace telemetry_observability
             Console.WriteLine("Metrics available:");
             Console.WriteLine("  - gen_ai.server.time_to_first_token (seconds)");
             Console.WriteLine("  - gen_ai.server.time_per_output_token (seconds)");
+            Console.WriteLine("  - gen_ai.server.time_per_input_token (seconds)");
             Console.WriteLine("  - gen_ai.server.request.duration (seconds)");
             Console.WriteLine("  - gen_ai.client.token.usage (tokens)");
             Console.WriteLine("  - gen_ai.client.operation.duration (seconds)");
@@ -428,6 +429,8 @@ namespace telemetry_observability
             Console.WriteLine("  - gen_ai.response.finish_reasons");
             Console.WriteLine("  - gen_ai.request.temperature, top_p, top_k, max_tokens");
             Console.WriteLine("  - gen_ai.usage.input_tokens, output_tokens");
+            Console.WriteLine("  - lmkit.prompt_processing.tokens_per_second");
+            Console.WriteLine("  - lmkit.token_generation.tokens_per_second");
             Console.WriteLine();
             Console.ResetColor();
         }
