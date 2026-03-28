@@ -1,3 +1,4 @@
+using LMKit.Media.Image;
 using LMKit.Model;
 using LMKit.TextGeneration;
 using LMKit.TextGeneration.Chat;
@@ -10,32 +11,65 @@ namespace translator
     {
         static bool _isDownloading;
 
+        static readonly string[] ImageExtensions = { ".png", ".jpg", ".jpeg", ".bmp", ".tiff", ".tif", ".webp" };
+
+        static readonly (string ModelId, string Label)[] TranslationModels =
+        {
+            ("translategemma3:4b",  "Google TranslateGemma 3 4B     (~3 GB VRAM)  [Suggested]"),
+            ("translategemma3:12b", "Google TranslateGemma 3 12B    (~8 GB VRAM)  [Suggested]"),
+        };
+
+        static readonly (string ModelId, string Label)[] GeneralModels =
+        {
+            ("gemma3:4b",     "Google Gemma 3 4B               (~4 GB VRAM)"),
+            ("qwen3.5:9b",    "Alibaba Qwen 3.5 9B             (~7 GB VRAM)"),
+            ("gemma3:12b",    "Google Gemma 3 12B              (~9 GB VRAM)"),
+            ("qwen3.5:27b",   "Alibaba Qwen 3.5 27B            (~18 GB VRAM)"),
+        };
+
+        static readonly (Language Lang, string Label)[] LanguageChoices =
+        {
+            (Language.English,           "English"),
+            (Language.French,            "French"),
+            (Language.Spanish,           "Spanish"),
+            (Language.German,            "German"),
+            (Language.Italian,           "Italian"),
+            (Language.Portuguese,        "Portuguese"),
+            (Language.ChineseSimplified, "Chinese (Simplified)"),
+            (Language.Japanese,          "Japanese"),
+            (Language.Korean,            "Korean"),
+            (Language.Arabic,            "Arabic"),
+            (Language.Russian,           "Russian"),
+            (Language.Hindi,             "Hindi"),
+        };
+
         static void Main(string[] args)
         {
             LMKit.Licensing.LicenseManager.SetLicenseKey("");
             Console.InputEncoding = Encoding.UTF8;
             Console.OutputEncoding = Encoding.UTF8;
-            Language destLanguage = Language.English;
 
             Console.Clear();
-            Console.WriteLine("=== Text Translator Demo ===\n");
-            Console.WriteLine("Select a model:\n");
-            Console.WriteLine("  0 - Google Gemma 3 4B           (~4 GB VRAM)");
-            Console.WriteLine("  1 - Alibaba Qwen 3.5 9B          (~7 GB VRAM)");
-            Console.WriteLine("  2 - Google Gemma 3 12B           (~9 GB VRAM)");
-            Console.WriteLine("  3 - Microsoft Phi-4 14.7B        (~11 GB VRAM)");
-            Console.WriteLine("  4 - OpenAI GPT OSS 20B           (~16 GB VRAM)");
-            Console.WriteLine("  5 - Z.ai GLM 4.7 Flash 30B      (~18 GB VRAM)");
-            Console.WriteLine("  6 - Alibaba Qwen 3.5 27B         (~18 GB VRAM)");
-            Console.Write("\n  Or enter a custom model URI\n\n> ");
+            PrintHeader("Text Translator Demo");
+            Console.WriteLine("Translate text or extract and translate text from images.\n");
 
-            string input = Console.ReadLine()?.Trim() ?? "";
-            LM model = LoadModel(input);
+            LM model = SelectAndLoadModel();
+            bool modelSupportsVision = model.HasVision;
 
             Console.Clear();
+            PrintHeader("Text Translator Demo");
+
+            Language destLanguage = SelectTargetLanguage();
+
             TextTranslation translator = new(model);
             translator.AfterTextCompletion += OnAfterTextCompletion;
             int translationCount = 0;
+
+            PrintDivider();
+            PrintStatus(modelSupportsVision
+                ? "Enter text to translate, or provide an image file path."
+                : "Enter text to translate.");
+            PrintStatus("Type /lang to change target language, or /quit to exit.\n");
 
             while (true)
             {
@@ -43,65 +77,217 @@ namespace translator
 
                 if (translationCount > 0)
                 {
-                    Console.Write("\n\n");
+                    PrintDivider();
                 }
 
-                Console.Write($"Enter a text to translate in {destLanguage}:\n\n");
+                Console.Write($"[{destLanguage}] > ");
                 Console.ResetColor();
 
-                string? text = Console.ReadLine();
+                string? input = Console.ReadLine();
 
-                if (string.IsNullOrWhiteSpace(text))
+                if (string.IsNullOrWhiteSpace(input))
+                {
+                    continue;
+                }
+
+                string trimmedInput = input.Trim().Trim('"');
+
+                if (trimmedInput.Equals("/quit", StringComparison.OrdinalIgnoreCase))
                 {
                     break;
                 }
 
-                Console.ForegroundColor = ConsoleColor.Green;
-                Console.Write("\nDetecting language...");
-                Language inputLanguage = translator.DetectLanguage(text);
-                Console.Write($"\nTranslating from {inputLanguage}...\n");
-                Console.ResetColor();
-                _ = translator.Translate(text, destLanguage, new CancellationTokenSource(TimeSpan.FromMinutes(2)).Token);
+                if (trimmedInput.Equals("/lang", StringComparison.OrdinalIgnoreCase))
+                {
+                    destLanguage = SelectTargetLanguage();
+                    PrintDivider();
+                    PrintStatus($"Target language changed to {destLanguage}.\n");
+                    continue;
+                }
 
-                translationCount++;
+                var cts = new CancellationTokenSource(TimeSpan.FromMinutes(5));
+
+                try
+                {
+                    if (IsImagePath(trimmedInput))
+                    {
+                        if (!modelSupportsVision)
+                        {
+                            PrintError("The selected model does not support vision input. Please use a vision-capable model for image translation.");
+                            continue;
+                        }
+
+                        if (!File.Exists(trimmedInput))
+                        {
+                            PrintError($"File not found: {trimmedInput}");
+                            continue;
+                        }
+
+                        PrintStatus("Loading image...");
+                        using ImageBuffer image = ImageBuffer.LoadAsRGB(trimmedInput);
+                        PrintStatus($"Image loaded ({image.Width}x{image.Height}).");
+
+                        PrintStatus("Detecting language...");
+                        Language inputLanguage = translator.DetectLanguage(image, cancellationToken: cts.Token);
+                        PrintStatus($"Detected: {inputLanguage}. Translating to {destLanguage}...\n");
+
+                        Console.ResetColor();
+                        _ = translator.Translate(image, destLanguage, cts.Token);
+                        Console.WriteLine();
+                    }
+                    else
+                    {
+                        PrintStatus("Detecting language...");
+                        Language inputLanguage = translator.DetectLanguage(trimmedInput, cancellationToken: cts.Token);
+                        PrintStatus($"Detected: {inputLanguage}. Translating to {destLanguage}...\n");
+
+                        Console.ResetColor();
+                        _ = translator.Translate(trimmedInput, destLanguage, cts.Token);
+                        Console.WriteLine();
+                    }
+
+                    translationCount++;
+                }
+                catch (OperationCanceledException)
+                {
+                    PrintError("\nTranslation timed out.");
+                }
+                catch (Exception ex)
+                {
+                    PrintError($"\nError: {ex.Message}");
+                }
             }
 
-            Console.WriteLine("Demo ended. Press any key to exit.");
+            Console.ResetColor();
+            Console.WriteLine("\nDemo ended. Press any key to exit.");
             _ = Console.ReadKey();
         }
 
-        static LM LoadModel(string input)
+        static LM SelectAndLoadModel()
         {
-            string? modelId = input switch
-            {
-                "0" => "gemma3:4b",
-                "1" => "qwen3.5:9b",
-                "2" => "gemma3:12b",
-                "3" => "phi4",
-                "4" => "gptoss:20b",
-                "5" => "glm4.7-flash",
-                "6" => "qwen3.5:27b",
-                _ => null
-            };
+            Console.WriteLine("Select a model:\n");
 
-            if (modelId != null)
+            Console.ForegroundColor = ConsoleColor.Cyan;
+            Console.WriteLine("  --- Translation-specialized models ---");
+            Console.ResetColor();
+
+            int index = 0;
+
+            foreach (var (_, label) in TranslationModels)
+            {
+                Console.WriteLine($"  {index++} - {label}");
+            }
+
+            Console.ForegroundColor = ConsoleColor.Cyan;
+            Console.WriteLine("\n  --- General-purpose models ---");
+            Console.ResetColor();
+
+            foreach (var (_, label) in GeneralModels)
+            {
+                Console.WriteLine($"  {index++} - {label}");
+            }
+
+            Console.Write("\n  Or enter a custom model URI\n\n> ");
+            string input = Console.ReadLine()?.Trim() ?? "";
+
+            if (int.TryParse(input, out int choice) && choice >= 0 && choice < TranslationModels.Length + GeneralModels.Length)
+            {
+                string modelId = choice < TranslationModels.Length
+                    ? TranslationModels[choice].ModelId
+                    : GeneralModels[choice - TranslationModels.Length].ModelId;
+
                 return LM.LoadFromModelID(modelId, downloadingProgress: OnDownloadProgress, loadingProgress: OnLoadProgress);
+            }
+
             return new LM(new Uri(input.Trim('"')), downloadingProgress: OnDownloadProgress, loadingProgress: OnLoadProgress);
+        }
+
+        static Language SelectTargetLanguage()
+        {
+            Console.WriteLine("\nSelect target language:\n");
+
+            for (int i = 0; i < LanguageChoices.Length; i++)
+            {
+                Console.WriteLine($"  {i,2} - {LanguageChoices[i].Label}");
+            }
+
+            Console.Write("\n> ");
+            string? input = Console.ReadLine()?.Trim();
+
+            if (int.TryParse(input, out int choice) && choice >= 0 && choice < LanguageChoices.Length)
+            {
+                return LanguageChoices[choice].Lang;
+            }
+
+            return Language.English;
+        }
+
+        static bool IsImagePath(string input)
+        {
+            try
+            {
+                string ext = Path.GetExtension(input);
+                return !string.IsNullOrEmpty(ext) &&
+                       Array.Exists(ImageExtensions, e => e.Equals(ext, StringComparison.OrdinalIgnoreCase));
+            }
+            catch
+            {
+                return false;
+            }
+        }
+
+        static void PrintHeader(string title)
+        {
+            Console.ForegroundColor = ConsoleColor.Cyan;
+            Console.WriteLine($"=== {title} ===\n");
+            Console.ResetColor();
+        }
+
+        static void PrintStatus(string message)
+        {
+            Console.ForegroundColor = ConsoleColor.DarkGray;
+            Console.WriteLine(message);
+            Console.ResetColor();
+        }
+
+        static void PrintError(string message)
+        {
+            Console.ForegroundColor = ConsoleColor.Red;
+            Console.WriteLine(message);
+            Console.ResetColor();
+        }
+
+        static void PrintDivider()
+        {
+            Console.ForegroundColor = ConsoleColor.DarkGray;
+            Console.WriteLine("\n" + new string('-', 60) + "\n");
+            Console.ResetColor();
         }
 
         static bool OnDownloadProgress(string path, long? contentLength, long bytesRead)
         {
             _isDownloading = true;
+
             if (contentLength.HasValue)
+            {
                 Console.Write($"\rDownloading model {Math.Round((double)bytesRead / contentLength.Value * 100, 2):0.00}%");
+            }
             else
+            {
                 Console.Write($"\rDownloading model {bytesRead} bytes");
+            }
+
             return true;
         }
 
         static bool OnLoadProgress(float progress)
         {
-            if (_isDownloading) { Console.Clear(); _isDownloading = false; }
+            if (_isDownloading)
+            {
+                Console.Clear();
+                _isDownloading = false;
+            }
+
             Console.Write($"\rLoading model {Math.Round(progress * 100)}%");
             return true;
         }
@@ -114,6 +300,7 @@ namespace translator
                 TextSegmentType.ToolInvocation => ConsoleColor.Magenta,
                 _ => ConsoleColor.White
             };
+
             Console.Write(e.Text);
         }
     }
