@@ -26,8 +26,7 @@ namespace invoice_data_extraction
             Console.WriteLine("2 - Alibaba Qwen 3.5 2B       (~2 GB VRAM)");
             Console.WriteLine("3 - Alibaba Qwen 3.5 4B       (~3.5 GB VRAM)");
             Console.WriteLine("4 - Alibaba Qwen 3.5 9B       (~7 GB VRAM)");
-            Console.WriteLine("5 - Google Gemma 3 4B          (~5.7 GB VRAM)");
-            Console.WriteLine("6 - Google Gemma 3 12B         (~11 GB VRAM)");
+            Console.WriteLine("6 - Google Gemma 4 E4B         (~6 GB VRAM)");
             Console.WriteLine("7 - Alibaba Qwen 3.5 27B      (~18 GB VRAM)");
             Console.WriteLine("8 - Mistral Ministral 3 8B     (~6.5 GB VRAM)");
             Console.Write("\nOther: Custom model URI or model ID\n\n> ");
@@ -40,7 +39,7 @@ namespace invoice_data_extraction
             string schemaJson = File.ReadAllText("schema.json");
             textExtraction.SetElementsFromJsonSchema(schemaJson);
 
-            /*var ocrEngine = new TesseractOcr
+            /*var ocrEngine = new LMKitOcr
             {
                 EnableLanguageDetection = true,
                 EnableModelDownload = true,
@@ -109,8 +108,7 @@ namespace invoice_data_extraction
                 "2" => "qwen3.5:2b",
                 "3" => "qwen3.5:4b",
                 "4" => "qwen3.5:9b",
-                "5" => "gemma3:4b",
-                "6" => "gemma3:12b",
+                "6" => "gemma4:e4b",
                 "7" => "qwen3.5:27b",
                 "8" => "ministral3:8b",
                 _ => null

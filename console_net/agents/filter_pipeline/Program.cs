@@ -38,7 +38,7 @@ namespace filter_pipeline
             string? modelId = input?.Trim() switch
             {
                 "0" => "qwen3.5:9b",
-                "1" => "gemma3:12b",
+                "1" => "gemma4:e4b",
                 "2" => "phi4",
                 "3" => "gptoss:20b",
                 "4" => "glm4.7-flash",
@@ -68,7 +68,7 @@ namespace filter_pipeline
             Console.WriteLine("and transform prompts, completions, and tool invocations.\n");
             Console.WriteLine("Please select the model you want to use:\n");
             Console.WriteLine("0 - Alibaba Qwen 3.5 9B     (~7 GB VRAM) [Recommended]");
-            Console.WriteLine("1 - Google Gemma 3 12B      (~9 GB VRAM)");
+            Console.WriteLine("1 - Google Gemma 4 E4B      (~6 GB VRAM)");
             Console.WriteLine("2 - Microsoft Phi-4 14.7B    (~11 GB VRAM)");
             Console.WriteLine("3 - OpenAI GPT OSS 20B       (~16 GB VRAM)");
             Console.WriteLine("4 - Z.ai GLM 4.7 Flash 30B   (~18 GB VRAM)");

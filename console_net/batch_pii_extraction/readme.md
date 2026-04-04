@@ -8,7 +8,7 @@ A high-throughput demo for extracting Personally Identifiable Information (PII) 
 - **Parallel extraction** with auto-tuned thread count based on available GPU memory
 - **Real-time statistics**: documents/sec, pages/sec, and per-document timing
 - **JSON output** preserving input directory structure
-- **Multiple OCR backends**: Tesseract, AWS Textract, or custom implementations
+- **Multiple OCR backends**: LM-Kit OCR, AWS Textract, or custom implementations
 - **Configurable inference modality**: Text or Vision modes
 - **Custom entity definitions** for domain-specific PII types
 - **Guidance prompts** for context-aware extraction
@@ -17,7 +17,7 @@ A high-throughput demo for extracting Personally Identifiable Information (PII) 
 
 - .NET 8.0 or later
 - LM-Kit.NET SDK
-- Tesseract OCR (included via `LMKit.Integrations.Tesseract`)
+- LM-Kit OCR (included via `LMKit.Extraction.Ocr`)
 - Sufficient VRAM for parallel inference (8+ GB recommended for multi-threaded processing)
 
 ## Configuration
@@ -61,8 +61,8 @@ engine.Guidance = "consider swift code as private information";
 ### OCR Engine Options
 
 ```csharp
-// Tesseract (default)
-engine.OcrEngine = new TesseractOcr();
+// LM-Kit OCR (default)
+engine.OcrEngine = new LMKitOcr();
 
 // AWS Textract
 engine.OcrEngine = new TextractOcr(

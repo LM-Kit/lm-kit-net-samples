@@ -63,9 +63,8 @@ namespace telemetry_observability
             PrintHeader();
 
             Console.WriteLine("Please select the model you want to use:\n");
-            Console.WriteLine("0 - Google Gemma 3 4B (requires approximately 4 GB of VRAM)");
             Console.WriteLine("1 - Alibaba Qwen 3.5 9B (requires approximately 7 GB of VRAM)");
-            Console.WriteLine("2 - Google Gemma 3 12B (requires approximately 9 GB of VRAM)");
+            Console.WriteLine("2 - Google Gemma 4 E4B (requires approximately 6 GB of VRAM)");
             Console.WriteLine("3 - Microsoft Phi-4 14.7B (requires approximately 11 GB of VRAM)");
             Console.WriteLine("4 - OpenAI GPT OSS 20B (requires approximately 16 GB of VRAM)");
             Console.WriteLine("5 - Z.ai GLM 4.7 Flash 30B (requires approximately 18 GB of VRAM)");
@@ -75,9 +74,8 @@ namespace telemetry_observability
             string? input = Console.ReadLine();
             string? modelId = input?.Trim() switch
             {
-                "0" => "gemma3:4b",
                 "1" => "qwen3.5:9b",
-                "2" => "gemma3:12b",
+                "2" => "gemma4:e4b",
                 "3" => "phi4",
                 "4" => "gptoss:20b",
                 "5" => "glm4.7-flash",
@@ -200,7 +198,7 @@ namespace telemetry_observability
             }
 
             // Custom URI fallback
-            string uri = !string.IsNullOrWhiteSpace(rawInput) ? rawInput.Trim().Trim('"') : "gemma3:4b";
+            string uri = !string.IsNullOrWhiteSpace(rawInput) ? rawInput.Trim().Trim('"') : "gemma4:e4b";
 
             // If it looks like a model ID (no slashes, no dots besides the colon separator), treat it as one
             if (!uri.Contains('/') && !uri.Contains('.'))

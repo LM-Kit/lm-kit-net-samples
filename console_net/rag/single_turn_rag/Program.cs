@@ -28,7 +28,7 @@ namespace single_turn_rag
 
             // Loading models
             _embeddingModel = LoadModel("embeddinggemma-300m", "Embedding");
-            _chatModel = LoadModel("gemma3:4b", "Chat");
+            _chatModel = LoadModel("gemma4:e4b", "Chat");
 
             Console.Clear();
             WriteLineColor("*********************************************************************************************\n" +

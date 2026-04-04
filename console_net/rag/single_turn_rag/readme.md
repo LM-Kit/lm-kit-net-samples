@@ -14,7 +14,7 @@ A demo for building a single-turn Retrieval-Augmented Generation (RAG) Q&A syste
 
 - .NET 8.0 or later
 - LM-Kit.NET SDK
-- Sufficient VRAM for the chat model (~4 GB for Gemma 3 4B)
+- Sufficient VRAM for the chat model (~6 GB for Gemma 4 E4B)
 
 ## How It Works
 

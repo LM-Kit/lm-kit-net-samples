@@ -40,7 +40,7 @@ namespace vlm_ocr
             Console.WriteLine("5 - Alibaba Qwen 3.5 2B                 (~2 GB VRAM)");
             Console.WriteLine("6 - Alibaba Qwen 3.5 4B                 (~3.5 GB VRAM)");
             Console.WriteLine("7 - Alibaba Qwen 3.5 9B                 (~7 GB VRAM)");
-            Console.WriteLine("8 - Google Gemma 3 4B                    (~5.7 GB VRAM)");
+            Console.WriteLine("8 - Google Gemma 4 E4B                    (~6 GB VRAM)");
             Console.WriteLine("9 - Alibaba Qwen 3.5 27B                 (~18 GB VRAM)");
             Console.WriteLine("10 - Mistral Ministral 3 8B               (~6.5 GB VRAM)");
             Console.Write("\nOther entry: A custom model URI\n\n> ");
@@ -184,7 +184,7 @@ namespace vlm_ocr
                 "5" => "qwen3.5:2b",
                 "6" => "qwen3.5:4b",
                 "7" => "qwen3.5:9b",
-                "8" => "gemma3:4b",
+                "8" => "gemma4:e4b",
                 "9" => "qwen3.5:27b",
                 "10" => "ministral3:8b",
                 _ => null

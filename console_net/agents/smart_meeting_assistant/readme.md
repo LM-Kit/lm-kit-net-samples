@@ -80,7 +80,7 @@ Stage 4: EMAIL DRAFTER
 | Option | Model | Approx. VRAM |
 |--------|-------|-------------|
 | 0 | Qwen 3.5 9B (Recommended) | ~7 GB |
-| 1 | Gemma 3 12B | ~9 GB |
+| 1 | Gemma 4 E4B | ~6 GB |
 | 2 | Phi-4 14.7B | ~11 GB |
 | 3 | GPT OSS 20B | ~16 GB |
 | 4 | GLM 4.7 Flash 30B | ~18 GB |

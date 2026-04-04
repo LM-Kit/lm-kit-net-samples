@@ -14,7 +14,7 @@ An AI agent equipped with 11 built-in Document tools for processing PDFs and ima
 - **Image cropping**: auto-remove uniform borders from scans
 - **Image resizing**: scale images or fit within bounding boxes preserving aspect ratio
 - **Text extraction**: extract text from PDF, DOCX, XLSX, PPTX, EML, MBOX, and HTML files
-- **OCR**: extract text from images using Tesseract (34 languages)
+- **OCR**: extract text from images using LM-Kit OCR (34 languages)
 - **Tool call monitoring**: see which tools the agent uses in real time
 - **Interactive console**: continuous conversation loop for multi-step workflows
 
@@ -47,7 +47,7 @@ The agent uses LM-Kit.NET's tool-calling architecture to:
 | `image_crop` | Auto-remove uniform borders from scans |
 | `image_resize` | Scale images or fit within bounding boxes preserving aspect ratio |
 | `document_text` | Extract text from PDF, DOCX, XLSX, PPTX, EML, MBOX, and HTML files |
-| `ocr` | Extract text from images using Tesseract (34 languages) |
+| `ocr` | Extract text from images using LM-Kit OCR (34 languages) |
 
 ## Agent Configuration
 

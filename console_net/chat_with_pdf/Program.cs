@@ -1,5 +1,5 @@
 using LMKit.Data.Storage;
-using LMKit.Integrations.Tesseract;
+using LMKit.Extraction.Ocr;
 using LMKit.Model;
 using LMKit.Retrieval;
 using LMKit.Retrieval.Events;
@@ -56,8 +56,7 @@ namespace chat_with_pdf
             Console.WriteLine("2 - Alibaba Qwen 3.5 2B       (~2 GB VRAM)");
             Console.WriteLine("3 - Alibaba Qwen 3.5 4B       (~3.5 GB VRAM)");
             Console.WriteLine("4 - Alibaba Qwen 3.5 9B       (~7 GB VRAM)");
-            Console.WriteLine("5 - Google Gemma 3 4B          (~5.7 GB VRAM)");
-            Console.WriteLine("6 - Google Gemma 3 12B         (~11 GB VRAM)");
+            Console.WriteLine("6 - Google Gemma 4 E4B         (~6 GB VRAM)");
             Console.WriteLine("7 - Alibaba Qwen 3.5 27B      (~18 GB VRAM)");
             Console.WriteLine("8 - Mistral Ministral 3 8B     (~6.5 GB VRAM)");
             Console.WriteLine("  *   Or enter a custom model URI");
@@ -107,7 +106,7 @@ namespace chat_with_pdf
             }
             else
             {
-                chat.OcrEngine = new TesseractOcr()
+                chat.OcrEngine = new LMKitOcr()
                 {
                     EnableLanguageDetection = true,
                     VisionModel = chatModel
@@ -624,8 +623,7 @@ namespace chat_with_pdf
                     "2" => "qwen3.5:2b",
                     "3" => "qwen3.5:4b",
                     "4" => "qwen3.5:9b",
-                    "5" => "gemma3:4b",
-                    "6" => "gemma3:12b",
+                    "6" => "gemma4:e4b",
                     "7" => "qwen3.5:27b",
                     "8" => "ministral3:8b",
                     _ => null

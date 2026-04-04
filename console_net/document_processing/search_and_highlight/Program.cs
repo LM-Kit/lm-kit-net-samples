@@ -2,7 +2,6 @@ using LMKit.Data;
 using LMKit.Document.Layout;
 using LMKit.Document.Search;
 using LMKit.Extraction.Ocr;
-using LMKit.Integrations.Tesseract;
 using LMKit.Model;
 using System.Diagnostics;
 using System.Text;
@@ -254,7 +253,7 @@ namespace search_and_highlight
         private static string SelectOcrEngine()
         {
             Console.WriteLine("\nSelect OCR engine:\n");
-            Console.WriteLine("  0 - Tesseract OCR (data files downloaded automatically)");
+            Console.WriteLine("  0 - LM-Kit OCR (dictionaries downloaded automatically)");
             Console.WriteLine("  1 - PaddleOCR-VL  (VLM-based, model downloaded automatically)");
             Console.Write("\n> ");
 
@@ -326,10 +325,10 @@ namespace search_and_highlight
             else
             {
                 Console.ForegroundColor = ConsoleColor.DarkGray;
-                Console.WriteLine("Running Tesseract OCR...");
+                Console.WriteLine("Running LM-Kit OCR...");
                 Console.ResetColor();
 
-                using var ocr = new TesseractOcr();
+                using var ocr = new LMKitOcr();
 
                 for (int i = 0; i < pageCount; i++)
                 {

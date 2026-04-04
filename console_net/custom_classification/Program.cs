@@ -52,11 +52,10 @@ namespace custom_classification
             string? modelId = input?.Trim() switch
             {
                 "0" => "qwen3.5:0.8b",
-                "1" => "gemma3:1b",
                 "2" => "qwen3.5:2b",
                 "3" => "ministral3:3b",
                 "4" => "qwen3.5:4b",
-                "5" => "gemma3:4b",
+                "5" => "gemma4:e4b",
                 "6" => "qwen3.5:9b",
                 _ => null
             };
@@ -84,11 +83,10 @@ namespace custom_classification
             Console.Clear();
             Console.WriteLine("Please select the model you want to use:\n");
             Console.WriteLine("0 - Alibaba Qwen 3.5 0.8B (requires approximately 1 GB of VRAM)");
-            Console.WriteLine("1 - Google Gemma 3 1B (requires approximately 1 GB of VRAM)");
             Console.WriteLine("2 - Alibaba Qwen 3.5 2B (requires approximately 2 GB of VRAM)");
             Console.WriteLine("3 - Mistral Ministral 3 3B (requires approximately 3 GB of VRAM)");
             Console.WriteLine("4 - Alibaba Qwen 3.5 4B (requires approximately 3.5 GB of VRAM)");
-            Console.WriteLine("5 - Google Gemma 3 4B (requires approximately 4 GB of VRAM)");
+            Console.WriteLine("5 - Google Gemma 4 E4B (requires approximately 6 GB of VRAM)");
             Console.WriteLine("6 - Alibaba Qwen 3.5 9B (requires approximately 7 GB of VRAM)");
             Console.Write("Other: Custom model URI\n\n> ");
 

@@ -70,7 +70,7 @@ cd demos/console_net/agents/skill_based_assistant
 dotnet run
 ```
 
-1. Pick a model (Gemma 3 12B recommended, ~9 GB VRAM).
+1. Pick a model (Gemma 4 E4B recommended, ~6 GB VRAM).
 2. Choose an activation mode (Manual or Model-driven).
 3. Chat using the selected mode.
 

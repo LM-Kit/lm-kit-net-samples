@@ -7,7 +7,7 @@ A console application that demonstrates **SearchHighlightEngine** from LM-Kit.NE
 - Search text in **PDF documents** (uses the native text layer) or **images** (via OCR)
 - Three search modes: **exact text**, **regex**, and **fuzzy** (Damerau-Levenshtein)
 - Automatic OCR detection: triggers OCR only when the document contains no extractable text
-- OCR engine selection: **Tesseract** (no model required) or **PaddleOCR-VL** (VLM-based, coordinate-aware)
+- OCR engine selection: **LM-Kit OCR** (no model required) or **PaddleOCR-VL** (VLM-based, coordinate-aware)
 - Outputs highlighted **PDF** (with highlight annotations) or **PNG** (with overlays)
 - Auto-opens the result file when done
 
@@ -15,12 +15,12 @@ A console application that demonstrates **SearchHighlightEngine** from LM-Kit.NE
 
 - .NET 8.0 or later
 - For PaddleOCR-VL: ~1 GB VRAM (model downloaded automatically on first use)
-- For Tesseract: no additional requirements (data files downloaded automatically)
+- For LM-Kit OCR: no additional requirements (dictionaries downloaded automatically)
 
 ## How It Works
 
 1. Provide a PDF or image file path
-2. If the document has no extractable text, choose an OCR engine (Tesseract or PaddleOCR-VL)
+2. If the document has no extractable text, choose an OCR engine (LM-Kit OCR or PaddleOCR-VL)
 3. Enter a search query
 4. Select a search mode (Text, Regex, or Fuzzy)
 5. The engine highlights all matches and saves the output
@@ -81,5 +81,5 @@ Highlighted file saved to: invoice_highlighted.pdf
 - [`SearchHighlightEngine`](https://docs.lm-kit.com/lm-kit-net/api/LMKit.Document.Search.SearchHighlightEngine.html) (LMKit.Document.Search): static API for search and highlight
 - [`SearchHighlightOptions`](https://docs.lm-kit.com/lm-kit-net/api/LMKit.Document.Search.SearchHighlightOptions.html): search mode, appearance, page range configuration
 - [`SearchHighlightResult`](https://docs.lm-kit.com/lm-kit-net/api/LMKit.Document.Search.SearchHighlightResult.html): output bytes, match metadata
-- [`TesseractOcr`](https://docs.lm-kit.com/lm-kit-net/api/LMKit.Integrations.Tesseract.TesseractOcr.html) (LMKit.Integrations.Tesseract): traditional OCR engine
+- [`LMKitOcr`](https://docs.lm-kit.com/lm-kit-net/api/LMKit.Extraction.Ocr.LMKitOcr.html) (LMKit.Extraction.Ocr): traditional OCR engine
 - [`VlmOcr`](https://docs.lm-kit.com/lm-kit-net/api/LMKit.Extraction.Ocr.VlmOcr.html) (LMKit.Extraction.Ocr): vision-language model OCR engine

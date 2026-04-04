@@ -85,7 +85,7 @@ namespace document_processing_agent
                     "- Crop images: remove uniform borders from scans\n" +
                     "- Resize images: scale images or fit within bounding boxes\n" +
                     "- Extract text: get text content from PDF, DOCX, XLSX, PPTX, EML, MBOX, HTML\n" +
-                    "- OCR: extract text from images using Tesseract (34 languages)\n\n" +
+                    "- OCR: extract text from images using LM-Kit OCR (34 languages)\n\n" +
                     "Always confirm what actions you took and report results clearly.")
                 .WithTools(tools =>
                 {

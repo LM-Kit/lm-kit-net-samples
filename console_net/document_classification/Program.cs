@@ -57,8 +57,7 @@ namespace document_classification
                 ("qwen3.5:2b",   "Alibaba Qwen 3.5 2B",    "~2 GB"),
                 ("qwen3.5:4b",   "Alibaba Qwen 3.5 4B",    "~3.5 GB"),
                 ("qwen3.5:9b",   "Alibaba Qwen 3.5 9B",    "~7 GB"),
-                ("gemma3:4b",    "Google Gemma 3 4B",       "~5.7 GB"),
-                ("gemma3:12b",   "Google Gemma 3 12B",      "~11 GB"),
+                ("gemma4:e4b",   "Google Gemma 4 E4B",      "~6 GB"),
                 ("qwen3.5:27b",  "Alibaba Qwen 3.5 27B",   "~18 GB")
             };
 

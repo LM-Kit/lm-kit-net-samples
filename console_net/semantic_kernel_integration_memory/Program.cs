@@ -14,7 +14,7 @@ Console.WriteLine("Approach 1: Querying the model directly (without memory).\n")
 var builder = Kernel.CreateBuilder();
 
 // Configure the chat model for completions
-var chatModel = LMKit.Model.LM.LoadFromModelID("gemma3:4b");
+var chatModel = LMKit.Model.LM.LoadFromModelID("gemma4:e4b");
 
 builder.AddLMKitChatCompletion(chatModel, new LMKitPromptExecutionSettings(chatModel)
 {

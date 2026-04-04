@@ -25,8 +25,7 @@ namespace document_splitting
             Console.WriteLine("1 - Alibaba Qwen 3.5 2B    (~2 GB VRAM)");
             Console.WriteLine("2 - Alibaba Qwen 3.5 4B    (~3.5 GB VRAM)");
             Console.WriteLine("3 - Alibaba Qwen 3.5 9B    (~7 GB VRAM)");
-            Console.WriteLine("4 - Google Gemma 3 4B       (~5.7 GB VRAM)");
-            Console.WriteLine("5 - Google Gemma 3 12B      (~11 GB VRAM)");
+            Console.WriteLine("5 - Google Gemma 4 E4B      (~6 GB VRAM)");
             Console.WriteLine("6 - Alibaba Qwen 3.5 27B   (~18 GB VRAM)");
             Console.Write("\nOther entry: A custom model URI\n\n> ");
 
@@ -232,8 +231,7 @@ namespace document_splitting
                 "1" => "qwen3.5:2b",
                 "2" => "qwen3.5:4b",
                 "3" => "qwen3.5:9b",
-                "4" => "gemma3:4b",
-                "5" => "gemma3:12b",
+                "5" => "gemma4:e4b",
                 "6" => "qwen3.5:27b",
                 _ => null
             };

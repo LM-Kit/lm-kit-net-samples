@@ -1,5 +1,5 @@
 ﻿using LMKit.Inference;
-using LMKit.Integrations.Tesseract;
+using LMKit.Extraction.Ocr;
 using LMKit.Model;
 using LMKit.TextAnalysis;
 
@@ -38,7 +38,7 @@ namespace batch_pii_extraction
                 includeOtherType: Configuration.IncludeOtherType)
             {
                 PreferredInferenceModality = PreferredInferenceModality,
-                OcrEngine = new TesseractOcr(), //Custom OCR can be used by implementing the MyCustomOcr class
+                OcrEngine = new LMKitOcr(), //Custom OCR can be used by implementing the MyCustomOcr class
                 Guidance = "" //example of guidance: "consider swift code as private information";
             };
 
@@ -47,7 +47,7 @@ namespace batch_pii_extraction
             //    new PiiExtraction.PiiEntityDefinition("swift code"));
 
             //example of external OCR usage
-            //engine.OcrEngine = new TesseractOcrEngine();
+            //engine.OcrEngine = new LMKitOcr();
             //engine.OcrEngine = new MyCustomOcr();
             //engine.OcrEngine = new LMKit.Integrations.AWS.Ocr.Textract.TextractOcr(
             //   "awsAccessKeyId", 

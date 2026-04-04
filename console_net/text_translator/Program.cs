@@ -15,15 +15,14 @@ namespace translator
 
         static readonly (string ModelId, string Label)[] TranslationModels =
         {
-            ("translategemma3:4b",  "Google TranslateGemma 3 4B     (~3 GB VRAM)  [Suggested]"),
+            ("translategemma3:4b",  "Google TranslateGemma 3 4B      (~3 GB VRAM)  [Suggested]"),
             ("translategemma3:12b", "Google TranslateGemma 3 12B    (~8 GB VRAM)  [Suggested]"),
         };
 
         static readonly (string ModelId, string Label)[] GeneralModels =
         {
-            ("gemma3:4b",     "Google Gemma 3 4B               (~4 GB VRAM)"),
             ("qwen3.5:9b",    "Alibaba Qwen 3.5 9B             (~7 GB VRAM)"),
-            ("gemma3:12b",    "Google Gemma 3 12B              (~9 GB VRAM)"),
+            ("gemma4:e4b",    "Google Gemma 4 E4B              (~6 GB VRAM)"),
             ("qwen3.5:27b",   "Alibaba Qwen 3.5 27B            (~18 GB VRAM)"),
         };
 

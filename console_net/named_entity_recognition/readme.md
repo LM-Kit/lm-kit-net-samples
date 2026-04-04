@@ -7,7 +7,7 @@ A demo for extracting named entities from PDF files, images, and documents using
 - Detect and extract named entities from documents
 - Support for PDF files, images, and text documents
 - Confidence scoring for each detected entity
-- Support for multiple VLMs: MiniCPM, Qwen 3, Qwen 3.5, Gemma 3, Ministral
+- Support for multiple VLMs: MiniCPM, Qwen 3, Qwen 3.5, Gemma 4, Ministral
 - Processing time metrics
 
 ## Prerequisites
