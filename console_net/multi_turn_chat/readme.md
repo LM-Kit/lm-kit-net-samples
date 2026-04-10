@@ -5,7 +5,8 @@ A demo for conversational AI with context retention using LM-Kit.NET. Build inte
 ## Features
 
 - Multi-turn conversation with full context history
-- Support for multiple LLMs: Ministral, Llama, Gemma, Phi, Qwen, Granite, GPT OSS, GLM
+- Support for multiple LLMs: Qwen, Gemma, Phi, GPT OSS, GLM
+- Toggle reasoning/thinking mode on or off at runtime
 - Regenerate or continue responses
 - Customizable system prompt
 - Real-time streaming output
@@ -15,7 +16,7 @@ A demo for conversational AI with context retention using LM-Kit.NET. Build inte
 
 - .NET 8.0 or later
 - LM-Kit.NET SDK
-- Sufficient VRAM for the selected model (3–18 GB depending on model choice)
+- Sufficient VRAM for the selected model (3ï¿½18 GB depending on model choice)
 
 ## Usage
 
@@ -29,6 +30,7 @@ A demo for conversational AI with context retention using LM-Kit.NET. Build inte
 | Command | Description |
 |---------|-------------|
 | `/reset` | Clear history and start fresh |
+| `/think` | Toggle reasoning on/off (clears history) |
 | `/regenerate` | Generate a new response to your last input |
 | `/continue` | Continue the last assistant response |
 
@@ -52,6 +54,7 @@ MultiTurnConversation chat = new(model)
 - **Temperature**: Controls response randomness (0 = deterministic, 1 = creative)
 - **Token limits**: Maximum tokens for generated responses
 - **System prompt**: Sets the assistant's behavior and personality
+- **Reasoning mode**: When enabled, models that support thinking (e.g. Gemma 4, Qwen 3) produce internal reasoning steps (shown in blue) before their final answer
 
 ## Use Cases
 

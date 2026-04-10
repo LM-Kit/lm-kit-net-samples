@@ -30,9 +30,6 @@ namespace multi_turn_chat
             string input = Console.ReadLine()?.Trim() ?? "";
             LM model = LoadModel(input);
 
-            Console.Clear();
-            ShowSpecialPrompts();
-
             MultiTurnConversation chat = new(model)
             {
                 MaximumCompletionTokens = 2048,
@@ -44,6 +41,9 @@ namespace multi_turn_chat
             };
 
             chat.AfterTextCompletion += OnAfterTextCompletion;
+
+            Console.Clear();
+            ShowSpecialPrompts(chat);
 
             string mode = "chat";
             string prompt = "Hello!";
@@ -84,6 +84,26 @@ namespace multi_turn_chat
                 if (string.Compare(prompt, "/reset", ignoreCase: true) == 0)
                 {
                     chat.ClearHistory();
+                    prompt = "Hello!";
+                }
+                else if (string.Compare(prompt, "/think", ignoreCase: true) == 0)
+                {
+                    if (chat.ReasoningLevel != ReasoningLevel.None)
+                    {
+                        chat.ClearHistory();
+                        chat.ReasoningLevel = ReasoningLevel.None;
+                    }
+                    else
+                    {
+                        chat.ClearHistory();
+                        chat.ReasoningLevel = ReasoningLevel.Medium;
+                    }
+
+                    string state = chat.ReasoningLevel != ReasoningLevel.None ? "ON" : "OFF";
+                    Console.ForegroundColor = ConsoleColor.Yellow;
+                    Console.WriteLine($"\nReasoning toggled {state}. History cleared.\n");
+                    Console.ResetColor();
+
                     prompt = "Hello!";
                 }
                 else if (string.Compare(prompt, "/regenerate", ignoreCase: true) == 0)
@@ -146,12 +166,21 @@ namespace multi_turn_chat
             Console.Write(e.Text);
         }
 
-        static void ShowSpecialPrompts()
+        static void ShowSpecialPrompts(MultiTurnConversation chat = null)
         {
             Console.WriteLine("-- Special Prompts --");
             Console.WriteLine("Use '/reset' to start a fresh session.");
             Console.WriteLine("Use '/continue' to continue last assistant message.");
-            Console.WriteLine("Use '/regenerate' to obtain a new completion from the last input.\n\n");
+            Console.WriteLine("Use '/regenerate' to obtain a new completion from the last input.");
+            Console.WriteLine("Use '/think' to toggle reasoning on/off.");
+
+            if (chat != null)
+            {
+                string state = chat.ReasoningLevel != ReasoningLevel.None ? "ON" : "OFF";
+                Console.WriteLine($"\nReasoning: {state}");
+            }
+
+            Console.WriteLine();
         }
     }
 }
