@@ -166,7 +166,7 @@ namespace multi_turn_chat
             Console.Write(e.Text);
         }
 
-        static void ShowSpecialPrompts(MultiTurnConversation chat = null)
+        static void ShowSpecialPrompts(MultiTurnConversation chat)
         {
             Console.WriteLine("-- Special Prompts --");
             Console.WriteLine("Use '/reset' to start a fresh session.");

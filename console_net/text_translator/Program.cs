@@ -1,7 +1,6 @@
 using LMKit.Media.Image;
 using LMKit.Model;
 using LMKit.TextGeneration;
-using LMKit.TextGeneration.Chat;
 using LMKit.Translation;
 using System.Text;
 
@@ -61,7 +60,7 @@ namespace translator
             Language destLanguage = SelectTargetLanguage();
 
             TextTranslation translator = new(model);
-            translator.AfterTextCompletion += OnAfterTextCompletion;
+            translator.TranslationProgress += OnTranslationProgress;
             int translationCount = 0;
 
             PrintDivider();
@@ -291,16 +290,9 @@ namespace translator
             return true;
         }
 
-        static void OnAfterTextCompletion(object? sender, LMKit.TextGeneration.Events.AfterTextCompletionEventArgs e)
+        static void OnTranslationProgress(object? sender, LMKit.Translation.Events.TranslationProgressEventArgs e)
         {
-            Console.ForegroundColor = e.SegmentType switch
-            {
-                TextSegmentType.InternalReasoning => ConsoleColor.Blue,
-                TextSegmentType.ToolInvocation => ConsoleColor.Magenta,
-                _ => ConsoleColor.White
-            };
-
-            Console.Write(e.Text);
+            Console.Write(e.TranslatedChunk);
         }
     }
 }
