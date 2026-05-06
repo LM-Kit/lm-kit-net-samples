@@ -7,15 +7,20 @@ fresh, factual, or real-time information.
 
 This is the **reference demo** for integrating the built-in `WebSearchTool` into a conversational assistant.
 
+> **Choose a provider before you run.** The default `BuiltInTools.WebSearch` uses DuckDuckGo's
+> public no-JavaScript HTML endpoint. It works for one or two queries but is rate-limited
+> aggressively and will start returning blocking errors after a small handful of automated calls
+> from the same IP. **For anything beyond a quick local trial, configure an API-backed provider
+> (Tavily / Brave / Serper, all have free tiers).** See *Choosing a provider* below.
+
 ## Features
 
 - **Autonomous web search**: the LLM decides by itself when to call the web search tool
-- **Zero configuration**: uses DuckDuckGo by default (no API key required)
+- **Multiple providers**: DuckDuckGo (no key, dev-only), Brave / Tavily / Serper (production)
 - **Full call-flow visibility**: color-coded output shows reasoning, tool calls, and responses
 - **Multi-turn conversation**: maintains context across messages
 - **Source citation**: the model cites sources when it uses web search results
 - **Special commands**: `/reset`, `/regenerate`, `/continue`
-- **Swappable providers**: easily switch to Brave, Tavily, or Serper for premium results
 
 ## Prerequisites
 
@@ -64,34 +69,58 @@ User: What is the square root of 144?
 Assistant: The square root of 144 is 12.
 ```
 
+## Choosing a provider
+
+| Provider | Free quota | API key | Reliability | Recommended for |
+|----------|------------|---------|-------------|------------------|
+| **Tavily** | 1,000 searches / month | Required ([sign up](https://tavily.com)) | High; AI-optimized snippets | RAG and agent demos, default recommendation |
+| **Brave** | 2,000 searches / month | Required ([sign up](https://brave.com/search/api/)) | High | General web search |
+| **Serper** | 2,500 searches free, then paid | Required ([sign up](https://serper.dev)) | High; Google-quality | When Google-style ranking matters |
+| **SearXNG** | Unlimited | Self-hosted instance | High (your infra) | Privacy-conscious deployments |
+| **DuckDuckGo** (default) | None official | None | **Low**: anti-bot blocks after a few queries | Quick local trial only |
+
+When the DuckDuckGo provider is blocked, `WebSearchTool` returns a clear `Error` field in
+its JSON response naming the cause and pointing at these alternatives. Your agent should
+treat this as a hard failure and ask the user to configure a provider, not retry.
+
 ## Tool Registration (Key Code)
 
 ```csharp
 using LMKit.Agents.Tools.BuiltIn;
+using LMKit.Agents.Tools.BuiltIn.Net;
 
 // Create conversation
 MultiTurnConversation chat = new(model);
 
-// Register the built-in web search tool (DuckDuckGo, no API key)
-chat.Tools.Register(BuiltInTools.WebSearch);
+// RECOMMENDED: configure an API-backed provider before registering.
+// Tavily: 1,000 free searches per month, AI-optimized for agents.
+var webSearch = BuiltInTools.CreateWebSearch(
+    WebSearchTool.Provider.Tavily,
+    Environment.GetEnvironmentVariable("TAVILY_API_KEY"));
+chat.Tools.Register(webSearch);
+
+// Quick local trial only (rate-limited, will block after a few queries):
+// chat.Tools.Register(BuiltInTools.WebSearch);
 
 // Register DateTime so the model knows the current date
 chat.Tools.Register(BuiltInTools.DateTime);
 ```
 
-### Switching to a Premium Provider
+### Other providers
 
 ```csharp
-using LMKit.Agents.Tools.BuiltIn.Net;
-
 // Brave Search (free tier available at https://brave.com/search/api/)
 var webSearch = BuiltInTools.CreateWebSearch(WebSearchTool.Provider.Brave, "YOUR_API_KEY");
 
-// Tavily (AI-optimized search, https://tavily.com)
-var webSearch = BuiltInTools.CreateWebSearch(WebSearchTool.Provider.Tavily, "YOUR_API_KEY");
-
 // Serper (Google results via API, https://serper.dev)
 var webSearch = BuiltInTools.CreateWebSearch(WebSearchTool.Provider.Serper, "YOUR_API_KEY");
+
+// Self-hosted SearXNG
+var webSearch = new WebSearchTool(new WebSearchTool.Options
+{
+    SearchProvider = WebSearchTool.Provider.SearXNG,
+    BaseUrl = "https://your-searxng-instance.example",
+});
 ```
 
 ## Understanding the Output

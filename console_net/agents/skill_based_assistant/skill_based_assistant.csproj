@@ -8,8 +8,8 @@
   </PropertyGroup>
 
   <ItemGroup>
-		<PackageReference Include="LM-Kit.NET" Version="2026.4.4" />
-		<PackageReference Include="LM-Kit.NET.Backend.Cuda13.Windows" Version="2026.4.4" />
+		<PackageReference Include="LM-Kit.NET" Version="2026.5.1" />
+		<PackageReference Include="LM-Kit.NET.Backend.Cuda13.Windows" Version="2026.5.1" />
   </ItemGroup>
 
   <!-- Copy skills folder to output directory -->
