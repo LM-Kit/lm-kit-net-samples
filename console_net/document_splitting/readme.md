@@ -52,10 +52,10 @@ Analyzing 10 page(s)...
   segments     : 6
 ────────────────────────────
 
-Assistant — 6 documents were detected. Would you like to split them into separate PDF files? (y/n)
+Assistant: 6 documents were detected. Would you like to split them into separate PDF files? (y/n)
 > y
 
-Assistant — enter output directory (press Enter for 'C:\docs\scanned_batch_split'):
+Assistant: enter output directory (press Enter for 'C:\docs\scanned_batch_split'):
 >
 
 Splitting into 'C:\docs\scanned_batch_split'...

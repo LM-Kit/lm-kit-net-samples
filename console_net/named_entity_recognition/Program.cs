@@ -25,7 +25,7 @@ namespace named_entity_recognition
             Console.WriteLine("2 - Qwen 3.5 4B (requires approximately 3.5 GB of VRAM)");
             Console.WriteLine("3 - Qwen 3.5 9B (requires approximately 7 GB of VRAM)");
             Console.WriteLine("5 - Gemma 4 E4B (requires approximately 6 GB of VRAM)");
-            Console.WriteLine("6 - Alibaba Qwen 3.5 27B (requires approximately 18 GB of VRAM)");
+            Console.WriteLine("6 - Alibaba Qwen 3.6 27B (requires approximately 18 GB of VRAM)");
             Console.Write("Other: A custom model URI\n\n> ");
 
             string input = Console.ReadLine()?.Trim() ?? "";
@@ -81,7 +81,7 @@ namespace named_entity_recognition
                 "2" => "qwen3.5:4b",
                 "3" => "qwen3.5:9b",
                 "5" => "gemma4:e4b",
-                "6" => "qwen3.5:27b",
+                "6" => "qwen3.6:27b",
                 _ => null
             };
 

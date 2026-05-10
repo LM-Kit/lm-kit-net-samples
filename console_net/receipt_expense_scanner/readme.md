@@ -69,5 +69,5 @@ The demo uses LM-Kit.NET's `TextExtraction` class with a schema designed for rec
 | 3 | Alibaba Qwen 3.5 4B | ~3.5 GB |
 | 4 | Alibaba Qwen 3.5 9B (Recommended) | ~7 GB |
 | 5 | Google Gemma 4 E4B | ~6 GB |
-| 7 | Alibaba Qwen 3.5 27B | ~18 GB |
+| 7 | Alibaba Qwen 3.6 27B | ~18 GB |
 | 8 | Mistral Ministral 3 8B | ~6.5 GB |

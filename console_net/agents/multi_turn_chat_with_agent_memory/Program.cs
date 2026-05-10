@@ -37,9 +37,9 @@ namespace multi_turn_chat_with_memory
             Console.OutputEncoding = Encoding.UTF8;
 
             Console.Clear();
-            Console.WriteLine("Loading Alibaba Qwen 3.5 Instruct 0.8B model...");
+            Console.WriteLine("Loading Alibaba Qwen 3.5 Instruct 8B model...");
             LM model = LM.LoadFromModelID(
-                "qwen3.5:0.8b",
+                "qwen3.5:8b",
                 downloadingProgress: OnDownloadProgress,
                 loadingProgress: OnLoadProgress);
 

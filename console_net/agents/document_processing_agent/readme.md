@@ -84,19 +84,19 @@ var agent = Agent.CreateBuilder(model)
 ## Example Prompts
 
 ```
-You — How many pages does 'contract.pdf' have?
+You: How many pages does 'contract.pdf' have?
 
-You — Extract pages 1-3 from 'report.pdf' into 'summary.pdf'
+You: Extract pages 1-3 from 'report.pdf' into 'summary.pdf'
 
-You — Merge 'part1.pdf' and 'part2.pdf' into 'combined.pdf'
+You: Merge 'part1.pdf' and 'part2.pdf' into 'combined.pdf'
 
-You — Deskew 'scan.png', crop its borders, then resize to 1200x1600
+You: Deskew 'scan.png', crop its borders, then resize to 1200x1600
 
-You — Run OCR on 'receipt.jpg' in French
+You: Run OCR on 'receipt.jpg' in French
 
-You — Render page 5 of 'manual.pdf' as a PNG at 2x zoom
+You: Render page 5 of 'manual.pdf' as a PNG at 2x zoom
 
-You — Extract text from 'quarterly_report.docx'
+You: Extract text from 'quarterly_report.docx'
 ```
 
 ## Example Output
@@ -106,25 +106,25 @@ LM-Kit Document Processing Agent
 An AI agent with Document tools for PDF processing, image preprocessing, text extraction, and OCR.
 Type a document processing task, or 'q' to quit.
 
-You — Extract pages 1-3 from 'report.pdf' into 'summary.pdf', then get the text from page 1
+You: Extract pages 1-3 from 'report.pdf' into 'summary.pdf', then get the text from page 1
 
 Processing...
   │ Tool: pdf_split({"operation":"split","inputPath":"report.pdf","outputPath":"summary.pdf","pageRa...)
   │ Tool: document_text({"operation":"extract","filePath":"report.pdf","pageRange":"1"})
 
-Assistant — Done. I extracted pages 1-3 from 'report.pdf' into 'summary.pdf' (3 pages).
+Assistant: Done. I extracted pages 1-3 from 'report.pdf' into 'summary.pdf' (3 pages).
 
 The text from page 1 reads:
-"Quarterly Financial Report — Q4 2025..."
+"Quarterly Financial Report - Q4 2025..."
   [2 tool call(s), 4.2s, 3 inference(s)]
 
-You — Now deskew 'scan_001.png' and run OCR on it
+You: Now deskew 'scan_001.png' and run OCR on it
 
 Processing...
   │ Tool: image_deskew({"operation":"deskew","inputPath":"scan_001.png","outputPath":"scan_001_deske...)
   │ Tool: ocr({"operation":"recognize","imagePath":"scan_001_deskewed.png","language":"eng"})
 
-Assistant — I deskewed 'scan_001.png' (corrected 1.8° rotation) and saved the result as 'scan_001_deskewed.png'. OCR extracted the following text:
+Assistant: I deskewed 'scan_001.png' (corrected 1.8° rotation) and saved the result as 'scan_001_deskewed.png'. OCR extracted the following text:
 
 "Invoice #2024-0847
 Date: November 15, 2025

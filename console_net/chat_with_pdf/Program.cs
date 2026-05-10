@@ -57,7 +57,7 @@ namespace chat_with_pdf
             Console.WriteLine("3 - Alibaba Qwen 3.5 4B       (~3.5 GB VRAM)");
             Console.WriteLine("4 - Alibaba Qwen 3.5 9B       (~7 GB VRAM)");
             Console.WriteLine("6 - Google Gemma 4 E4B         (~6 GB VRAM)");
-            Console.WriteLine("7 - Alibaba Qwen 3.5 27B      (~18 GB VRAM)");
+            Console.WriteLine("7 - Alibaba Qwen 3.6 27B      (~18 GB VRAM)");
             Console.WriteLine("8 - Mistral Ministral 3 8B     (~6.5 GB VRAM)");
             Console.WriteLine("  *   Or enter a custom model URI");
             Console.WriteLine();
@@ -624,7 +624,7 @@ namespace chat_with_pdf
                     "3" => "qwen3.5:4b",
                     "4" => "qwen3.5:9b",
                     "6" => "gemma4:e4b",
-                    "7" => "qwen3.5:27b",
+                    "7" => "qwen3.6:27b",
                     "8" => "ministral3:8b",
                     _ => null
                 };

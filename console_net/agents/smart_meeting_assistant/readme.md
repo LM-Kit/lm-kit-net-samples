@@ -84,7 +84,7 @@ Stage 4: EMAIL DRAFTER
 | 2 | Phi-4 14.7B | ~11 GB |
 | 3 | GPT OSS 20B | ~16 GB |
 | 4 | GLM 4.7 Flash 30B | ~18 GB |
-| 5 | Qwen 3.5 27B | ~18 GB |
+| 5 | Qwen 3.6 27B | ~18 GB |
 
 ## Configuration
 

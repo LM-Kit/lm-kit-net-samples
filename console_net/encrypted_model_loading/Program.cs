@@ -102,7 +102,7 @@ namespace encrypted_model_loading
             Console.WriteLine("No plaintext model path was provided. Pick one:");
             Console.WriteLine("  1 - Google Gemma 3 270M Instruct  (~250 MB) [default]");
             Console.WriteLine("  2 - Microsoft Phi-4 Mini 3.8B     (~2.4 GB)");
-            Console.WriteLine("  3 - Alibaba Qwen 3 4B             (~2.5 GB)");
+            Console.WriteLine("  3 - Alibaba Qwen 3.5 4B           (~3.5 GB)");
             Console.WriteLine();
             Console.Write("Choice (1/2/3) or full path to a .gguf file: ");
             string input = Console.ReadLine()?.Trim() ?? "";
@@ -112,7 +112,7 @@ namespace encrypted_model_loading
             string modelId = input switch
             {
                 "2" => "phi4-mini:3.8b",
-                "3" => "qwen3:4b",
+                "3" => "qwen3.5:4b",
                 _   => "gemma3:270m",
             };
 
