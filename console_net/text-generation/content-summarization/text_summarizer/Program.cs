@@ -24,7 +24,8 @@ namespace text_summarizer
             Console.WriteLine("  4 - OpenAI GPT OSS 20B           (~16 GB VRAM)");
             Console.WriteLine("  5 - Z.ai GLM 4.7 Flash 30B      (~18 GB VRAM)");
             Console.WriteLine("  6 - Alibaba Qwen 3.6 27B         (~18 GB VRAM)");
-            Console.WriteLine("  7 - Alibaba Qwen 3.5 0.8B         (~1 GB VRAM)");
+            Console.WriteLine("  7 - Alibaba Qwen 3.6 35B-A3B     (~22 GB VRAM)");
+            Console.WriteLine("  8 - Alibaba Qwen 3.5 0.8B         (~1 GB VRAM)");
             Console.WriteLine("  8 - Meta Llama 3.2 1B            (~1 GB VRAM)");
             Console.Write("\n  Or enter a custom model URI\n\n> ");
 

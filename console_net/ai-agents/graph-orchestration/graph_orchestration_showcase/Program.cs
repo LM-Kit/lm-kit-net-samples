@@ -444,8 +444,9 @@ namespace graph_orchestration_showcase
             Console.WriteLine("  2 - Alibaba Qwen 3.5 2B    (~2 GB VRAM)  [Fastest]");
             Console.WriteLine("  3 - Google Gemma 4 E4B     (~6 GB VRAM)");
             Console.WriteLine("  4 - OpenAI GPT OSS 20B     (~12 GB VRAM) [Highest quality]");
+            Console.WriteLine("  5 - Alibaba Qwen 3.6 35B-A3B (~22 GB VRAM)");
             Console.WriteLine();
-            Console.Write("Choice (0-4) or custom model ID/URI [default 0]: ");
+            Console.Write("Choice (0-5) or custom model ID/URI [default 0]: ");
 
             string input = (Console.ReadLine() ?? "").Trim();
 
@@ -456,6 +457,7 @@ namespace graph_orchestration_showcase
                 "2" => "qwen3.5:2b",
                 "3" => "gemma4:e4b",
                 "4" => "gptoss:20b",
+                "5" => "qwen3.6:35b-a3b",
                 _ => input
             };
 

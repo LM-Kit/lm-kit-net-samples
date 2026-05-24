@@ -282,6 +282,7 @@ namespace named_entity_recognition
             Console.WriteLine("  3 - Alibaba Qwen 3.5 9B          (~7 GB VRAM) [Recommended]");
             Console.WriteLine("  4 - Google Gemma 4 E4B           (~6 GB VRAM)");
             Console.WriteLine("  5 - Alibaba Qwen 3.6 27B         (~18 GB VRAM)");
+            Console.WriteLine("  6 - Alibaba Qwen 3.6 35B-A3B     (~22 GB VRAM)");
             Console.Write("\nOr enter a custom model URI\n> ");
 
             string input = Console.ReadLine()?.Trim() ?? "1";
@@ -292,6 +293,7 @@ namespace named_entity_recognition
                 "3" => "qwen3.5:9b",
                 "4" => "gemma4:e4b",
                 "5" => "qwen3.6:27b",
+                "6" => "qwen3.6:35b-a3b",
                 _ => null,
             };
             if (modelId != null)

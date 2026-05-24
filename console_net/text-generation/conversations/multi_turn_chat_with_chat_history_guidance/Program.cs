@@ -26,6 +26,7 @@ namespace multi_turn_chat_with_chat_history_guidance
             Console.WriteLine("4 - GPT OSS 20B (requires approximately 16 GB of VRAM)");
             Console.WriteLine("5 - GLM 4.7 Flash (requires approximately 18 GB of VRAM)");
             Console.WriteLine("6 - Qwen 3.6 27B (requires approximately 18 GB of VRAM)");
+            Console.WriteLine("7 - Qwen 3.6 35B-A3B (requires approximately 22 GB of VRAM)");
             Console.Write("Other: A custom model URI\n\n> ");
 
             string input = Console.ReadLine()?.Trim() ?? "";
@@ -89,6 +90,7 @@ namespace multi_turn_chat_with_chat_history_guidance
                 "4" => "gptoss:20b",
                 "5" => "glm4.7-flash",
                 "6" => "qwen3.6:27b",
+                "7" => "qwen3.6:35b-a3b",
                 _ => null
             };
 

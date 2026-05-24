@@ -44,6 +44,7 @@ namespace function_calling
                 "4" => "gptoss:20b",
                 "5" => "glm4.7-flash",
                 "6" => "qwen3.6:27b",
+                "7" => "qwen3.6:35b-a3b",
                 _ => null
             };
 
@@ -75,6 +76,7 @@ namespace function_calling
             Console.WriteLine("4 - OpenAI GPT OSS 20B (requires approximately 16 GB of VRAM)");
             Console.WriteLine("5 - Z.ai GLM 4.7 Flash 30B (requires approximately 18 GB of VRAM)");
             Console.WriteLine("6 - Alibaba Qwen 3.6 27B (requires approximately 18 GB of VRAM)");
+            Console.WriteLine("7 - Alibaba Qwen 3.6 35B-A3B (requires approximately 22 GB of VRAM)");
             Console.Write("Other: Custom model URI\n\n> ");
 
             string? input = Console.ReadLine();

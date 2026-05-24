@@ -33,6 +33,7 @@ namespace conversational_rag
             Console.WriteLine("  3 - OpenAI GPT OSS 20B        (~16 GB VRAM)");
             Console.WriteLine("  4 - Z.ai GLM 4.7 Flash 30B    (~18 GB VRAM)");
             Console.WriteLine("  5 - Alibaba Qwen 3.6 27B       (~18 GB VRAM)");
+            Console.WriteLine("  6 - Alibaba Qwen 3.6 35B-A3B   (~22 GB VRAM)");
             Console.WriteLine("  *   Or enter a custom model URI or model ID");
             Console.WriteLine();
 
@@ -289,6 +290,7 @@ namespace conversational_rag
                 "3" => "gptoss:20b",
                 "4" => "glm4.7-flash",
                 "5" => "qwen3.6:27b",
+                "6" => "qwen3.6:35b-a3b",
                 _ => null
             };
 

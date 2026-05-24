@@ -28,7 +28,8 @@ namespace invoice_data_extraction
             Console.WriteLine("4 - Alibaba Qwen 3.5 9B       (~7 GB VRAM)");
             Console.WriteLine("6 - Google Gemma 4 E4B         (~6 GB VRAM)");
             Console.WriteLine("7 - Alibaba Qwen 3.6 27B      (~18 GB VRAM)");
-            Console.WriteLine("8 - Mistral Ministral 3 8B     (~6.5 GB VRAM)");
+            Console.WriteLine("8 - Alibaba Qwen 3.6 35B-A3B  (~22 GB VRAM)");
+            Console.WriteLine("9 - Mistral Ministral 3 8B     (~6.5 GB VRAM)");
             Console.Write("\nOther: Custom model URI or model ID\n\n> ");
 
             string input = Console.ReadLine()?.Trim() ?? "0";
@@ -110,7 +111,8 @@ namespace invoice_data_extraction
                 "4" => "qwen3.5:9b",
                 "6" => "gemma4:e4b",
                 "7" => "qwen3.6:27b",
-                "8" => "ministral3:8b",
+                "8" => "qwen3.6:35b-a3b",
+                "9" => "ministral3:8b",
                 _ => null
             };
 

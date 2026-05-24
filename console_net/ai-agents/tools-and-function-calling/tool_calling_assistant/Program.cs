@@ -35,10 +35,12 @@ namespace tool_calling_assistant
             {
                 "0" => "qwen3.5:9b",
                 "1" => "gemma4:e4b",
-                "2" => "phi4",
-                "3" => "gptoss:20b",
-                "4" => "glm4.7-flash",
-                "5" => "qwen3.6:27b",
+                "2" => "gptoss:20b",
+                "3" => "glm4.7-flash",
+                "4" => "qwen3.6:27b",
+                "5" => "qwen3.6:35b-a3b",
+                "6" => "magistral-small1.2",
+                "7" => "granite4-h:7b",
                 _ => null
             };
 
@@ -60,12 +62,14 @@ namespace tool_calling_assistant
 
             Console.Clear();
             Console.WriteLine("Please select the model you want to use:\n");
-            Console.WriteLine("0 - Alibaba Qwen 3.5 9B     (~7 GB VRAM) [Recommended]");
-            Console.WriteLine("1 - Google Gemma 4 E4B      (~6 GB VRAM)");
-            Console.WriteLine("2 - Microsoft Phi-4 14.7B    (~11 GB VRAM)");
-            Console.WriteLine("3 - OpenAI GPT OSS 20B       (~16 GB VRAM)");
-            Console.WriteLine("4 - Z.ai GLM 4.7 Flash 30B   (~18 GB VRAM)");
-            Console.WriteLine("5 - Alibaba Qwen 3.6 27B     (~18 GB VRAM)");
+            Console.WriteLine("0 - Alibaba Qwen 3.5 9B        (~7 GB VRAM) [Recommended]");
+            Console.WriteLine("1 - Google Gemma 4 E4B         (~6 GB VRAM)");
+            Console.WriteLine("2 - OpenAI GPT OSS 20B          (~16 GB VRAM)");
+            Console.WriteLine("3 - Z.ai GLM 4.7 Flash 30B      (~18 GB VRAM)");
+            Console.WriteLine("4 - Alibaba Qwen 3.6 27B        (~18 GB VRAM)");
+            Console.WriteLine("5 - Alibaba Qwen 3.6 35B-A3B    (~22 GB VRAM)");
+            Console.WriteLine("6 - Mistral Magistral Small 1.2 (~15 GB VRAM)");
+            Console.WriteLine("7 - IBM Granite 4 Tiny 7B       (~6 GB VRAM)");
             Console.Write("Other: Custom model URI or model ID\n\n> ");
 
             string? input = Console.ReadLine();
