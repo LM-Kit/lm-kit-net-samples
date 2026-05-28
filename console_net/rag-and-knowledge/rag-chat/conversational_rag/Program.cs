@@ -465,9 +465,9 @@ namespace conversational_rag
         {
             Console.ForegroundColor = ConsoleColor.Cyan;
             Console.WriteLine("  ╔══════════════════════════════════════════════════════════╗");
-            Console.WriteLine("  ║             RAG Chat Demo (RagChat)                     ║");
+            Console.WriteLine("  ║             RAG Chat Demo (RagChat)                      ║");
             Console.WriteLine("  ╠══════════════════════════════════════════════════════════╣");
-            Console.WriteLine("  ║  Multi-turn Q&A over a fictional company knowledge base ║");
+            Console.WriteLine("  ║  Multi-turn Q&A over a fictional company knowledge base  ║");
             Console.WriteLine("  ║  using retrieval-augmented generation with RagChat.      ║");
             Console.WriteLine("  ╚══════════════════════════════════════════════════════════╝");
             Console.ResetColor();
