@@ -269,14 +269,14 @@ namespace ocr_demo
         static LM LoadModelInteractive()
         {
             Console.WriteLine("Select an OCR model:");
-            Console.WriteLine("  1 - paddleocr-vl:0.9b   (compact, fast)   [Recommended]");
+            Console.WriteLine("  1 - paddleocr-vl-1.6:0.9b   (compact, fast)   [Recommended]");
             Console.WriteLine("  2 - glm-ocr             (higher accuracy)");
             Console.WriteLine("  3 - lightonocr-2:1b     (small, fast)");
             Console.Write("\nOr enter a custom model URI / id\n> ");
             string input = Console.ReadLine()?.Trim() ?? "1";
             string? modelId = input switch
             {
-                "1" => "paddleocr-vl:0.9b",
+                "1" => "paddleocr-vl-1.6:0.9b",
                 "2" => "glm-ocr",
                 "3" => "lightonocr-2:1b",
                 _ => null,

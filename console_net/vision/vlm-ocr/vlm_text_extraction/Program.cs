@@ -32,7 +32,7 @@ namespace vlm_ocr
 
             Console.Clear();
             Console.WriteLine("Please select the model you want to use:\n");
-            Console.WriteLine("0 - PaddlePaddle PaddleOCR VL 1.5 0.9B  (~1 GB VRAM) (recommended)");
+            Console.WriteLine("0 - PaddlePaddle PaddleOCR VL 1.6 0.9B  (~1 GB VRAM) (recommended)");
             Console.WriteLine("1 - Z.ai GLM-OCR 0.9B                   (~1 GB VRAM)");
             Console.WriteLine("2 - LightOn LightOnOCR 2 1B             (~2 GB VRAM)");
             Console.WriteLine("3 - Z.ai GLM-V 4.6 Flash 10B            (~7 GB VRAM)");
@@ -177,7 +177,7 @@ namespace vlm_ocr
         {
             string? modelId = input switch
             {
-                "0" => "paddleocr-vl:0.9b",
+                "0" => "paddleocr-vl-1.6:0.9b",
                 "1" => "glm-ocr",
                 "2" => "lightonocr-2:1b",
                 "3" => "glm-4.6v-flash",

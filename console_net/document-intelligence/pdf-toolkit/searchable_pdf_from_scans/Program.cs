@@ -64,7 +64,7 @@ namespace searchable_pdf_from_scans
         static string PromptModel()
         {
             Console.WriteLine("Pick a VLM-OCR model:");
-            Console.WriteLine("  1  paddleocr-vl:0.9b   (fast, low-VRAM, default)");
+            Console.WriteLine("  1  paddleocr-vl-1.6:0.9b   (fast, low-VRAM, default)");
             Console.WriteLine("  2  glm-ocr             (higher accuracy)");
             Console.WriteLine("  3  lightonocr-2:1b     (balanced)");
             Console.Write("Choice [1-3] (default 1): ");
@@ -73,7 +73,7 @@ namespace searchable_pdf_from_scans
             {
                 "2" => "glm-ocr",
                 "3" => "lightonocr-2:1b",
-                _ => "paddleocr-vl:0.9b",
+                _ => "paddleocr-vl-1.6:0.9b",
             };
         }
 

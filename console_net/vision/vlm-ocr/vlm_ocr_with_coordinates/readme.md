@@ -15,7 +15,7 @@ A demo for extracting text regions with bounding boxes from images and documents
 
 - .NET 8.0 or later
 - LM-Kit.NET SDK
-- Sufficient VRAM for the selected model (~1 GB for PaddleOCR VL 1.5)
+- Sufficient VRAM for the selected model (~1 GB for PaddleOCR VL 1.6)
 
 ## Usage
 

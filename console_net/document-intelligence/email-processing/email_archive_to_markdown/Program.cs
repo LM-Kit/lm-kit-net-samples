@@ -17,8 +17,8 @@ namespace email_archive_to_markdown
             Console.Clear();
             WriteHeader();
 
-            Console.WriteLine("Loading paddleocr-vl:0.9b (used for embedded scans / attachments) ...");
-            using LM ocrModel = LM.LoadFromModelID("paddleocr-vl:0.9b",
+            Console.WriteLine("Loading paddleocr-vl-1.6:0.9b (used for embedded scans / attachments) ...");
+            using LM ocrModel = LM.LoadFromModelID("paddleocr-vl-1.6:0.9b",
                 downloadingProgress: OnDownloadProgress,
                 loadingProgress: OnLoadProgress);
             Console.WriteLine();

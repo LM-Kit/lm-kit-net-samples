@@ -17,8 +17,8 @@ namespace multi_format_to_markdown
             Console.Clear();
             WriteHeader();
 
-            Console.WriteLine("Loading paddleocr-vl:0.9b (used for scanned / image pages) ...");
-            using LM ocrModel = LM.LoadFromModelID("paddleocr-vl:0.9b",
+            Console.WriteLine("Loading paddleocr-vl-1.6:0.9b (used for scanned / image pages) ...");
+            using LM ocrModel = LM.LoadFromModelID("paddleocr-vl-1.6:0.9b",
                 downloadingProgress: OnDownloadProgress,
                 loadingProgress: OnLoadProgress);
             Console.WriteLine();

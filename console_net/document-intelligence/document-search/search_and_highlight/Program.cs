@@ -279,7 +279,7 @@ namespace search_and_highlight
             if (ocrChoice == "1")
             {
                 LM model = LM.LoadFromModelID(
-                    "paddleocr-vl:0.9b",
+                    "paddleocr-vl-1.6:0.9b",
                     downloadingProgress: OnDownloadProgress,
                     loadingProgress: OnLoadProgress);
 

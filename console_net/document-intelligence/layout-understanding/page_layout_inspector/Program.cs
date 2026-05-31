@@ -18,8 +18,8 @@ namespace page_layout_inspector
             Console.Clear();
             WriteHeader();
 
-            Console.WriteLine("Loading paddleocr-vl:0.9b ...");
-            using LM model = LM.LoadFromModelID("paddleocr-vl:0.9b",
+            Console.WriteLine("Loading paddleocr-vl-1.6:0.9b ...");
+            using LM model = LM.LoadFromModelID("paddleocr-vl-1.6:0.9b",
                 downloadingProgress: OnDownloadProgress,
                 loadingProgress: OnLoadProgress);
             Console.WriteLine();

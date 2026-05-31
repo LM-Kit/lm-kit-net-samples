@@ -20,7 +20,7 @@ namespace vlm_ocr_with_coordinates
         // This list will grow as more engines add bounding-box capabilities.
         private static readonly (string ModelId, string Label)[] SupportedModels =
         [
-            ("paddleocr-vl:0.9b", "PaddlePaddle PaddleOCR VL 1.5 0.9B  (~1 GB VRAM)")
+            ("paddleocr-vl-1.6:0.9b", "PaddlePaddle PaddleOCR VL 1.6 0.9B  (~1 GB VRAM)")
         ];
 
         private static void Main(string[] args)
