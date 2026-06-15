@@ -44,6 +44,7 @@ namespace vlm_ocr
             Console.WriteLine("9 - Alibaba Qwen 3.6 27B                 (~18 GB VRAM)");
             Console.WriteLine("10 - Alibaba Qwen 3.6 35B-A3B             (~22 GB VRAM)");
             Console.WriteLine("11 - Mistral Ministral 3 8B               (~6.5 GB VRAM)");
+            Console.WriteLine("12 - Google Gemma 4 26B-A4B               (~18 GB VRAM)");
             Console.Write("\nOther entry: A custom model URI\n\n> ");
 
             string input = Console.ReadLine()?.Trim() ?? "0";
@@ -189,6 +190,7 @@ namespace vlm_ocr
                 "9" => "qwen3.6:27b",
                 "10" => "qwen3.6:35b-a3b",
                 "11" => "ministral3:8b",
+                "12" => "gemma4:26b-a4b",
                 _ => null
             };
 

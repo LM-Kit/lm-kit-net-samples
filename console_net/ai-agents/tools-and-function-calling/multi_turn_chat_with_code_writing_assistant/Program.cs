@@ -38,6 +38,7 @@ namespace multi_turn_chat_with_code_writing_assistant
                 "3" => "qwen3-coder:30b-a3b",
                 "4" => "glm4.7-flash",
                 "5" => "qwen3.6:35b-a3b",
+                "6" => "gemma4:26b-a4b",
                 _ => null
             };
 
@@ -70,6 +71,7 @@ namespace multi_turn_chat_with_code_writing_assistant
             Console.WriteLine("3 - Alibaba Qwen 3 Coder 30B-A3B  (~18 GB VRAM) [Recommended]");
             Console.WriteLine("4 - Z.ai GLM 4.7 Flash 30B        (~18 GB VRAM)");
             Console.WriteLine("5 - Alibaba Qwen 3.6 35B-A3B      (~22 GB VRAM)");
+            Console.WriteLine("6 - Google Gemma 4 26B-A4B        (~18 GB VRAM)");
             Console.Write("Other: Custom model URI or model ID\n\n> ");
 
             string? input = Console.ReadLine();

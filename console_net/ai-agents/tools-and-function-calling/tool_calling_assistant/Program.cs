@@ -41,6 +41,7 @@ namespace tool_calling_assistant
                 "5" => "qwen3.6:35b-a3b",
                 "6" => "magistral-small1.2",
                 "7" => "granite4-h:7b",
+                "8" => "gemma4:26b-a4b",
                 _ => null
             };
 
@@ -70,6 +71,7 @@ namespace tool_calling_assistant
             Console.WriteLine("5 - Alibaba Qwen 3.6 35B-A3B    (~22 GB VRAM)");
             Console.WriteLine("6 - Mistral Magistral Small 1.2 (~15 GB VRAM)");
             Console.WriteLine("7 - IBM Granite 4 Tiny 7B       (~6 GB VRAM)");
+            Console.WriteLine("8 - Google Gemma 4 26B-A4B     (~18 GB VRAM)");
             Console.Write("Other: Custom model URI or model ID\n\n> ");
 
             string? input = Console.ReadLine();

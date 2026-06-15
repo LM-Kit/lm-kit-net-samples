@@ -38,6 +38,7 @@ namespace document_processing_agent
                 "3" => "glm4.7-flash",
                 "4" => "qwen3.6:27b",
                 "5" => "qwen3.6:35b-a3b",
+                "6" => "gemma4:26b-a4b",
                 _ => null
             };
 
@@ -65,6 +66,7 @@ namespace document_processing_agent
             Console.WriteLine("3 - Z.ai GLM 4.7 Flash      (~18 GB VRAM)");
             Console.WriteLine("4 - Alibaba Qwen 3.6 27B    (~18 GB VRAM)");
             Console.WriteLine("5 - Alibaba Qwen 3.6 35B-A3B (~22 GB VRAM)");
+            Console.WriteLine("6 - Google Gemma 4 26B-A4B   (~18 GB VRAM)");
             Console.Write("Other: Custom model URI or model ID\n\n> ");
 
             string inputStr = Console.ReadLine() ?? string.Empty;

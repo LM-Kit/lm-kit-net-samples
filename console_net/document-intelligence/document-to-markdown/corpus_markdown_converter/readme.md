@@ -100,5 +100,6 @@ File.WriteAllText("report.md", result.Markdown);
 | 8 | Alibaba Qwen 3.6 27B              | ~18 GB  |
 | 9 | Alibaba Qwen 3.6 35B-A3B          | ~22 GB  |
 | 10 | Mistral Ministral 3 8B           | ~6.5 GB |
+| 11 | Google Gemma 4 26B-A4B           | ~18 GB  |
 
 Any other input is treated as a custom model URI (local path, HTTP, or Hugging Face link).

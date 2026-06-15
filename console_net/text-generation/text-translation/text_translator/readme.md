@@ -75,6 +75,7 @@ Zona peatonal - Prohibido el paso de vehiculos
 | Google Gemma 4 E4B | ~6 GB |
 | Alibaba Qwen 3.6 27B | ~18 GB |
 | Alibaba Qwen 3.6 35B-A3B | ~22 GB |
+| Google Gemma 4 26B-A4B | ~18 GB |
 
 ## Supported Languages
 

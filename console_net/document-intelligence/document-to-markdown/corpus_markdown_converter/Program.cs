@@ -215,6 +215,7 @@ namespace document_to_markdown
             Console.WriteLine("  8 - Alibaba Qwen 3.6 27B       (~18 GB VRAM)");
             Console.WriteLine("  9 - Alibaba Qwen 3.6 35B-A3B   (~22 GB VRAM)");
             Console.WriteLine(" 10 - Mistral Ministral 3 8B     (~6.5 GB VRAM)");
+            Console.WriteLine(" 11 - Google Gemma 4 26B-A4B     (~18 GB VRAM)");
             Console.Write("\nOther entry: A custom model URI\n\n> ");
 
             string input = Console.ReadLine()?.Trim() ?? "0";
@@ -232,6 +233,7 @@ namespace document_to_markdown
                 "8" => "qwen3.6:27b",
                 "9" => "qwen3.6:35b-a3b",
                 "10" => "ministral3:8b",
+                "11" => "gemma4:26b-a4b",
                 _ => null
             };
 

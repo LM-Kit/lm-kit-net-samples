@@ -28,6 +28,7 @@ namespace single_turn_chat
             Console.WriteLine("  5 - Z.ai GLM 4.7 Flash 30B      (~18 GB VRAM)");
             Console.WriteLine("  6 - Alibaba Qwen 3.6 27B         (~18 GB VRAM)");
             Console.WriteLine("  7 - Alibaba Qwen 3.6 35B-A3B     (~22 GB VRAM)");
+            Console.WriteLine("  8 - Google Gemma 4 26B-A4B       (~18 GB VRAM)");
             Console.Write("\n  Or enter a custom model URI\n\n> ");
 
             string input = Console.ReadLine()?.Trim() ?? "";
@@ -79,6 +80,7 @@ namespace single_turn_chat
                 "5" => "glm4.7-flash",
                 "6" => "qwen3.6:27b",
                 "7" => "qwen3.6:35b-a3b",
+                "8" => "gemma4:26b-a4b",
                 _ => null
             };
 
