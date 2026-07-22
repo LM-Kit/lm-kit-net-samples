@@ -303,6 +303,7 @@ namespace embeddings_demo
             Console.WriteLine("  2 - Qwen3 Embedding 4B      (higher quality)");
             Console.WriteLine("  3 - Qwen3 Embedding 8B      (best quality)");
             Console.WriteLine("  4 - Embedding Gemma 300M    (very small)");
+            Console.WriteLine("  5 - Harrier OSS v1 0.6B     (compact, multilingual)");
             Console.Write("\nOr enter a custom model URI / model id\n> ");
             string input = Console.ReadLine()?.Trim() ?? "1";
             string? modelId = input switch
@@ -311,6 +312,7 @@ namespace embeddings_demo
                 "2" => "qwen3-embedding:4b",
                 "3" => "qwen3-embedding:8b",
                 "4" => "embeddinggemma-300m",
+                "5" => "harrier-oss:0.6b",
                 _ => null,
             };
             if (modelId != null)

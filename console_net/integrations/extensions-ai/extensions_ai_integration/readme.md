@@ -13,7 +13,7 @@ This demo shows how to use LM-Kit.NET through the standard [Microsoft.Extensions
 ## Prerequisites
 
 - .NET 8.0 SDK
-- Sufficient VRAM for `gemma4:e4b` (~3 GB) and `embeddinggemma-300m` (~300 MB)
+- Sufficient VRAM for `gemma4:e4b` (~3 GB) and `embeddinggemma-300m` (~300 MB; `harrier-oss:0.6b` at ~400 MB is a drop-in multilingual alternative)
 
 ## How It Works
 

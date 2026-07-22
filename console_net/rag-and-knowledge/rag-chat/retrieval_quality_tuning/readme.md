@@ -21,7 +21,7 @@ The knowledge base contains **entirely fictional documentation** for a made-up d
 
 ## How It Works
 
-1. **Embedding model loading**: the `embeddinggemma-300m` model is loaded for vector operations
+1. **Embedding model loading**: the `embeddinggemma-300m` model is loaded for vector operations (`harrier-oss:0.6b` is a drop-in multilingual alternative)
 2. **Indexing**: 11 fictional NebulaDB documentation topics are split into chunks (max 300 tokens) and embedded into a `RagEngine`
 3. **Interactive loop**: you enter queries and commands to explore how different retrieval configurations affect result quality
 4. **Strategy switching**: each command instantly reconfigures the `RagEngine` properties (`RetrievalStrategy`, `MmrLambda`, `ContextWindow`, `Reranker`)

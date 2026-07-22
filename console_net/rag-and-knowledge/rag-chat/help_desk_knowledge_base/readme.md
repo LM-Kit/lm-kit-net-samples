@@ -21,7 +21,7 @@ The knowledge base contains **fictional documentation** for a made-up SaaS produ
 
 ## How It Works
 
-1. **Model loading**: a chat model (user-selected) and an embedding model (`embeddinggemma-300m`) are loaded
+1. **Model loading**: a chat model (user-selected) and an embedding model (`embeddinggemma-300m`; `harrier-oss:0.6b` is a drop-in multilingual alternative) are loaded
 2. **Knowledge base initialization**: if no `.dat` file exists, 20 support articles are indexed with `MarkdownChunking` and persisted. On subsequent runs, the file is loaded directly (no re-embedding).
 3. **Query pipeline**: on each question:
    - A `DataFilter` is applied if a category scope is set (returns `true` to exclude non-matching sections)

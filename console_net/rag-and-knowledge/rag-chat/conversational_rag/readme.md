@@ -21,7 +21,7 @@ The knowledge base contains **entirely fictional data** about a made-up company 
 
 ## How It Works
 
-1. **Model loading**: a chat model (user-selected) and an embedding model (`embeddinggemma-300m`) are loaded
+1. **Model loading**: a chat model (user-selected) and an embedding model (`embeddinggemma-300m`; `harrier-oss:0.6b` is a drop-in multilingual alternative) are loaded
 2. **Indexing**: five topic articles about the fictional NovaPulse company are split into chunks (max 400 tokens) and embedded into the `RagEngine`
 3. **RagChat initialization**: a `RagChat` instance wraps the engine with a multi-turn conversation
 4. **Query loop**: on each question, `RagChat.SubmitAsync` orchestrates:

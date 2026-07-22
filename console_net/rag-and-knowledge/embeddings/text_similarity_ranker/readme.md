@@ -4,7 +4,7 @@ Interactive console app that indexes a folder of `.md` / `.txt` files (paragraph
 
 ## What it shows
 
-- `LM.LoadFromModelID(...)` with picker for `qwen3-embedding:0.6b` / `4b` / `8b` / `embeddinggemma-300m`.
+- `LM.LoadFromModelID(...)` with picker for `qwen3-embedding:0.6b` / `4b` / `8b` / `embeddinggemma-300m` / `harrier-oss:0.6b`.
 - `Embedder.GetEmbeddings(string[])` for batched chunk embedding (high throughput).
 - `Embedder.GetQueryEmbeddings(text)` for the asymmetric query side.
 - `Embedder.GetCosineSimilarity(a, b)` for ranking.
