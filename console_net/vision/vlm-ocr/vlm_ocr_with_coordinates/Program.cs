@@ -20,7 +20,8 @@ namespace vlm_ocr_with_coordinates
         // This list will grow as more engines add bounding-box capabilities.
         private static readonly (string ModelId, string Label)[] SupportedModels =
         [
-            ("paddleocr-vl-1.6:0.9b", "PaddlePaddle PaddleOCR VL 1.6 0.9B  (~1 GB VRAM)")
+            ("paddleocr-vl-1.6:0.9b", "PaddlePaddle PaddleOCR VL 1.6 0.9B  (~1 GB VRAM) - text-line spotting"),
+            ("infinity-parser2-flash", "INF Tech Infinity-Parser2 Flash 2B  (~2 GB VRAM) - full layout analysis")
         ];
 
         private static void Main(string[] args)
@@ -45,11 +46,18 @@ namespace vlm_ocr_with_coordinates
             string input = Console.ReadLine()?.Trim() ?? "0";
             LM model = LoadModel(input);
 
+            // Each engine exposes its native level of spatial understanding.
+            // Layout-analysis models (Infinity-Parser2) locate and classify
+            // block-level regions (title, text, table, formula, figure, ...);
+            // spotting models (PaddleOCR-VL) locate individual text lines.
+            // Pick the richest intent the model supports.
+            IReadOnlyList<VlmOcrIntent> supportedIntents = VlmOcr.GetSupportedIntents(model);
+            VlmOcrIntent intent = supportedIntents.Contains(VlmOcrIntent.LayoutAnalysis)
+                ? VlmOcrIntent.LayoutAnalysis
+                : VlmOcrIntent.OcrWithCoordinates;
+
             Console.Clear();
-            Console.ForegroundColor = ConsoleColor.Cyan;
-            Console.WriteLine("LM-Kit VLM OCR with Coordinates Demo");
-            Console.ResetColor();
-            Console.WriteLine("Detects text regions with bounding boxes and draws them on the image.\n");
+            PrintBanner(intent);
 
             while (true)
             {
@@ -88,9 +96,9 @@ namespace vlm_ocr_with_coordinates
                     }
                 }
 
-                var ocr = new VlmOcr(model, VlmOcrIntent.OcrWithCoordinates)
+                var ocr = new VlmOcr(model, intent)
                 {
-                    MaximumCompletionTokens = 4096
+                    MaximumCompletionTokens = 8192
                 };
 
                 for (int pageIndex = 0; pageIndex < attachment.PageCount; pageIndex++)
@@ -104,12 +112,27 @@ namespace vlm_ocr_with_coordinates
                     sw.Stop();
 
                     PageElement page = result.PageElement;
+
+                    // Only elements with a real bounding box are positioned regions;
+                    // an engine that could not produce coordinates yields plain text.
+                    List<TextElement> regions = page.TextElements
+                        .Where(e => e.Width > 0 && e.Height > 0)
+                        .ToList();
+
                     int index = 0;
 
-                    foreach (TextElement element in page.TextElements)
+                    foreach (TextElement element in regions)
                     {
-                        Console.WriteLine($"  [{index}] \"{element.Text}\"");
-                        Console.WriteLine($"       Position: ({element.Left:F1}, {element.Top:F1})  " +
+                        Console.Write($"  [{index,3}] ");
+
+                        Console.ForegroundColor = GetConsoleColor(element.Category);
+                        Console.Write($"{FormatCategory(element.Category),-16}");
+                        Console.ResetColor();
+
+                        Console.WriteLine(string.IsNullOrEmpty(element.Text)
+                            ? "(no text content)"
+                            : $"\"{Preview(element.Text)}\"");
+                        Console.WriteLine($"        Position: ({element.Left:F1}, {element.Top:F1})  " +
                                           $"Size: {element.Width:F1} x {element.Height:F1}");
                         index++;
                     }
@@ -117,93 +140,21 @@ namespace vlm_ocr_with_coordinates
                     if (index == 0)
                     {
                         Console.ForegroundColor = ConsoleColor.Yellow;
-                        Console.WriteLine("  No text regions with coordinates detected.");
+                        Console.WriteLine("  No regions with coordinates detected.");
                         Console.ResetColor();
                         Console.WriteLine($"\n  Raw text:\n{page.Text}");
                     }
                     else
                     {
                         Console.WriteLine($"\n  Total regions: {index}");
+                        PrintLegend(regions);
                     }
+
                     if (index > 0)
                     {
-                        string inputPath = attachment.Path;
-
-                        string annotatedPath = BuildAnnotatedPath(inputPath, pageIndex, attachment.PageCount);
-
-                        try
-                        {
-                            ImageBuffer image;
-                            bool ownImage;
-
-                            string ext = Path.GetExtension(inputPath);
-                            bool isRawImage = IsImageExtension(ext);
-
-                            if (isRawImage && attachment.PageCount == 1)
-                            {
-                                // Single image file: load directly.
-                                image = ImageBuffer.LoadAsRGB(inputPath);
-                                ownImage = true;
-                            }
-                            else
-                            {
-                                // Document (PDF, etc.): render the specific page.
-                                image = PdfToImage.RenderPage(attachment, pageIndex);
-                                ownImage = true;
-                            }
-
-                            try
-                            {
-                                var canvas = new Canvas(image) { Antialiasing = true };
-                                var pen = new Pen(new Color32(255, 0, 0), 2) { LineJoin = LineJoin.Miter };
-
-                                // Scale OCR coordinates to the rendered image dimensions.
-                                double scaleX = page.Width > 0 ? image.Width / page.Width : 1;
-                                double scaleY = page.Height > 0 ? image.Height / page.Height : 1;
-
-                                foreach (TextElement element in page.TextElements)
-                                {
-                                    var rect = Rectangle.FromSize(
-                                        element.Left * scaleX,
-                                        element.Top * scaleY,
-                                        element.Width * scaleX,
-                                        element.Height * scaleY);
-
-                                    canvas.DrawRectangle(rect, pen);
-                                }
-
-                                image.SaveAsPng(annotatedPath);
-
-                                Console.ForegroundColor = ConsoleColor.Green;
-                                Console.WriteLine($"\n  Annotated image saved to: {annotatedPath}");
-                                Console.ResetColor();
-
-                                try
-                                {
-                                    Process.Start(new ProcessStartInfo(annotatedPath) { UseShellExecute = true });
-                                }
-                                catch (Exception ex)
-                                {
-                                    Console.ForegroundColor = ConsoleColor.Yellow;
-                                    Console.WriteLine($"  Could not auto-open file: {ex.Message}");
-                                    Console.ResetColor();
-                                }
-                            }
-                            finally
-                            {
-                                if (ownImage)
-                                {
-                                    image.Dispose();
-                                }
-                            }
-                        }
-                        catch (Exception e)
-                        {
-                            Console.ForegroundColor = ConsoleColor.Red;
-                            Console.WriteLine($"\n  Could not save annotated image: {e.Message}");
-                            Console.ResetColor();
-                        }
+                        SaveAnnotatedImage(attachment, page, regions, pageIndex);
                     }
+
                     double elapsedSeconds = sw.Elapsed.TotalSeconds;
 
                     Console.ForegroundColor = ConsoleColor.Blue;
@@ -232,11 +183,237 @@ namespace vlm_ocr_with_coordinates
                 }
 
                 Console.Clear();
-                Console.ForegroundColor = ConsoleColor.Cyan;
-                Console.WriteLine("LM-Kit VLM OCR with Coordinates Demo");
-                Console.ResetColor();
-                Console.WriteLine("Detects text regions with bounding boxes and draws them on the image.\n");
+                PrintBanner(intent);
             }
+        }
+
+        private static void PrintBanner(VlmOcrIntent intent)
+        {
+            Console.ForegroundColor = ConsoleColor.Cyan;
+            Console.WriteLine("LM-Kit VLM OCR with Coordinates Demo");
+            Console.ResetColor();
+
+            if (intent == VlmOcrIntent.LayoutAnalysis)
+            {
+                Console.WriteLine("Mode: layout analysis. Every region is located and classified");
+                Console.WriteLine("(title, text, table, formula, figure, captions, footers, ...),");
+                Console.WriteLine("then drawn on the image with one color per category.\n");
+            }
+            else
+            {
+                Console.WriteLine("Mode: text spotting. Individual text lines are located with");
+                Console.WriteLine("bounding boxes and drawn on the image.\n");
+            }
+        }
+
+        /// <summary>
+        /// Renders the page's regions onto the source image, one border color per
+        /// layout category, and saves the result next to the input file.
+        /// </summary>
+        private static void SaveAnnotatedImage(
+            Attachment attachment,
+            PageElement page,
+            List<TextElement> regions,
+            int pageIndex)
+        {
+            string inputPath = attachment.Path;
+            string annotatedPath = BuildAnnotatedPath(inputPath, pageIndex, attachment.PageCount);
+
+            try
+            {
+                ImageBuffer image;
+
+                string ext = Path.GetExtension(inputPath);
+
+                if (IsImageExtension(ext) && attachment.PageCount == 1)
+                {
+                    // Single image file: load directly.
+                    image = ImageBuffer.LoadAsRGB(inputPath);
+                }
+                else
+                {
+                    // Document (PDF, etc.): render the specific page.
+                    image = PdfToImage.RenderPage(attachment, pageIndex);
+                }
+
+                try
+                {
+                    var canvas = new Canvas(image) { Antialiasing = true };
+
+                    // Scale page coordinates to the rendered image dimensions.
+                    double scaleX = page.Width > 0 ? image.Width / page.Width : 1;
+                    double scaleY = page.Height > 0 ? image.Height / page.Height : 1;
+
+                    foreach (TextElement element in regions)
+                    {
+                        var rect = Rectangle.FromSize(
+                            element.Left * scaleX,
+                            element.Top * scaleY,
+                            element.Width * scaleX,
+                            element.Height * scaleY);
+
+                        var pen = new Pen(GetColor(element.Category), 2) { LineJoin = LineJoin.Miter };
+                        canvas.DrawRectangle(rect, pen);
+                    }
+
+                    image.SaveAsPng(annotatedPath);
+
+                    Console.ForegroundColor = ConsoleColor.Green;
+                    Console.WriteLine($"\n  Annotated image saved to: {annotatedPath}");
+                    Console.ResetColor();
+
+                    try
+                    {
+                        Process.Start(new ProcessStartInfo(annotatedPath) { UseShellExecute = true });
+                    }
+                    catch (Exception ex)
+                    {
+                        Console.ForegroundColor = ConsoleColor.Yellow;
+                        Console.WriteLine($"  Could not auto-open file: {ex.Message}");
+                        Console.ResetColor();
+                    }
+                }
+                finally
+                {
+                    image.Dispose();
+                }
+            }
+            catch (Exception e)
+            {
+                Console.ForegroundColor = ConsoleColor.Red;
+                Console.WriteLine($"\n  Could not save annotated image: {e.Message}");
+                Console.ResetColor();
+            }
+        }
+
+        /// <summary>
+        /// Prints the categories present on the page with their box colors,
+        /// so the annotated image can be read at a glance.
+        /// </summary>
+        private static void PrintLegend(List<TextElement> regions)
+        {
+            var categories = regions
+                .Select(e => e.Category)
+                .Distinct()
+                .ToList();
+
+            if (categories.Count == 1 && categories[0] == LayoutElementCategory.Unknown)
+            {
+                // Spotting output carries no classification: a legend adds nothing.
+                return;
+            }
+
+            Console.Write("\n  Legend: ");
+
+            for (int i = 0; i < categories.Count; i++)
+            {
+                if (i > 0)
+                {
+                    Console.Write(", ");
+                }
+
+                Console.ForegroundColor = GetConsoleColor(categories[i]);
+                Console.Write(FormatCategory(categories[i]));
+                Console.ResetColor();
+            }
+
+            Console.WriteLine();
+        }
+
+        /// <summary>
+        /// The border color drawn on the annotated image for a layout category.
+        /// Captions reuse a lighter shade of their parent element's color.
+        /// </summary>
+        private static Color32 GetColor(LayoutElementCategory category)
+        {
+            switch (category)
+            {
+                case LayoutElementCategory.Title: return new Color32(147, 51, 234);   // purple
+                case LayoutElementCategory.Text: return new Color32(37, 99, 235);     // blue
+                case LayoutElementCategory.Table: return new Color32(22, 163, 74);    // green
+                case LayoutElementCategory.TableCaption: return new Color32(74, 222, 128);
+                case LayoutElementCategory.TableFootnote: return new Color32(21, 128, 61);
+                case LayoutElementCategory.Formula: return new Color32(13, 148, 136); // teal
+                case LayoutElementCategory.FormulaCaption: return new Color32(45, 212, 191);
+                case LayoutElementCategory.Figure: return new Color32(249, 115, 22);  // orange
+                case LayoutElementCategory.FigureCaption: return new Color32(251, 146, 60);
+                case LayoutElementCategory.FigureFootnote: return new Color32(194, 65, 12);
+                case LayoutElementCategory.Header: return new Color32(120, 120, 120); // gray
+                case LayoutElementCategory.Footer: return new Color32(120, 120, 120);
+                case LayoutElementCategory.PageFootnote: return new Color32(87, 83, 78);
+                default: return new Color32(255, 0, 0);                               // red
+            }
+        }
+
+        /// <summary>
+        /// The console color used for a category tag; the closest match to the
+        /// color drawn on the annotated image.
+        /// </summary>
+        private static ConsoleColor GetConsoleColor(LayoutElementCategory category)
+        {
+            switch (category)
+            {
+                case LayoutElementCategory.Title: return ConsoleColor.Magenta;
+                case LayoutElementCategory.Text: return ConsoleColor.Blue;
+                case LayoutElementCategory.Table: return ConsoleColor.Green;
+                case LayoutElementCategory.TableCaption: return ConsoleColor.DarkGreen;
+                case LayoutElementCategory.TableFootnote: return ConsoleColor.DarkGreen;
+                case LayoutElementCategory.Formula: return ConsoleColor.Cyan;
+                case LayoutElementCategory.FormulaCaption: return ConsoleColor.DarkCyan;
+                case LayoutElementCategory.Figure: return ConsoleColor.DarkYellow;
+                case LayoutElementCategory.FigureCaption: return ConsoleColor.DarkYellow;
+                case LayoutElementCategory.FigureFootnote: return ConsoleColor.DarkYellow;
+                case LayoutElementCategory.Header: return ConsoleColor.DarkGray;
+                case LayoutElementCategory.Footer: return ConsoleColor.DarkGray;
+                case LayoutElementCategory.PageFootnote: return ConsoleColor.DarkGray;
+                default: return ConsoleColor.Red;
+            }
+        }
+
+        private static string FormatCategory(LayoutElementCategory category)
+        {
+            switch (category)
+            {
+                case LayoutElementCategory.Unknown: return "text line";
+                case LayoutElementCategory.FigureCaption: return "figure caption";
+                case LayoutElementCategory.FigureFootnote: return "figure footnote";
+                case LayoutElementCategory.TableCaption: return "table caption";
+                case LayoutElementCategory.TableFootnote: return "table footnote";
+                case LayoutElementCategory.FormulaCaption: return "formula caption";
+                case LayoutElementCategory.PageFootnote: return "page footnote";
+                default: return category.ToString().ToLowerInvariant();
+            }
+        }
+
+        /// <summary>
+        /// Collapses a region's content (which can be multi-line Markdown, HTML,
+        /// or LaTeX) into a single truncated console line.
+        /// </summary>
+        private static string Preview(string text, int maxLength = 70)
+        {
+            var sb = new StringBuilder(Math.Min(text.Length, maxLength + 3));
+            bool lastWasSpace = false;
+
+            foreach (char c in text)
+            {
+                char mapped = char.IsWhiteSpace(c) ? ' ' : c;
+
+                if (mapped == ' ' && lastWasSpace)
+                {
+                    continue;
+                }
+
+                sb.Append(mapped);
+                lastWasSpace = mapped == ' ';
+
+                if (sb.Length >= maxLength)
+                {
+                    sb.Append("...");
+                    break;
+                }
+            }
+
+            return sb.ToString();
         }
 
         private static bool IsImageExtension(string extension)

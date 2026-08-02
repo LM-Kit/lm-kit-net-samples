@@ -35,7 +35,7 @@ namespace multi_turn_chat
             MultiTurnConversation chat = new(model)
             {
                 MaximumCompletionTokens = 2048,
-                SamplingMode = new GreedyDecoding(),
+                SamplingMode = new RandomSampling() { Temperature = 0.7f },
                 SystemPrompt = "You are a chatbot that always responds promptly and helpfully to user requests."
             };
 
