@@ -6,7 +6,7 @@ A demo for multi-turn conversations about images using LM-Kit.NET vision-languag
 
 - Chat about images with vision-language models
 - Multi-turn conversation with context retention
-- Support for multiple VLMs: GLM-V 4.6, MiniCPM, Qwen 3, Qwen 3.5, Gemma 4, Ministral
+- Support for multiple VLMs: GLM-V 4.6, MiniCPM, Qwen 3, Qwen 3.5, Gemma 4, Ministral, Muse Glimmer
 - Real-time streaming responses
 - Follow-up questions about the same image
 
@@ -14,7 +14,7 @@ A demo for multi-turn conversations about images using LM-Kit.NET vision-languag
 
 - .NET 8.0 or later
 - LM-Kit.NET SDK
-- Sufficient VRAM for the selected model (2.5~18 GB depending on model choice)
+- Sufficient VRAM for the selected model (2.5~22 GB depending on model choice)
 
 ## Usage
 

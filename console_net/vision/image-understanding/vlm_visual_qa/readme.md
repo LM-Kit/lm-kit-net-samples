@@ -4,7 +4,7 @@ Interactive console app that asks vision-language models analytical questions ab
 
 ## What it shows
 
-- `LM.LoadFromModelID("qwen3.5:4b" | "qwen3.5:9b" | "gemma4:e2b" | "gemma4:e4b" | "glm-4.6v-flash")` (current catalog).
+- `LM.LoadFromModelID("qwen3.5:4b" | "qwen3.5:9b" | "gemma4:e2b" | "gemma4:e4b" | "glm-4.6v-flash" | "muse-glimmer:30b")` (current catalog).
 - `LM.HasVision` for capability check at runtime.
 - `LMKit.Data.Attachment(imagePath)` to attach an image to a turn.
 - `chat.Submit(new ChatHistory.Message(prompt, attachment))` for vision input.

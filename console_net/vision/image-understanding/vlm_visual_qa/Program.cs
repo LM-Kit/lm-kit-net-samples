@@ -194,6 +194,7 @@ namespace vlm_visual_qa
             Console.WriteLine("  3 - Google Gemma 4 E2B            (~3 GB VRAM)");
             Console.WriteLine("  4 - Google Gemma 4 E4B            (~5 GB VRAM)");
             Console.WriteLine("  5 - GLM 4.6V Flash                (~6 GB VRAM)");
+            Console.WriteLine("  6 - Meta Muse Glimmer 30B         (~20 GB VRAM)");
             Console.Write("\nOr enter a custom model URI / id\n> ");
             string input = Console.ReadLine()?.Trim() ?? "1";
             string? modelId = input switch
@@ -203,6 +204,7 @@ namespace vlm_visual_qa
                 "3" => "gemma4:e2b",
                 "4" => "gemma4:e4b",
                 "5" => "glm-4.6v-flash",
+                "6" => "muse-glimmer:30b",
                 _ => null,
             };
             if (modelId != null)

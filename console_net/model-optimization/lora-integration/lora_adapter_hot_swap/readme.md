@@ -22,7 +22,7 @@ cd console_net/model-optimization/lora-integration/lora_adapter_hot_swap
 dotnet run
 ```
 
-No command-line arguments. The base model (`qwen3.5:0.8b`) loads once at startup. Produce LoRA `.gguf` files via the [LoRA Fine-Tuning](../../llm-finetuning/lora_finetuning) demo, or bring your own.
+No command-line arguments. The base model (`qwen3.5:0.8b`) loads once at startup. Produce LoRA `.gguf` files via the [LoRA Fine-Tuning](../../fine-tuning/lora_fine_tuning), [Text-to-SQL Fine-Tuning](../../fine-tuning/text_to_sql_fine_tuning), or [Vision Display Fine-Tuning](../../fine-tuning/vision_display_fine_tuning) demos, or bring your own.
 
 ## Where this fits
 
