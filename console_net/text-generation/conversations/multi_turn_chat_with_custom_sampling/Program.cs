@@ -24,7 +24,7 @@ namespace multi_turn_chat_with_custom_sampling
             Console.WriteLine("3 - Phi-4 14.7B (requires approximately 11 GB of VRAM)");
             Console.WriteLine("4 - GPT OSS 20B (requires approximately 16 GB of VRAM)");
             Console.WriteLine("5 - GLM 4.7 Flash (requires approximately 18 GB of VRAM)");
-            Console.WriteLine("6 - Qwen 3.6 27B (requires approximately 18 GB of VRAM)");
+            Console.WriteLine("6 - Qwen 3.8 27B (requires approximately 18 GB of VRAM)");
             Console.WriteLine("7 - Qwen 3.6 35B-A3B (requires approximately 22 GB of VRAM)");
             Console.WriteLine("8 - Google Gemma 4 26B-A4B (requires approximately 18 GB of VRAM)");
             Console.Write("Other: A custom model URI\n\n> ");
@@ -127,7 +127,7 @@ namespace multi_turn_chat_with_custom_sampling
                 "3" => "phi4",
                 "4" => "gptoss:20b",
                 "5" => "glm4.7-flash",
-                "6" => "qwen3.6:27b",
+                "6" => "qwen3.8:27b",
                 "7" => "qwen3.6:35b-a3b",
                 "8" => "gemma4:26b-a4b",
                 _ => null

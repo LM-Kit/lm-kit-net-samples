@@ -338,7 +338,7 @@ namespace pii_extraction
             Console.WriteLine("  2 - Alibaba Qwen 3.5 4B          (~3.5 GB VRAM)");
             Console.WriteLine("  3 - Alibaba Qwen 3.5 9B          (~7 GB VRAM) [Recommended]");
             Console.WriteLine("  4 - Google Gemma 4 E4B           (~6 GB VRAM)");
-            Console.WriteLine("  5 - Alibaba Qwen 3.6 27B         (~18 GB VRAM)");
+            Console.WriteLine("  5 - Alibaba Qwen 3.8 27B         (~18 GB VRAM)");
             Console.WriteLine("  6 - Alibaba Qwen 3.6 35B-A3B     (~22 GB VRAM)");
             Console.WriteLine("  7 - Google Gemma 4 26B-A4B       (~18 GB VRAM)");
             Console.Write("\nOr enter a custom model URI\n> ");
@@ -349,7 +349,7 @@ namespace pii_extraction
                 "2" => "qwen3.5:4b",
                 "3" => "qwen3.5:9b",
                 "4" => "gemma4:e4b",
-                "5" => "qwen3.6:27b",
+                "5" => "qwen3.8:27b",
                 "6" => "qwen3.6:35b-a3b",
                 "7" => "gemma4:26b-a4b",
                 _ => null,

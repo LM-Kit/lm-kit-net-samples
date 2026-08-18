@@ -58,7 +58,7 @@ namespace chat_with_pdf
             Console.WriteLine("4 - Alibaba Qwen 3.5 9B       (~7 GB VRAM)");
             Console.WriteLine("5 - Meta Muse Glimmer 30B     (~20 GB VRAM)");
             Console.WriteLine("6 - Google Gemma 4 E4B         (~6 GB VRAM)");
-            Console.WriteLine("7 - Alibaba Qwen 3.6 27B      (~18 GB VRAM)");
+            Console.WriteLine("7 - Alibaba Qwen 3.8 27B      (~18 GB VRAM)");
             Console.WriteLine("8 - Alibaba Qwen 3.6 35B-A3B  (~22 GB VRAM)");
             Console.WriteLine("9 - Mistral Ministral 3 8B     (~6.5 GB VRAM)");
             Console.WriteLine("10 - Google Gemma 4 26B-A4B   (~18 GB VRAM)");
@@ -628,7 +628,7 @@ namespace chat_with_pdf
                     "4" => "qwen3.5:9b",
                     "5" => "muse-glimmer:30b",
                     "6" => "gemma4:e4b",
-                    "7" => "qwen3.6:27b",
+                    "7" => "qwen3.8:27b",
                     "8" => "qwen3.6:35b-a3b",
                     "9" => "ministral3:8b",
                     "10" => "gemma4:26b-a4b",

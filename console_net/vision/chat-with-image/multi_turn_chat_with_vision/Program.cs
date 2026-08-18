@@ -75,7 +75,7 @@ namespace multi_turn_chat_with_vision
             Console.WriteLine("  8 - Mistral Ministral 3 8B     (~6.5 GB VRAM)");
             Console.WriteLine("  9 - Mistral Ministral 3 14B    (~12 GB VRAM)");
             Console.WriteLine(" 10 - Mistral Devstral Small 2   (~16 GB VRAM)");
-            Console.WriteLine(" 11 - Alibaba Qwen 3.6 27B       (~18 GB VRAM)");
+            Console.WriteLine(" 11 - Alibaba Qwen 3.8 27B       (~18 GB VRAM)");
             Console.WriteLine(" 12 - Alibaba Qwen 3.6 35B-A3B   (~22 GB VRAM)");
             Console.WriteLine(" 13 - Google Gemma 4 26B-A4B     (~18 GB VRAM)");
             Console.WriteLine("\n  Or enter a custom model URI\n");
@@ -207,7 +207,7 @@ namespace multi_turn_chat_with_vision
                 "8" => "ministral3:8b",
                 "9" => "ministral3:14b",
                 "10" => "devstral-small2",
-                "11" => "qwen3.6:27b",
+                "11" => "qwen3.8:27b",
                 "12" => "qwen3.6:35b-a3b",
                 "13" => "gemma4:26b-a4b",
                 _ => null

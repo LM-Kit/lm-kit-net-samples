@@ -43,7 +43,7 @@ namespace vlm_ocr
             Console.WriteLine("7 - Alibaba Qwen 3.5 4B                 (~3.5 GB VRAM)");
             Console.WriteLine("8 - Alibaba Qwen 3.5 9B                 (~7 GB VRAM)");
             Console.WriteLine("9 - Google Gemma 4 E4B                    (~6 GB VRAM)");
-            Console.WriteLine("10 - Alibaba Qwen 3.6 27B                 (~18 GB VRAM)");
+            Console.WriteLine("10 - Alibaba Qwen 3.8 27B                 (~18 GB VRAM)");
             Console.WriteLine("11 - Alibaba Qwen 3.6 35B-A3B             (~22 GB VRAM)");
             Console.WriteLine("12 - Mistral Ministral 3 8B               (~6.5 GB VRAM)");
             Console.WriteLine("13 - Google Gemma 4 26B-A4B               (~18 GB VRAM)");
@@ -190,7 +190,7 @@ namespace vlm_ocr
                 "7" => "qwen3.5:4b",
                 "8" => "qwen3.5:9b",
                 "9" => "gemma4:e4b",
-                "10" => "qwen3.6:27b",
+                "10" => "qwen3.8:27b",
                 "11" => "qwen3.6:35b-a3b",
                 "12" => "ministral3:8b",
                 "13" => "gemma4:26b-a4b",

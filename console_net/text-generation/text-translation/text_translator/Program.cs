@@ -22,7 +22,7 @@ namespace translator
         {
             ("qwen3.5:9b",    "Alibaba Qwen 3.5 9B             (~7 GB VRAM)"),
             ("gemma4:e4b",    "Google Gemma 4 E4B              (~6 GB VRAM)"),
-            ("qwen3.6:27b",   "Alibaba Qwen 3.6 27B            (~18 GB VRAM)"),
+            ("qwen3.8:27b",   "Alibaba Qwen 3.8 27B            (~18 GB VRAM)"),
             ("qwen3.6:35b-a3b", "Alibaba Qwen 3.6 35B-A3B       (~22 GB VRAM)"),
             ("gemma4:26b-a4b", "Google Gemma 4 26B-A4B          (~18 GB VRAM)"),
         };

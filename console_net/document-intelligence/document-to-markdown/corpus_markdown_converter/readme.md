@@ -97,7 +97,7 @@ File.WriteAllText("report.md", result.Markdown);
 | 5 | Alibaba Qwen 3.5 4B               | ~3.5 GB |
 | 6 | Alibaba Qwen 3.5 9B               | ~7 GB   |
 | 7 | Google Gemma 4 E4B                | ~6 GB   |
-| 8 | Alibaba Qwen 3.6 27B              | ~18 GB  |
+| 8 | Alibaba Qwen 3.8 27B              | ~18 GB  |
 | 9 | Alibaba Qwen 3.6 35B-A3B          | ~22 GB  |
 | 10 | Mistral Ministral 3 8B           | ~6.5 GB |
 | 11 | Google Gemma 4 26B-A4B           | ~18 GB  |

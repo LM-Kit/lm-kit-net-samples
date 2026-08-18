@@ -284,7 +284,7 @@ namespace smart_pii_redaction
             Console.WriteLine("3 - Google Gemma 4 E4B                  (~6 GB VRAM)");
             Console.WriteLine("4 - Mistral Ministral 3 8B              (~6.5 GB VRAM)");
             Console.WriteLine("5 - Z.ai GLM-V 4.6 Flash 10B            (~7 GB VRAM, strong on scans)");
-            Console.WriteLine("6 - Alibaba Qwen 3.6 27B                (~18 GB VRAM, highest accuracy)");
+            Console.WriteLine("6 - Alibaba Qwen 3.8 27B                (~18 GB VRAM, highest accuracy)");
             Console.WriteLine("Or enter a custom model URI or model ID");
             Console.Write("\n> ");
 
@@ -297,7 +297,7 @@ namespace smart_pii_redaction
                 "3" => "gemma4:e4b",
                 "4" => "ministral3:8b",
                 "5" => "glm-4.6v-flash",
-                "6" => "qwen3.6:27b",
+                "6" => "qwen3.8:27b",
                 _ => null
             };
 
