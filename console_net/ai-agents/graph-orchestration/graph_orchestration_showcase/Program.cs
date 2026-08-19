@@ -32,8 +32,6 @@ namespace graph_orchestration_showcase
     /// </summary>
     internal static class Program
     {
-        private const string LicenseKey = "";
-
         // Per-role console color so the user can see which agent is producing what.
         private const ConsoleColor ColorClassifier   = ConsoleColor.Cyan;
         private const ConsoleColor ColorTechExpert   = ConsoleColor.Yellow;
@@ -53,7 +51,6 @@ namespace graph_orchestration_showcase
 
         private static async Task Main()
         {
-            LMKit.Licensing.LicenseManager.SetLicenseKey(LicenseKey);
             Console.OutputEncoding = Encoding.UTF8;
             try { Console.InputEncoding = Encoding.UTF8; } catch { /* not interactive */ }
             TryClear();

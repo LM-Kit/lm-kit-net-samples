@@ -12,7 +12,6 @@ namespace audio_language_detection
 
         static int Main(string[] args)
         {
-            LMKit.Licensing.LicenseManager.SetLicenseKey("");
             Console.OutputEncoding = Encoding.UTF8;
 
             Console.Clear();

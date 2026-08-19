@@ -7,7 +7,6 @@ namespace pdf_splitter_by_range
     {
         static async Task Main()
         {
-            LMKit.Licensing.LicenseManager.SetLicenseKey("");
             Console.InputEncoding = Encoding.UTF8;
             Console.OutputEncoding = Encoding.UTF8;
             Console.Clear();

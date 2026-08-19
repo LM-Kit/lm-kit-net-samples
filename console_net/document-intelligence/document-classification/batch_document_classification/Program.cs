@@ -61,7 +61,6 @@ namespace batch_document_classification
 
         static void Main(string[] args)
         {
-            LMKit.Licensing.LicenseManager.SetLicenseKey("");
             Console.OutputEncoding = Encoding.UTF8;
 
             Console.WriteLine("=== Document Classification ===\n");

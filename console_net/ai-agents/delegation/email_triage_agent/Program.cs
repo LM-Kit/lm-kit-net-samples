@@ -54,7 +54,6 @@ namespace email_triage_agent
 
         private static async Task Main(string[] args)
         {
-            LMKit.Licensing.LicenseManager.SetLicenseKey("");
             Console.InputEncoding = Encoding.UTF8;
             Console.OutputEncoding = Encoding.UTF8;
 

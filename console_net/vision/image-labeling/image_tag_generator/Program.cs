@@ -21,7 +21,6 @@ namespace image_labeling
 
         static void Main()
         {
-            LMKit.Licensing.LicenseManager.SetLicenseKey("");
             Console.OutputEncoding = Encoding.UTF8;
             Console.InputEncoding = Encoding.UTF8;
             Console.Clear();

@@ -21,8 +21,6 @@ namespace agent_telemetry_with_activity_source
     /// </summary>
     internal static class Program
     {
-        private const string LicenseKey = "";
-
         private const ConsoleColor ColorBanner       = ConsoleColor.White;
         private const ConsoleColor ColorMuted        = ConsoleColor.DarkGray;
         private const ConsoleColor ColorOrchestration= ConsoleColor.Cyan;
@@ -35,7 +33,6 @@ namespace agent_telemetry_with_activity_source
 
         private static async Task Main()
         {
-            LMKit.Licensing.LicenseManager.SetLicenseKey(LicenseKey);
             Console.OutputEncoding = Encoding.UTF8;
             try { Console.InputEncoding = Encoding.UTF8; } catch { /* not interactive */ }
             TryClear();

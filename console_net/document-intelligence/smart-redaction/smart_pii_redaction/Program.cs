@@ -29,10 +29,6 @@ namespace smart_pii_redaction
 
         private static void Main()
         {
-            // Set an optional license key here if available.
-            // A free community license can be obtained from: https://lm-kit.com/products/community-edition/
-            LMKit.Licensing.LicenseManager.SetLicenseKey("");
-
             Console.InputEncoding = Encoding.UTF8;
             Console.OutputEncoding = Encoding.UTF8;
             Console.Clear();

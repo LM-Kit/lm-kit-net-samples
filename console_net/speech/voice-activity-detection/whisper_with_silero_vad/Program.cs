@@ -13,7 +13,6 @@ namespace voice_activity_detection
 
         static int Main(string[] args)
         {
-            LMKit.Licensing.LicenseManager.SetLicenseKey("");
             Console.OutputEncoding = Encoding.UTF8;
 
             Console.Clear();

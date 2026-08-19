@@ -27,8 +27,6 @@ namespace document_to_markdown
 
         private static void Main(string[] args)
         {
-            // A free community license is available at: https://lm-kit.com/products/community-edition/
-            LMKit.Licensing.LicenseManager.SetLicenseKey("");
             Console.InputEncoding = Encoding.UTF8;
             Console.OutputEncoding = Encoding.UTF8;
 

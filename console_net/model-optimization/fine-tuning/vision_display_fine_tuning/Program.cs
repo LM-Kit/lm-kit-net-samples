@@ -19,8 +19,6 @@ using System.Text;
 
 Console.OutputEncoding = Encoding.UTF8;
 
-// Optional: LMKit.Licensing.LicenseManager.SetLicenseKey("");
-
 const string ModelId = "qwen3.5:0.8b";
 const string Question = "What value does the display show?";
 

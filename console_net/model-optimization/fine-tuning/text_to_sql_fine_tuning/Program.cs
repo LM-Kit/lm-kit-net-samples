@@ -16,8 +16,6 @@ using System.Text.RegularExpressions;
 
 Console.OutputEncoding = Encoding.UTF8;
 
-// Optional: LMKit.Licensing.LicenseManager.SetLicenseKey("");
-
 const string ModelId = "qwen3.5:0.8b";
 const string System = "You translate questions into SQLite queries for the VeloShop database. Reply with one SQL statement and nothing else.";
 

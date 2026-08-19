@@ -14,7 +14,6 @@ namespace searchable_pdf_from_scans
 
         static async Task Main()
         {
-            LMKit.Licensing.LicenseManager.SetLicenseKey("");
             Console.InputEncoding = Encoding.UTF8;
             Console.OutputEncoding = Encoding.UTF8;
             Console.Clear();

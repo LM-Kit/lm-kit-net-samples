@@ -11,7 +11,6 @@ namespace pdf_pages_to_thumbnails
 
         static async Task Main()
         {
-            LMKit.Licensing.LicenseManager.SetLicenseKey("");
             Console.InputEncoding = Encoding.UTF8;
             Console.OutputEncoding = Encoding.UTF8;
             Console.Clear();

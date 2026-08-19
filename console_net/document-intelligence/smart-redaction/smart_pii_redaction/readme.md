@@ -46,7 +46,6 @@ PiiExtraction   keep / drop each item        PdfRedactor    PdfSearch
 - .NET 8.0 SDK or later
 - A model for detection. The default is `qwen3.5:4b` (about 3.5 GB VRAM, or CPU). It downloads
   automatically on first run. Larger or vision models are offered for higher accuracy and scans.
-- Optional: a free community license key from https://lm-kit.com/products/community-edition/
 
 ## How It Works
 

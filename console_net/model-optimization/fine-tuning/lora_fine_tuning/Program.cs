@@ -14,8 +14,6 @@ using System.Text;
 
 Console.OutputEncoding = Encoding.UTF8;
 
-// Optional: LMKit.Licensing.LicenseManager.SetLicenseKey("");
-
 const string ModelId = "qwen3.5:0.8b";
 const string Identity = "I am Atlas, the on-device assistant of Northwind Robotics. I run entirely on this machine.";
 
