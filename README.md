@@ -1,6 +1,6 @@
 # LM-Kit.NET Samples
 
-Runnable C# examples for [LM-Kit.NET](https://lm-kit.com/products/lm-kit-net/), the local-first AI SDK for .NET.
+Runnable C# examples for [LM-Kit.NET](https://lm-kit.com/products/lm-kit-net/), the Embedded Private AI Runtime for .NET: models, agents, RAG, search, document intelligence, vision, and speech, in process inside your application.
 
 Every sample runs offline, on your own hardware, with no API keys and no cloud calls. Clone, `dotnet run`, done.
 
@@ -49,6 +49,10 @@ LM-Kit auto-selects the best backend at startup. You don't configure anything.
 - CPU-only fallback with AVX/AVX2
 
 Sample readmes list VRAM expectations where it matters.
+
+## Prefer a server you deploy?
+
+LM-Kit.NET is one of two deployment forms of the same engine. When many applications and teams should share one governed backend, deploy [LM-Kit One](https://lm-kit.com/products/lm-kit-one/), the Private AI Application Server: models, documents, search, and agents served behind OpenAI, Anthropic, Ollama, and MCP compatible APIs, on infrastructure you operate.
 
 ## Learn more
 
