@@ -4,7 +4,7 @@ Runnable C# examples for [LM-Kit.NET](https://lm-kit.com/products/lm-kit-net/), 
 
 Every sample runs offline, on your own hardware, with no API keys and no cloud calls. Clone, `dotnet run`, done.
 
-> New to LM-Kit? Start at [lm-kit.com](https://lm-kit.com) for the product overview, or jump straight into a sample below.
+> New to LM-Kit? Start at [lm-kit.com](https://lm-kit.com) for the product overview, read what we mean by [private AI](https://lm-kit.com/private-ai/), or jump straight into a sample below.
 
 ## Browse by capability
 
