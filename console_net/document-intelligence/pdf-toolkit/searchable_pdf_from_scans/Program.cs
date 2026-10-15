@@ -65,13 +65,15 @@ namespace searchable_pdf_from_scans
             Console.WriteLine("Pick a VLM-OCR model:");
             Console.WriteLine("  1  paddleocr-vl-1.6:0.9b   (fast, low-VRAM, default)");
             Console.WriteLine("  2  glm-ocr             (higher accuracy)");
-            Console.WriteLine("  3  lightonocr-2:1b     (balanced)");
-            Console.Write("Choice [1-3] (default 1): ");
+            Console.WriteLine("  3  lightonocr-3:0.8b   (balanced)");
+            Console.WriteLine("  4  lightonocr-3:4b     (most accurate LightOnOCR)");
+            Console.Write("Choice [1-4] (default 1): ");
             string? c = Console.ReadLine()?.Trim();
             return c switch
             {
                 "2" => "glm-ocr",
-                "3" => "lightonocr-2:1b",
+                "3" => "lightonocr-3:0.8b",
+                "4" => "lightonocr-3:4b",
                 _ => "paddleocr-vl-1.6:0.9b",
             };
         }

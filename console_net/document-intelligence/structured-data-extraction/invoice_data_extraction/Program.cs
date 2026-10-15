@@ -53,7 +53,7 @@ namespace invoice_data_extraction
             
              */
 
-            var ocrEngine = new VlmOcr(LM.LoadFromModelID("lightonocr-2:1b"));
+            var ocrEngine = new VlmOcr(LM.LoadFromModelID("lightonocr-3:0.8b"));
 
             textExtraction.OcrEngine = ocrEngine;
 

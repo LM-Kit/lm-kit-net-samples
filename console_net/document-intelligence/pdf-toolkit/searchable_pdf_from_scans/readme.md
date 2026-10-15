@@ -4,7 +4,7 @@ Interactive console app that turns image-only scanned PDFs into searchable PDFs:
 
 ## What it shows
 
-- `LM.LoadFromModelID(...)` to load a VLM-OCR model (paddleocr-vl, glm-ocr, or lightonocr-2).
+- `LM.LoadFromModelID(...)` to load a VLM-OCR model (paddleocr-vl, glm-ocr, or lightonocr-3).
 - `new VlmOcr(model, VlmOcrIntent.Markdown)` for layout-preserving OCR.
 - `PdfSearchableMaker.ConvertToFileAsync(input, ocrEngine, output, options, ct)` for the conversion.
 - `PdfSearchableMakerOptions { TextPageHandling, TextDetectionStrategy, MaxDegreeOfParallelism, Progress }`.

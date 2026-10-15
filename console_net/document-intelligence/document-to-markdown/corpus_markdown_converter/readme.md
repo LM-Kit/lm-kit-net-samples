@@ -35,7 +35,7 @@ unified quality signal, fully local.
 
 - .NET 8.0 or later
 - LM-Kit.NET SDK
-- For VLM strategies: ~2 GB VRAM (LightOnOCR 2 1B is the default)
+- For VLM strategies: ~2 GB VRAM (LightOnOCR 3 0.8B is the default)
 
 ## Usage
 
@@ -58,11 +58,11 @@ requested/effective strategy, page breakdown, token totals, and timings.
 using LMKit.Document.Conversion;
 using LMKit.Model;
 
-// Zero-config: lightonocr-2:1b is loaded lazily on first VLM page.
+// Zero-config: lightonocr-3:0.8b is loaded lazily on first VLM page.
 var converter = new DocumentToMarkdown();
 
 // Or bring your own vision model.
-var model = LM.LoadFromModelID("lightonocr-2:1b");
+var model = LM.LoadFromModelID("lightonocr-3:0.8b");
 var converter2 = new DocumentToMarkdown(model);
 
 var result = converter.Convert("report.pdf", new DocumentToMarkdownOptions
@@ -87,19 +87,20 @@ File.WriteAllText("report.md", result.Markdown);
 
 ## Model Menu (vision strategies)
 
-| # | Model                            | VRAM    |
-|---|----------------------------------|---------|
-| 0 | LightOn LightOnOCR 2 1B (default) | ~2 GB   |
-| 1 | Z.ai GLM-OCR 0.9B                 | ~1 GB   |
-| 2 | Z.ai GLM-V 4.6 Flash 10B          | ~7 GB   |
-| 3 | MiniCPM o 4.5 9B                  | ~5.9 GB |
-| 4 | Alibaba Qwen 3.5 2B               | ~2 GB   |
-| 5 | Alibaba Qwen 3.5 4B               | ~3.5 GB |
-| 6 | Alibaba Qwen 3.5 9B               | ~7 GB   |
-| 7 | Google Gemma 4 E4B                | ~6 GB   |
-| 8 | Alibaba Qwen 3.8 27B              | ~18 GB  |
-| 9 | Alibaba Qwen 3.6 35B-A3B          | ~22 GB  |
-| 10 | Mistral Ministral 3 8B           | ~6.5 GB |
-| 11 | Google Gemma 4 26B-A4B           | ~18 GB  |
+| # | Model | VRAM |
+|---|---|---|
+| 0 | LightOn LightOnOCR 3 0.8B (default) | ~2 GB |
+| 1 | LightOn LightOnOCR 3 4B | ~5 GB |
+| 2 | Z.ai GLM-OCR 0.9B | ~1 GB |
+| 3 | Z.ai GLM-V 4.6 Flash 10B | ~7 GB |
+| 4 | MiniCPM o 4.5 9B | ~5.9 GB |
+| 5 | Alibaba Qwen 3.5 2B | ~2 GB |
+| 6 | Alibaba Qwen 3.5 4B | ~3.5 GB |
+| 7 | Alibaba Qwen 3.5 9B | ~7 GB |
+| 8 | Google Gemma 4 E4B | ~6 GB |
+| 9 | Alibaba Qwen 3.8 27B | ~18 GB |
+| 10 | Alibaba Qwen 3.6 35B-A3B | ~22 GB |
+| 11 | Mistral Ministral 3 8B | ~6.5 GB |
+| 12 | Google Gemma 4 26B-A4B | ~18 GB |
 
 Any other input is treated as a custom model URI (local path, HTTP, or Hugging Face link).

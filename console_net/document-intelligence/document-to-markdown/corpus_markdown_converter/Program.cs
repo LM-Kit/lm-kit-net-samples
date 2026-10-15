@@ -202,36 +202,38 @@ namespace document_to_markdown
         private static LM PromptModel()
         {
             PrintSection("Step 2. Vision-language model");
-            Console.WriteLine("  0 - LightOn LightOnOCR 2 1B    (~2 GB VRAM)   ★ default, OCR-specialist");
-            Console.WriteLine("  1 - Z.ai GLM-OCR 0.9B          (~1 GB VRAM)   lightweight OCR-specialist");
-            Console.WriteLine("  2 - Z.ai GLM-V 4.6 Flash 10B   (~7 GB VRAM)   highest fidelity on complex layouts");
-            Console.WriteLine("  3 - MiniCPM o 4.5 9B           (~5.9 GB VRAM)");
-            Console.WriteLine("  4 - Alibaba Qwen 3.5 2B        (~2 GB VRAM)");
-            Console.WriteLine("  5 - Alibaba Qwen 3.5 4B        (~3.5 GB VRAM)");
-            Console.WriteLine("  6 - Alibaba Qwen 3.5 9B        (~7 GB VRAM)");
-            Console.WriteLine("  7 - Google Gemma 4 E4B         (~6 GB VRAM)");
-            Console.WriteLine("  8 - Alibaba Qwen 3.8 27B       (~18 GB VRAM)");
-            Console.WriteLine("  9 - Alibaba Qwen 3.6 35B-A3B   (~22 GB VRAM)");
-            Console.WriteLine(" 10 - Mistral Ministral 3 8B     (~6.5 GB VRAM)");
-            Console.WriteLine(" 11 - Google Gemma 4 26B-A4B     (~18 GB VRAM)");
+            Console.WriteLine("  0 - LightOn LightOnOCR 3 0.8B  (~2 GB VRAM)   ★ default, OCR-specialist");
+            Console.WriteLine("  1 - LightOn LightOnOCR 3 4B    (~5 GB VRAM)   most accurate LightOnOCR size");
+            Console.WriteLine("  2 - Z.ai GLM-OCR 0.9B          (~1 GB VRAM)   lightweight OCR-specialist");
+            Console.WriteLine("  3 - Z.ai GLM-V 4.6 Flash 10B   (~7 GB VRAM)   highest fidelity on complex layouts");
+            Console.WriteLine("  4 - MiniCPM o 4.5 9B           (~5.9 GB VRAM)");
+            Console.WriteLine("  5 - Alibaba Qwen 3.5 2B        (~2 GB VRAM)");
+            Console.WriteLine("  6 - Alibaba Qwen 3.5 4B        (~3.5 GB VRAM)");
+            Console.WriteLine("  7 - Alibaba Qwen 3.5 9B        (~7 GB VRAM)");
+            Console.WriteLine("  8 - Google Gemma 4 E4B         (~6 GB VRAM)");
+            Console.WriteLine("  9 - Alibaba Qwen 3.8 27B       (~18 GB VRAM)");
+            Console.WriteLine(" 10 - Alibaba Qwen 3.6 35B-A3B   (~22 GB VRAM)");
+            Console.WriteLine(" 11 - Mistral Ministral 3 8B     (~6.5 GB VRAM)");
+            Console.WriteLine(" 12 - Google Gemma 4 26B-A4B     (~18 GB VRAM)");
             Console.Write("\nOther entry: A custom model URI\n\n> ");
 
             string input = Console.ReadLine()?.Trim() ?? "0";
 
             string? modelId = input switch
             {
-                "0" => "lightonocr-2:1b",
-                "1" => "glm-ocr",
-                "2" => "glm-4.6v-flash",
-                "3" => "minicpm-o-45",
-                "4" => "qwen3.5:2b",
-                "5" => "qwen3.5:4b",
-                "6" => "qwen3.5:9b",
-                "7" => "gemma4:e4b",
-                "8" => "qwen3.8:27b",
-                "9" => "qwen3.6:35b-a3b",
-                "10" => "ministral3:8b",
-                "11" => "gemma4:26b-a4b",
+                "0" => "lightonocr-3:0.8b",
+                "1" => "lightonocr-3:4b",
+                "2" => "glm-ocr",
+                "3" => "glm-4.6v-flash",
+                "4" => "minicpm-o-45",
+                "5" => "qwen3.5:2b",
+                "6" => "qwen3.5:4b",
+                "7" => "qwen3.5:9b",
+                "8" => "gemma4:e4b",
+                "9" => "qwen3.8:27b",
+                "10" => "qwen3.6:35b-a3b",
+                "11" => "ministral3:8b",
+                "12" => "gemma4:26b-a4b",
                 _ => null
             };
 

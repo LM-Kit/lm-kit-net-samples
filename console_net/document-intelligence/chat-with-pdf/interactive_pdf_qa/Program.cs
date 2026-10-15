@@ -103,7 +103,7 @@ namespace chat_with_pdf
             if (useDocumentUnderstanding)
             {
                 chat.PageProcessingMode = PageProcessingMode.DocumentUnderstanding;
-                chat.DocumentVisionParser = new LMKit.Extraction.Ocr.VlmOcr(LM.LoadFromModelID("lightonocr-2:1b"));
+                chat.DocumentVisionParser = new LMKit.Extraction.Ocr.VlmOcr(LM.LoadFromModelID("lightonocr-3:0.8b"));
                 PrintStatus("Document understanding enabled", ConsoleColor.Cyan);
             }
             else

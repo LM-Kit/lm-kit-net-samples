@@ -5,7 +5,7 @@ A demo for extracting positioned regions from images and documents using LM-Kit.
 ## Features
 
 - Detect regions with bounding-box coordinates using vision-language models
-- Full layout analysis with Infinity-Parser2: every region is classified (title, text, table, formula, figure, captions, footnotes, header, footer) and exposed through `TextElement.Category`
+- Full layout analysis with Infinity-Parser2 or LightOnOCR 3: every region is classified (title, text, table, formula, figure, captions, footnotes, header, footer) and exposed through `TextElement.Category`
 - Category-aware rendering: each layout category is drawn with its own border color, with a matching color legend in the console
 - Typed region content: tables carry HTML, formulas carry LaTeX, other categories carry Markdown
 - Figure regions are reported with their bounding box even though they carry no text
@@ -18,7 +18,7 @@ A demo for extracting positioned regions from images and documents using LM-Kit.
 
 - .NET 8.0 or later
 - LM-Kit.NET SDK
-- Sufficient VRAM for the selected model (~1 GB for PaddleOCR VL 1.6, ~2 GB for Infinity-Parser2 Flash)
+- Sufficient VRAM for the selected model (~1 GB for PaddleOCR VL 1.6, ~2 GB for Infinity-Parser2 Flash or LightOnOCR 3 0.8B, ~5 GB for LightOnOCR 3 4B)
 
 ## Usage
 
@@ -26,6 +26,7 @@ A demo for extracting positioned regions from images and documents using LM-Kit.
 2. Select a model:
    - **PaddleOCR VL 0.9B**: line-level text spotting
    - **Infinity-Parser2 Flash 2B**: full layout analysis with region categories
+   - **LightOnOCR 3 0.8B / 4B**: full layout analysis with region categories, image descriptions and chart data tables
 3. Enter the path to an image or document file
 4. View the detected regions with categories and coordinates in the console
 5. Find the annotated image saved next to the original file, with one border color per category
@@ -35,6 +36,7 @@ A demo for extracting positioned regions from images and documents using LM-Kit.
 The demo queries `VlmOcr.GetSupportedIntents(model)` and picks the richest spatial intent the loaded model supports:
 
 - **`VlmOcrIntent.LayoutAnalysis`** (Infinity-Parser2): the model runs its native doc2json task and returns every layout element with a bounding box, a semantic category, and typed content (HTML for tables, LaTeX for formulas, Markdown otherwise), sorted in human reading order. LM-Kit.NET parses this payload into `TextElement` instances whose `Category` property carries the classification, and maps the normalized grid coordinates back to the original image's pixel space through the preprocessing transform chain. Text-free regions (figures) keep their bounding box. The raw machine-readable JSON payload remains available through `VlmOcrResult.NormalizedText`.
+- **`VlmOcrIntent.LayoutAnalysis`** (LightOnOCR 3): the model runs its grounding mode, which opens every block of the page with its label and a bounding box on the same normalized grid. LM-Kit.NET rewrites the blocks into the same layout payload and `TextElement` instances; a figure region's text is the model's short description of the image, or the data table of a chart.
 - **`VlmOcrIntent.OcrWithCoordinates`** (PaddleOCR VL): the model emits each text line followed by eight normalized location tokens (four corners). LM-Kit.NET translates the tokens back to source-image pixel coordinates.
 
 For each detected region, the demo:

@@ -270,14 +270,16 @@ namespace ocr_demo
             Console.WriteLine("Select an OCR model:");
             Console.WriteLine("  1 - paddleocr-vl-1.6:0.9b   (compact, fast)   [Recommended]");
             Console.WriteLine("  2 - glm-ocr             (higher accuracy)");
-            Console.WriteLine("  3 - lightonocr-2:1b     (small, fast)");
+            Console.WriteLine("  3 - lightonocr-3:0.8b   (small, fast)");
+            Console.WriteLine("  4 - lightonocr-3:4b     (most accurate LightOnOCR)");
             Console.Write("\nOr enter a custom model URI / id\n> ");
             string input = Console.ReadLine()?.Trim() ?? "1";
             string? modelId = input switch
             {
                 "1" => "paddleocr-vl-1.6:0.9b",
                 "2" => "glm-ocr",
-                "3" => "lightonocr-2:1b",
+                "3" => "lightonocr-3:0.8b",
+                "4" => "lightonocr-3:4b",
                 _ => null,
             };
             if (modelId != null)

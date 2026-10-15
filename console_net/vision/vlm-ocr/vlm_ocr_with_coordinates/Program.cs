@@ -21,7 +21,9 @@ namespace vlm_ocr_with_coordinates
         private static readonly (string ModelId, string Label)[] SupportedModels =
         [
             ("paddleocr-vl-1.6:0.9b", "PaddlePaddle PaddleOCR VL 1.6 0.9B  (~1 GB VRAM) - text-line spotting"),
-            ("infinity-parser2-flash", "INF Tech Infinity-Parser2 Flash 2B  (~2 GB VRAM) - full layout analysis")
+            ("infinity-parser2-flash", "INF Tech Infinity-Parser2 Flash 2B  (~2 GB VRAM) - full layout analysis"),
+            ("lightonocr-3:0.8b", "LightOn LightOnOCR 3 0.8B           (~2 GB VRAM) - full layout analysis, image descriptions, chart data"),
+            ("lightonocr-3:4b", "LightOn LightOnOCR 3 4B             (~5 GB VRAM) - full layout analysis, image descriptions, chart data")
         ];
 
         private static void Main(string[] args)
@@ -44,7 +46,7 @@ namespace vlm_ocr_with_coordinates
             LM model = LoadModel(input);
 
             // Each engine exposes its native level of spatial understanding.
-            // Layout-analysis models (Infinity-Parser2) locate and classify
+            // Layout-analysis models (Infinity-Parser2, LightOnOCR-3) locate and classify
             // block-level regions (title, text, table, formula, figure, ...);
             // spotting models (PaddleOCR-VL) locate individual text lines.
             // Pick the richest intent the model supports.
