@@ -23,7 +23,7 @@ builder.AddLMKitChatCompletion(chatModel, new LMKitPromptExecutionSettings(chatM
 });
 
 // Configure the embedding model for semantic memory
-var embeddingModel = LMKit.Model.LM.LoadFromModelID("embeddinggemma-300m");
+var embeddingModel = LMKit.Model.LM.LoadFromModelID("embeddinggemma-2");
 builder.AddLMKitTextEmbeddingGeneration(embeddingModel);
 
 // Build the kernel

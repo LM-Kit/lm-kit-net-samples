@@ -95,7 +95,7 @@ namespace persistent_memory_assistant
             Console.WriteLine();
 
             // Load embedding model for memory
-            var embeddingModel = LM.LoadFromModelID("embeddinggemma-300m",
+            var embeddingModel = LM.LoadFromModelID("embeddinggemma-2",
                 downloadingProgress: OnDownloadProgress,
                 loadingProgress: OnLoadProgress);
 

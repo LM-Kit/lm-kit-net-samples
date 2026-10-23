@@ -20,7 +20,7 @@ namespace parsed_document_rag
     /// </summary>
     internal class Program
     {
-        private const string EmbeddingModelId = "embeddinggemma-300m";
+        private const string EmbeddingModelId = "embeddinggemma-2";
 
         private static void Main()
         {

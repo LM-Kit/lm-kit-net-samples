@@ -30,7 +30,7 @@ namespace single_turn_rag_filesystem
             _store = new FileSystemVectorStore(storeDirectory);
 
             // Loading models
-            _embeddingModel = LoadModel("embeddinggemma-300m", "Embedding");
+            _embeddingModel = LoadModel("embeddinggemma-2", "Embedding");
             _chatModel = LoadModel("gemma4:e4b", "Chat");
 
             Console.Clear();

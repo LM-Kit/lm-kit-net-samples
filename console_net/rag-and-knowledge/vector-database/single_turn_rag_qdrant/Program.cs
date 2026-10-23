@@ -30,7 +30,7 @@ namespace single_turn_rag_qdrant
             _store = new QdrantEmbeddingStore(new Uri("http://localhost:6334"));
 
             // Loading models
-            _embeddingModel = LoadModel("embeddinggemma-300m", "Embedding");
+            _embeddingModel = LoadModel("embeddinggemma-2", "Embedding");
             _chatModel = LoadModel("gemma4:e4b", "Chat");
 
             Console.Clear();

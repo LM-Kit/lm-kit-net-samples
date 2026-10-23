@@ -37,7 +37,7 @@ namespace single_turn_rag_pgvector
             _store = new PgVectorEmbeddingStore(connectionString);
 
             // Loading models
-            _embeddingModel = LoadModel("embeddinggemma-300m", "Embedding");
+            _embeddingModel = LoadModel("embeddinggemma-2", "Embedding");
             _chatModel = LoadModel("gemma4:e4b", "Chat");
 
             Console.Clear();

@@ -10,7 +10,7 @@ Console.WriteLine("=== LM-Kit.NET + Microsoft.Extensions.AI Demo ===\n");
 Console.WriteLine("Loading chat model...");
 var chatModel = LMKit.Model.LM.LoadFromModelID("gemma4:e4b");
 Console.WriteLine("Loading embedding model...");
-var embeddingModel = LMKit.Model.LM.LoadFromModelID("embeddinggemma-300m");
+var embeddingModel = LMKit.Model.LM.LoadFromModelID("embeddinggemma-2");
 
 // ---- Create Microsoft.Extensions.AI services ----
 

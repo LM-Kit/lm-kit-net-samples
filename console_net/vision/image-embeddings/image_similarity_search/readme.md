@@ -1,16 +1,16 @@
 # Visual Similarity & Near-Duplicate Index
 
-Interactive console app that embeds a folder of images into a persistent vector index, then either clusters near-duplicates above a cosine threshold or runs visual-similarity search against a query image. Built on `LM.LoadFromModelID("nomic-embed-vision")`, `Embedder`, `DataSource`, and `VectorSearch`.
+Interactive console app that embeds a folder of images into a persistent vector index, then either clusters near-duplicates above a cosine threshold or searches it with a query image or a text description. Built on `LM.LoadFromModelID("embeddinggemma-2")` (Google EmbeddingGemma 2: text and images in one vector space), `Embedder`, `DataSource`, and `VectorSearch`.
 
 ## What it shows
 
-- `Embedder.GetEmbeddings(Attachment)` for image vectors.
+- `Embedder.GetEmbeddings(Attachment)` for image vectors and `Embedder.GetEmbeddings(string)` for text queries in the same space.
 - `DataSource.CreateFileDataSource(...)` for a persistent file-based vector index.
 - `VectorSearch.FindMatchingPartitions(dataSources, vector)` for nearest-neighbour search by cosine.
 - Four interactive modes from a menu:
   - **Index**: walk a folder, embed every image, write the index file.
   - **Duplicates**: cluster near-duplicates above a chosen cosine threshold; emits `duplicates_report.md` + `duplicates.csv`; reports reclaimable disk space.
-  - **Search**: REPL of query-image paths; each returns top-K matches with similarity scores.
+  - **Search**: REPL of query-image paths or text descriptions; each returns top-K matches with similarity scores.
   - **Stats**: image count, total bytes, embedding dimension.
 
 ## Run

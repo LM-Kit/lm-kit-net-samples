@@ -11,7 +11,7 @@ namespace conversational_rag
 {
     internal class Program
     {
-        const string EmbeddingModelId = "embeddinggemma-300m";
+        const string EmbeddingModelId = "embeddinggemma-2";
 
         static bool _isDownloading;
 

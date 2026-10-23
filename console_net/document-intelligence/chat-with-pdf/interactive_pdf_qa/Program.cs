@@ -72,7 +72,7 @@ namespace chat_with_pdf
 
             PrintStatus("Chat model loaded", ConsoleColor.Green);
 
-            LM embeddingModel = LM.LoadFromModelID("embeddinggemma-300m");
+            LM embeddingModel = LM.LoadFromModelID("embeddinggemma-2");
             PrintStatus("Embedding model loaded", ConsoleColor.Green);
 
             Console.Clear();

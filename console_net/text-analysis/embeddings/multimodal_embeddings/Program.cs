@@ -13,20 +13,16 @@ namespace multimodal_embeddings
         {
             Console.InputEncoding = Encoding.UTF8;
             Console.OutputEncoding = Encoding.UTF8;
-            Console.Clear();
+            if (!Console.IsOutputRedirected) { Console.Clear(); }
             WriteHeader();
 
-            Console.WriteLine("Loading nomic-embed-text ...");
-            using LM textModel = LM.LoadFromModelID("nomic-embed-text",
-                downloadingProgress: OnDownloadProgress, loadingProgress: OnLoadProgress);
-            Console.WriteLine();
-            Console.WriteLine("Loading nomic-embed-vision ...");
-            using LM visionModel = LM.LoadFromModelID("nomic-embed-vision",
+            // EmbeddingGemma 2 embeds text and images with the same model, into one vector space.
+            Console.WriteLine("Loading embeddinggemma-2 ...");
+            using LM model = LM.LoadFromModelID("embeddinggemma-2",
                 downloadingProgress: OnDownloadProgress, loadingProgress: OnLoadProgress);
             Console.WriteLine();
             Console.WriteLine();
-            Embedder textEmbedder = new(textModel);
-            Embedder imageEmbedder = new(visionModel);
+            Embedder embedder = new(model);
 
             PrintMenu();
             while (true)
@@ -40,13 +36,13 @@ namespace multimodal_embeddings
                 switch (choice.ToLowerInvariant())
                 {
                     case "1": case "matrix":
-                        SimilarityMatrix(textEmbedder, imageEmbedder);
+                        SimilarityMatrix(embedder);
                         break;
                     case "2": case "search":
-                        TextOverImages(textEmbedder, imageEmbedder);
+                        TextOverImages(embedder);
                         break;
                     case "3": case "tag":
-                        ImageOverTags(textEmbedder, imageEmbedder);
+                        ImageOverTags(embedder);
                         break;
                     case "q": case "quit": case "exit":
                         return;
@@ -60,7 +56,7 @@ namespace multimodal_embeddings
             }
         }
 
-        static void SimilarityMatrix(Embedder text, Embedder image)
+        static void SimilarityMatrix(Embedder embedder)
         {
             Console.WriteLine();
             Console.WriteLine("Paste captions one per line, blank ends:");
@@ -90,8 +86,9 @@ namespace multimodal_embeddings
             }
             if (images.Count == 0) { Console.WriteLine("No images."); return; }
 
-            float[][] tVecs = text.GetEmbeddings(captions.ToArray());
-            float[][] iVecs = images.Select(p => { using ImageBuffer img = ImageBuffer.LoadAsRGB(p); return image.GetEmbeddings(img); }).ToArray();
+            // The text side of a text-to-image comparison is embedded as a query.
+            float[][] tVecs = captions.Select(c => embedder.GetQueryEmbeddings(c)).ToArray();
+            float[][] iVecs = images.Select(p => EmbedImage(embedder, p)).ToArray();
 
             Console.WriteLine();
             Console.WriteLine("Cosine similarity matrix:");
@@ -110,7 +107,7 @@ namespace multimodal_embeddings
             Console.WriteLine();
         }
 
-        static void TextOverImages(Embedder text, Embedder image)
+        static void TextOverImages(Embedder embedder)
         {
             Console.WriteLine();
             Console.Write("Path to a folder of images: ");
@@ -127,7 +124,7 @@ namespace multimodal_embeddings
             if (images.Length == 0) { Console.WriteLine("No images."); return; }
 
             Console.WriteLine($"Embedding {images.Length} image(s) ...");
-            float[][] iVecs = images.Select(p => { using ImageBuffer img = ImageBuffer.LoadAsRGB(p); return image.GetEmbeddings(img); }).ToArray();
+            float[][] iVecs = images.Select(p => EmbedImage(embedder, p)).ToArray();
 
             while (true)
             {
@@ -135,7 +132,7 @@ namespace multimodal_embeddings
                 Console.Write("Text query (blank to return to menu): ");
                 string? q = Console.ReadLine();
                 if (string.IsNullOrEmpty(q)) { return; }
-                float[] qVec = text.GetQueryEmbeddings(q);
+                float[] qVec = embedder.GetQueryEmbeddings(q);
                 (string path, float score)[] ranked = images
                     .Select((p, i) => (p, Embedder.GetCosineSimilarity(qVec, iVecs[i])))
                     .OrderByDescending(t => t.Item2).Take(k).ToArray();
@@ -145,7 +142,7 @@ namespace multimodal_embeddings
             }
         }
 
-        static void ImageOverTags(Embedder text, Embedder image)
+        static void ImageOverTags(Embedder embedder)
         {
             Console.WriteLine();
             Console.Write("Path to an image: ");
@@ -168,9 +165,8 @@ namespace multimodal_embeddings
             int.TryParse(Console.ReadLine(), out int k);
             if (k <= 0) { k = 5; }
 
-            using ImageBuffer img = ImageBuffer.LoadAsRGB(imgPath);
-            float[] iVec = image.GetEmbeddings(img);
-            float[][] tVecs = text.GetEmbeddings(tags.ToArray());
+            float[] iVec = EmbedImage(embedder, imgPath);
+            float[][] tVecs = tags.Select(t => embedder.GetQueryEmbeddings(t)).ToArray();
             (string tag, float score)[] ranked = tags
                 .Select((t, i) => (t, Embedder.GetCosineSimilarity(iVec, tVecs[i])))
                 .OrderByDescending(t => t.Item2).Take(k).ToArray();
@@ -179,6 +175,12 @@ namespace multimodal_embeddings
             Console.WriteLine($"Top-{k} tags for {Path.GetFileName(imgPath)}:");
             foreach (var (tag, score) in ranked) { Console.WriteLine($"  {score:F3}  {tag}"); }
             Console.WriteLine();
+        }
+
+        static float[] EmbedImage(Embedder embedder, string path)
+        {
+            using ImageBuffer image = ImageBuffer.LoadAsRGB(path);
+            return embedder.GetEmbeddings(image);
         }
 
         static string Truncate(string s, int max) => s.Length <= max ? s : s.Substring(0, max - 1) + "…";
@@ -204,7 +206,7 @@ namespace multimodal_embeddings
             Console.WriteLine("║      Multimodal Embeddings (Text + Image)        ║");
             Console.WriteLine("╚══════════════════════════════════════════════════╝");
             Console.ResetColor();
-            Console.WriteLine("Text and image embeddings share a vector space. Search and tag across modalities.");
+            Console.WriteLine("One model embeds text and images into one vector space. Search and tag across modalities.");
             Console.WriteLine();
         }
 

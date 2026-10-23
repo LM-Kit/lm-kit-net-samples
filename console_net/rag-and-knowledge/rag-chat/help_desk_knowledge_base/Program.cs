@@ -12,7 +12,7 @@ namespace help_desk_knowledge_base
 {
     internal class Program
     {
-        const string EmbeddingModelId = "embeddinggemma-300m";
+        const string EmbeddingModelId = "embeddinggemma-2";
         const string DataSourcePath = "help_desk_kb.dat";
         const string DataSourceId = "help_desk";
 

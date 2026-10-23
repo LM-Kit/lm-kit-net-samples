@@ -301,7 +301,7 @@ namespace embeddings_demo
             Console.WriteLine("  1 - Qwen3 Embedding 0.6B    (small, fast) [Recommended]");
             Console.WriteLine("  2 - Qwen3 Embedding 4B      (higher quality)");
             Console.WriteLine("  3 - Qwen3 Embedding 8B      (best quality)");
-            Console.WriteLine("  4 - Embedding Gemma 300M    (very small)");
+            Console.WriteLine("  4 - EmbeddingGemma 2        (very small)");
             Console.WriteLine("  5 - Harrier OSS v1 0.6B     (compact, multilingual)");
             Console.Write("\nOr enter a custom model URI / model id\n> ");
             string input = Console.ReadLine()?.Trim() ?? "1";
@@ -310,7 +310,7 @@ namespace embeddings_demo
                 "1" => "qwen3-embedding:0.6b",
                 "2" => "qwen3-embedding:4b",
                 "3" => "qwen3-embedding:8b",
-                "4" => "embeddinggemma-300m",
+                "4" => "embeddinggemma-2",
                 "5" => "harrier-oss:0.6b",
                 _ => null,
             };

@@ -26,9 +26,9 @@ namespace image_similarity_search
             Console.Clear();
             WriteHeader();
 
-            Console.WriteLine("Loading nomic-embed-vision ...");
+            Console.WriteLine("Loading embeddinggemma-2 ...");
             using LM model = LM.LoadFromModelID(
-                "nomic-embed-vision",
+                "embeddinggemma-2",
                 downloadingProgress: OnDownloadProgress,
                 loadingProgress: OnLoadProgress);
             Console.WriteLine();
@@ -227,24 +227,21 @@ namespace image_similarity_search
             Console.Write("Top-K results [10]: ");
             int topK = int.TryParse(Console.ReadLine()?.Trim(), out int k) && k > 0 ? k : 10;
 
-            Console.WriteLine("Search mode. Type a query image path; empty line returns to menu.");
+            Console.WriteLine("Search mode. Type a query image path or a text description; empty line returns to menu.");
             Console.WriteLine();
             while (true)
             {
                 Console.ForegroundColor = ConsoleColor.Cyan;
                 Console.Write("query > ");
                 Console.ResetColor();
-                string? path = Console.ReadLine()?.Trim().Trim('"');
-                if (string.IsNullOrWhiteSpace(path)) { Console.WriteLine(); return; }
-                if (!File.Exists(path))
-                {
-                    Console.ForegroundColor = ConsoleColor.Red;
-                    Console.WriteLine($"  not found: {path}");
-                    Console.ResetColor();
-                    continue;
-                }
+                string? query = Console.ReadLine()?.Trim().Trim('"');
+                if (string.IsNullOrWhiteSpace(query)) { Console.WriteLine(); return; }
 
-                float[] qVec = _embedder!.GetEmbeddings(new Attachment(path));
+                // The model embeds images and text into one space: an existing file is
+                // searched by its pixels, anything else by its meaning.
+                float[] qVec = File.Exists(query)
+                    ? _embedder!.GetEmbeddings(new Attachment(query))
+                    : _embedder!.GetEmbeddings(query);
                 var hits = VectorSearch.FindMatchingPartitions(
                     dataSources: new[] { _collection },
                     vector: qVec)
@@ -351,7 +348,7 @@ namespace image_similarity_search
             Console.WriteLine();
             Console.WriteLine("  1 / index       Embed a folder of images into a persistent index");
             Console.WriteLine("  2 / duplicates  Cluster near-duplicates above a threshold");
-            Console.WriteLine("  3 / search      Search the index by a query image");
+            Console.WriteLine("  3 / search      Search the index by a query image or a text description");
             Console.WriteLine("  4 / stats       Show index statistics");
             Console.WriteLine("  q / quit        Exit");
             Console.WriteLine();
